@@ -15,10 +15,13 @@
     "OWNER_MODEL_VERSION": "per instance, per refit (om-<instance>-r<N>-<sha8>)"
   },
   "ENGINE": {
-    "LOCATION": "repo root (the folder HoBeGone-Template was cloned into)",
+    "LOCATION": "~/hobegone/HoBeGone-Template (or $HOBEGONE_HOME/HoBeGone-Template); reported by bootstrap as HOBEGONE_ENGINE",
     "ENTRYPOINT": "python3 -m fis",
     "CLI": "fis/cli.py",
-    "VERSIONS_COMMAND": "python3 -m fis versions"
+    "VERSIONS_COMMAND": "python3 -m fis versions",
+    "SOURCE": "https://github.com/TheRetardedElon/HoBeGone-Template",
+    "BOOTSTRAP": "bootstrap.sh --x-account @handle (clone/fast-forward into ~/hobegone/HoBeGone-Template, Python check, tests, start; see BOOTSTRAP.md)",
+    "DOCTOR_COMMAND": "python3 -m fis doctor --x-account @handle"
   },
   "DEFAULT_MODE": "AUTO_CLEAN",
   "MODES": {
@@ -63,7 +66,7 @@
   "INSTANCE_RULE": "Every X account -> its own instances/<handle>, created on first start from instances/_template (neutral base rules, empty owner model). Owner-specific rules are added only on the owner's words (owner-policy command).",
   "REQUIRES": [
     "the owner is already signed in to X in the bot's browser (the owner types their own credentials)",
-    "this repo cloned on the bot's computer, with Python 3.10+ (standard library only)"
+    "git and Python 3.10+ (standard library only) on the bot's computer; the bootstrap fetches this repo"
   ],
   "NEVER": [
     "ask for or store passwords, cookies, tokens, 2FA codes or passkeys",
@@ -74,7 +77,8 @@
     "use nationality, race, religion, gender or politics, or treat disagreement/criticism/fandom/opinion as suspicious",
     "block an owner-kept account",
     "auto-block on automation, repurposing, network membership or any excluded trait alone",
-    "unblock except on the owner's request"
+    "unblock except on the owner's request",
+    "run the engine from any copy other than the bootstrap's, or import data from another install or owner"
   ],
   "FILES": {
     "TEMPLATE": "TEMPLATE.md",
@@ -89,7 +93,7 @@
     "BASE_RULES": "../../rules/BASE_RULES.md",
     "STARTER_INSTANCE": "../../instances/_template/"
   },
-  "FIRST_CONVERSATION": "zero questions: start line, x.com/home signed-in handle check, `python3 -m fis start --x-account @handle`, clean immediately, create quiet daily routine",
+  "FIRST_CONVERSATION": "zero questions: start line, x.com/home signed-in handle check, bootstrap.sh --x-account @handle (runs `python3 -m fis start --x-account @handle`), clean immediately, create quiet daily routine",
   "AUTO_BLOCK_TIERS": [
     "A BLOCK_CONFIRMED (v0.6 engine verdict)",
     "B AUTO_BLOCK_PATTERN (strong scam/impersonation feature or persona+funnel+lure compound; evidence >= PARTIAL; no substantial human continuity)",

@@ -13,13 +13,17 @@ Backend (printed by `python3 -m fis versions`, stamped on every run, audit event
 HO_BE_GONE_VERSION v0.2.0 · FollowerIntegritySkill v0.6.0 · feature registry v0.5 · scoring-v0.6.0 ·
 decision-v0.6.0 · AUTO_BLOCK_VERSION decision-v0.7.0 · calibration NONE until the owner freezes a set · OWNER_MODEL_VERSION per refit.
 
-If the engine (`fis/` at the repo root) is missing, stop and tell the owner the engine isn't installed yet.
+Deploy and update only through `bootstrap.sh` from https://github.com/TheRetardedElon/HoBeGone-Template (see
+`BOOTSTRAP.md`): it clones or fast-forwards the repo into `~/hobegone/HoBeGone-Template`, tests it, refuses another
+owner's instance and runs `start`. If the repo can't be reached, stop and tell the owner the engine isn't installed
+yet; never fall back to another copy.
 
 ## 1. Zero-question start
 1. Send one line: `hbg.START_LINE` (printed by `start`). Never ask which account, which mode, or resume vs new.
 2. The browser subagent opens `https://x.com/home` in the owner's existing signed-in session and reads the signed-in
    @handle. Not signed in → hand the owner the browser to sign in themselves (never type credentials).
-3. `python3 -m fis start --x-account @handle` — picks the instance (every account → its own
+3. `bash ~/hobegone/HoBeGone-Template/bootstrap.sh --x-account @handle` (first run: clone the repo there first), which runs
+   `python3 -m fis start --x-account @handle` — picks the instance (every account → its own
    `instances/<handle>`, created on first start with **neutral base rules** and an empty owner model), auto-resumes an unfinished run (a new run only on
    the owner's words: `--new`, old checkpoint archived), migrates to v0.2, refits the owner model, turns on Active
    Scouting with auto-block.

@@ -7,5 +7,5 @@ FEATURE_REGISTRY_VERSION: v0.5 (template build; weights identical to v0.5, notes
 SCORING_VERSION: scoring-v0.6.0 (v0.5 feature weights unchanged; adds REPURPOSED_ACCOUNT and EVIDENCE_COVERAGE scores)
 DECISION_ENGINE_VERSION: decision-v0.6.0 (gated block policy, adaptive second pass, three enforcement modes)
 CALIBRATION_VERSION: NONE until you freeze your own set (`python3 -m fis calibration freeze --instance I --set-id S --activate`)
-TEMPLATE_VERSION: HoBeGone-Template 2026-09-30
+TEMPLATE_VERSION: HoBeGone-Template v0.2.1 (2026-09-30; bootstrap.sh deploys from https://github.com/TheRetardedElon/HoBeGone-Template)
 LAST_UPDATED: 2026-09-30

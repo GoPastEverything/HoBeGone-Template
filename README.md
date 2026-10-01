@@ -12,7 +12,7 @@ decision-v0.7.0 auto-block layer), the base rules, operator prompts for a browse
 manual, a test suite and a neutral starter instance. It contains **no owner data**: no follower lists, no reactions and
 no trained model. Every owner starts from zero.
 
-> Status: v0.2.0 template. The license is MIT; see [LICENSE](LICENSE) and replace the copyright holder before you publish.
+> Status: template v0.2.1 (engine Ho Be Gone @BOT v0.2.0). The license is MIT; see [LICENSE](LICENSE).
 
 ---
 
@@ -25,6 +25,7 @@ no trained model. Every owner starts from zero.
 | `rules/` | **Base rules**: [`BASE_RULES.md`](rules/BASE_RULES.md) (scam/impersonation patterns, decision layers, never-evidence list), [`SCORING_RUBRIC.md`](rules/SCORING_RUBRIC.md) and [`FEATURES.md`](rules/FEATURES.md) (generated from the registry). |
 | `operator_prompts/` | Task prompts for the browser agent that reads X and clicks Block/Unblock: discovery, collection, second pass, block, unblock, notifications scan, light check. |
 | `skills/` | Three agent skills: `ho-be-gone-getting-started` (first conversation), `ho-be-gone-runbook` (every command), `ho-be-gone-manual` (the owner's guide). |
+| `bootstrap.sh`, `BOOTSTRAP.md` | The one-command deploy/update script for every bot (clone or fast-forward, Python check, tests, clean instance, start) and its documentation. |
 | `USER_MANUAL.md` | The plain-language guide that's sent when the owner says "manual" or "help". |
 | `templates/ho-be-gone/` | Template card: `TEMPLATE.md`, `GETTING_STARTED.md`, `LOCAL_LIVE_TEST.md` (first live-run checklist) and `manifest.json`. |
 | `instances/_template/` | Neutral starter files (`owner_policy.json` with **no** owner-specific rules, and `scout_settings.json`). Never edited per owner. |
@@ -58,22 +59,29 @@ no trained model. Every owner starts from zero.
 
 ## How to start (new owner)
 
-Requirements: Python 3.10+ (standard library only; there's nothing to `pip install`), and an agent with a browser in
-which **you** are signed in to X. You type your own credentials; the bot never asks for passwords, codes or cookies.
+Requirements: Python 3.10+ (standard library only; there's nothing to `pip install`), git, and an agent with a browser
+in which **you** are signed in to X. You type your own credentials; the bot never asks for passwords, codes or cookies.
+
+One command, for the first run and every later run (details in [BOOTSTRAP.md](BOOTSTRAP.md)):
 
 ```bash
-git clone <your copy of this repo> HoBeGone-Template
-cd HoBeGone-Template
-python3 -m unittest discover -s tests       # optional: should end with OK
-python3 -m fis start --x-account @yourhandle
+D="${HOBEGONE_HOME:-$HOME/hobegone}/HoBeGone-Template"
+[ -d "$D/.git" ] || git clone -q https://github.com/TheRetardedElon/HoBeGone-Template "$D"
+bash "$D/bootstrap.sh" --x-account @yourhandle
 ```
+
+The bootstrap clones or fast-forwards this repo into `~/hobegone/HoBeGone-Template`, checks Python, runs the tests once
+per new commit, refuses an instance that belongs to another X account, then runs `python3 -m fis start --x-account
+@yourhandle`. It never imports data from anywhere.
 
 `start` asks nothing. It creates your own instance at `instances/yourhandle/`: neutral base rules, an **empty owner
 model** that stays inactive until your own reactions arrive (at least 20 ❌ and 3 ✅), automatic mode (AUTO_CLEAN) and
 Active Scouting on. It prints the start line and the instance path. If you run it again, it resumes your unfinished run.
+`python3 -m fis doctor` is a quick read-only self-check.
 
 For an agent: install the three skills from `skills/`. The getting-started skill handles the first conversation, and the
-runbook covers every command after that, run from the folder you cloned this repo into.
+runbook covers every command after that. Both run the bootstrap first, then work from the folder it reports
+(`HOBEGONE_ENGINE`).
 
 ### Optional owner-specific rules
 By default there are **no** owner-specific rules. If you want extra protection for a particular public figure or

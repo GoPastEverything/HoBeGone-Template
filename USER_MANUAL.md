@@ -89,3 +89,7 @@ on scouting" to bring it back.
 
 **Can I see everything it blocked?** Yes — say "show my blocked list". To see the borderline ones, say "show held
 for later".
+
+**Does it update itself?** Yes. Before each run it fetches the latest Ho Be Gone engine from its public source and
+checks it before using it. If the source can't be reached, it tells you and tries again next time. Your blocks, keeps
+and settings stay yours and are never shared.

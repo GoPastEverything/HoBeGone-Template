@@ -277,8 +277,10 @@ class TestInstancesAndResume(unittest.TestCase):
         self.assertIn("python3 -m fis manual", rb); self.assertIn("python3 -m fis auto-clean", rb); self.assertIn("unblock-request", rb)
         self.assertNotIn("RESUME PREVIOUS AUDIT or", gs)
         self.assertIn("isn't installed", " ".join(rb.split())); self.assertNotIn("/workspace/", rb + gs)
+        repo = "https://github.com/TheRetardedElon/HoBeGone-Template"  # the engine's public source (bootstrap); not an owner
+        self.assertIn(repo, rb); self.assertIn(repo, gs); self.assertIn("bootstrap.sh", rb + gs)
         for txt in (rb, gs, man, t):
-            self.assertIsNone(re.search(r"\bjay\b|theretarded|instances/jay", txt, re.I))
+            self.assertIsNone(re.search(r"\bjay\b|theretarded|instances/jay", txt.replace(repo, ""), re.I))
         for h in ("Tesla", "SpaceX"):
             self.assertNotIn(h, rb); self.assertNotIn(h, gs)
         self.assertFalse(os.path.exists(os.path.join(ROOT, "templates", "follower-cleanup")))  # deprecated template not shipped

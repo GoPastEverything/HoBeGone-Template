@@ -667,6 +667,54 @@ def cmd_daily_plan(a):
     print("\n".join(steps))
 
 
+def engine_commit(root=ROOT):
+    """Commit of the engine checkout (None when it isn't a git clone). Read-only."""
+    import subprocess
+    try:
+        r = subprocess.run(["git", "-C", root, "rev-parse", "HEAD"], capture_output=True, text=True, timeout=10)
+        return r.stdout.strip() or None if r.returncode == 0 else None
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+
+def cmd_doctor(a):
+    """Cheap self-check: Python, engine files, version stamps, neutral starter instance, and (with --x-account) which
+    instance this owner gets and whether it belongs to them. Read-only; exits 1 when something is wrong."""
+    problems = []
+    if sys.version_info < (3, 10):
+        problems.append(f"Python 3.10+ needed, found {sys.version.split()[0]}")
+    for rel in ("fis/cli.py", "feature_registry.json", "fingerprints_db.json", "instances/_template/owner_policy.json",
+                "instances/_template/scout_settings.json", "USER_MANUAL.md"):
+        if not os.path.exists(os.path.join(ROOT, rel)):
+            problems.append(f"missing {rel}")
+    try:
+        v = versions()
+    except Exception as e:  # noqa: BLE001 - report, don't crash
+        v = {}; problems.append(f"version stamps unreadable: {e}")
+    try:
+        tpl = json.load(open(hbg.TEMPLATE_INSTANCE + "/owner_policy.json", encoding="utf-8"))
+        if tpl.get("PROTECTED_IDENTITIES") or tpl.get("RULE_ANSWERS"):
+            problems.append("instances/_template/owner_policy.json is not neutral")
+    except (OSError, ValueError) as e:
+        problems.append(f"starter owner policy unreadable: {e}")
+    out = {"PRODUCT": HO_BE_GONE_DISPLAY, "ENGINE_ROOT": ROOT, "ENGINE_COMMIT": engine_commit(),
+           "PYTHON": sys.version.split()[0], "HO_BE_GONE_VERSION": v.get("HO_BE_GONE_VERSION"),
+           "AUTO_BLOCK_VERSION": v.get("AUTO_BLOCK_VERSION"),
+           "INSTANCES": sorted(os.path.basename(d) for d in glob.glob(os.path.join(hbg.INSTANCES, "[!_]*")) if os.path.isdir(d))}
+    if a.x_account:
+        inst = hbg.select_instance(a.x_account)
+        owner = hbg.instance_owner(inst)
+        out.update({"X_ACCOUNT": a.x_account, "INSTANCE": inst, "INSTANCE_EXISTS": os.path.exists(os.path.join(inst, "checkpoint.json")),
+                    "INSTANCE_OWNER": owner})
+        if owner and hbg.slug(owner) != hbg.slug(a.x_account):
+            problems.append(f"{inst} belongs to another X account; refusing to reuse it")
+    out["PROBLEMS"] = problems
+    out["STATUS"] = "OK" if not problems else "PROBLEM"
+    print(json.dumps(out, indent=2))
+    if problems:
+        sys.exit(1)
+
+
 def cmd_manual(a):
     txt = open(os.path.join(ROOT, "USER_MANUAL.md"), encoding="utf-8").read()
     if a.short:  # condensed: quick start + section headings with their first paragraph
@@ -700,6 +748,7 @@ def main(argv=None):
             s.add_argument("--instance", required=True)
         return s
     add("versions", cmd_versions)
+    s = sub.add_parser("doctor"); s.set_defaults(fn=cmd_doctor); s.add_argument("--x-account")
     s = sub.add_parser("init-job"); s.set_defaults(fn=cmd_init_job); s.add_argument("--instance")
     s.add_argument("--owner", required=True); s.add_argument("--mode", default=None, help="default AUTO_CLEAN"); s.add_argument("--x-account")
     s.add_argument("--owner-words", help="the owner's own words asking for a non-default mode")
