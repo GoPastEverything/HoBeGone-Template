@@ -1,0 +1,447 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FollowerIntegritySkill v0.6 account state",
+  "type": "object",
+  "required": [
+    "STATE_VERSION",
+    "HANDLE",
+    "PROFILE_URL",
+    "VERSIONS",
+    "COLLECTION",
+    "STAGES",
+    "DECISION",
+    "EVIDENCE_SUMMARY",
+    "SHORT_REASON",
+    "ENFORCEMENT_RECORD"
+  ],
+  "properties": {
+    "STATE_VERSION": {
+      "const": "0.6.0"
+    },
+    "HANDLE": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_]{1,15}$"
+    },
+    "PROFILE_URL": {
+      "type": "string",
+      "pattern": "^https://x\\.com/"
+    },
+    "VERSIONS": {
+      "type": "object",
+      "required": [
+        "SKILL_VERSION",
+        "FEATURE_REGISTRY_VERSION",
+        "SCORING_VERSION",
+        "DECISION_ENGINE_VERSION",
+        "CALIBRATION_VERSION"
+      ],
+      "properties": {
+        "SKILL_VERSION": {
+          "type": "string",
+          "pattern": ".+"
+        },
+        "FEATURE_REGISTRY_VERSION": {
+          "type": "string",
+          "pattern": ".+"
+        },
+        "SCORING_VERSION": {
+          "type": "string",
+          "pattern": ".+"
+        },
+        "DECISION_ENGINE_VERSION": {
+          "type": "string",
+          "pattern": ".+"
+        },
+        "CALIBRATION_VERSION": {
+          "type": "string",
+          "pattern": ".+"
+        }
+      }
+    },
+    "COLLECTION": {
+      "type": "object",
+      "required": [
+        "STATUS"
+      ],
+      "properties": {
+        "STATUS": {
+          "enum": [
+            "VALID",
+            "SCHEMA_PROBLEMS"
+          ]
+        }
+      }
+    },
+    "STAGES": {
+      "type": "object",
+      "required": [
+        "BEHAVIOR_EXTRACTION",
+        "HUMAN_CONTINUITY_ANALYSIS",
+        "NETWORK_ANALYSIS",
+        "PRIMARY_SCORING",
+        "EVIDENCE_SUFFICIENCY",
+        "SECOND_PASS",
+        "REPURPOSED",
+        "OWNER_POLICY"
+      ],
+      "properties": {
+        "HUMAN_CONTINUITY_ANALYSIS": {
+          "type": "object",
+          "required": [
+            "HUMAN_CONTINUITY",
+            "STATE",
+            "SUBSTANTIAL"
+          ],
+          "properties": {
+            "STATE": {
+              "enum": [
+                "EVIDENCE_OF_HUMANITY",
+                "SOME_EVIDENCE",
+                "NO_EVIDENCE_FOUND",
+                "NOT_SEARCHED"
+              ]
+            }
+          }
+        },
+        "EVIDENCE_SUFFICIENCY": {
+          "type": "object",
+          "required": [
+            "EVIDENCE_COVERAGE_SCORE",
+            "EVIDENCE_STATE"
+          ],
+          "properties": {
+            "EVIDENCE_COVERAGE_SCORE": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "EVIDENCE_STATE": {
+              "enum": [
+                "SUFFICIENT",
+                "PARTIAL",
+                "INSUFFICIENT",
+                "UNAVAILABLE"
+              ]
+            }
+          }
+        },
+        "REPURPOSED": {
+          "type": "object",
+          "required": [
+            "REPURPOSED_ACCOUNT",
+            "IS_REPURPOSED",
+            "COMPOUND_STRONG"
+          ],
+          "properties": {
+            "REPURPOSED_ACCOUNT": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            }
+          }
+        },
+        "SECOND_PASS": {
+          "type": "object",
+          "required": [
+            "RESULT",
+            "SECOND_PASS_COMPLETE",
+            "SECOND_PASS_COVERAGE_SCORE",
+            "AVAILABLE_BEHAVIOR_TYPES",
+            "SAMPLED_BEHAVIOR_TYPES",
+            "UNOBSERVABLE_BEHAVIOR_TYPES",
+            "WHY_COMPLETE_OR_INCOMPLETE"
+          ],
+          "properties": {
+            "RESULT": {
+              "enum": [
+                "PENDING",
+                "CONFIRMS",
+                "REFUTES",
+                "INCOMPLETE"
+              ]
+            },
+            "SECOND_PASS_COMPLETE": {
+              "type": "boolean"
+            },
+            "SECOND_PASS_COVERAGE_SCORE": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "AVAILABLE_BEHAVIOR_TYPES": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "PROFILE_HISTORY",
+                  "ORIGINAL_POSTS",
+                  "REPLIES",
+                  "REPOSTS",
+                  "QUOTES",
+                  "EXTERNAL_LINKS",
+                  "OLDER_CONTENT"
+                ]
+              }
+            },
+            "SAMPLED_BEHAVIOR_TYPES": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "PROFILE_HISTORY",
+                  "ORIGINAL_POSTS",
+                  "REPLIES",
+                  "REPOSTS",
+                  "QUOTES",
+                  "EXTERNAL_LINKS",
+                  "OLDER_CONTENT"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "DECISION": {
+      "type": "object",
+      "required": [
+        "ENFORCEMENT",
+        "OUTCOME",
+        "ACCOUNT_NATURE",
+        "CLASSIFICATION",
+        "SCORES",
+        "GATES",
+        "WHY",
+        "LIKELY_LABEL"
+      ],
+      "properties": {
+        "ENFORCEMENT": {
+          "enum": [
+            "KEEP",
+            "REVIEW",
+            "BLOCK_CANDIDATE",
+            "BLOCK_CONFIRMED"
+          ]
+        },
+        "OUTCOME": {
+          "enum": [
+            "KEEP",
+            "LOW_EVIDENCE_KEEP",
+            "REVIEW",
+            "REVIEW_INSUFFICIENT_DATA",
+            "BLOCK_CANDIDATE",
+            "BLOCK_CONFIRMED",
+            "UNKNOWN"
+          ]
+        },
+        "ACCOUNT_NATURE": {
+          "enum": [
+            "HUMAN_LIKELY",
+            "AUTOMATION_LIKELY",
+            "MIXED_OR_ASSISTED",
+            "UNKNOWN"
+          ]
+        },
+        "CLASSIFICATION": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "NORMAL",
+              "SPAM",
+              "SCAM",
+              "IMPERSONATION",
+              "COORDINATED_NETWORK",
+              "REPURPOSED_ACCOUNT"
+            ]
+          }
+        },
+        "SCORES": {
+          "type": "object",
+          "required": [
+            "AUTOMATION",
+            "SPAM",
+            "SCAM",
+            "IMPERSONATION",
+            "DECEPTION",
+            "NETWORK_COORDINATION",
+            "HUMAN_CONTINUITY",
+            "REPURPOSED_ACCOUNT",
+            "EVIDENCE_COVERAGE"
+          ],
+          "properties": {
+            "AUTOMATION": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "SPAM": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "SCAM": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "IMPERSONATION": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "DECEPTION": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "NETWORK_COORDINATION": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "HUMAN_CONTINUITY": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "REPURPOSED_ACCOUNT": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "EVIDENCE_COVERAGE": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            }
+          }
+        },
+        "GATES": {
+          "type": "object",
+          "required": [
+            "G1_BLOCK_BASIS",
+            "G2_STRONG_FEATURE",
+            "G3_COVERAGE_SUFFICIENT",
+            "G4_SECOND_PASS_COMPLETE",
+            "G5_SECOND_PASS_CONFIRMS",
+            "G6_NO_SUBSTANTIAL_CONTRARY"
+          ],
+          "properties": {
+            "G1_BLOCK_BASIS": {
+              "type": "boolean"
+            },
+            "G2_STRONG_FEATURE": {
+              "type": "boolean"
+            },
+            "G3_COVERAGE_SUFFICIENT": {
+              "type": "boolean"
+            },
+            "G4_SECOND_PASS_COMPLETE": {
+              "type": "boolean"
+            },
+            "G5_SECOND_PASS_CONFIRMS": {
+              "type": "boolean"
+            },
+            "G6_NO_SUBSTANTIAL_CONTRARY": {
+              "type": "boolean"
+            }
+          }
+        },
+        "WHY": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "LIKELY_LABEL": {
+          "enum": [
+            "scam",
+            "impersonation",
+            "bot",
+            "spam",
+            "uncertain"
+          ]
+        }
+      }
+    },
+    "EVIDENCE_SUMMARY": {
+      "type": "object"
+    },
+    "SHORT_REASON": {
+      "type": "string"
+    },
+    "OWNER_ADJUDICATION": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "OWNER_ACTION"
+          ],
+          "properties": {
+            "OWNER_ACTION": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "OWNER_ACTION_KEEP",
+                    "OWNER_ACTION_BLOCK"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "OWNER_ACCOUNT_NATURE_LABEL": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "BOT_LIKELY",
+                    "HUMAN_LIKELY"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "ENFORCEMENT_RECORD": {
+      "type": "object",
+      "required": [
+        "BLOCK_ATTEMPTED",
+        "BLOCK_VERIFIED",
+        "BLOCK_TIMESTAMP",
+        "STATUS"
+      ],
+      "properties": {
+        "BLOCK_ATTEMPTED": {
+          "type": "boolean"
+        },
+        "BLOCK_VERIFIED": {
+          "type": "boolean"
+        },
+        "BLOCK_TIMESTAMP": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "STATUS": {
+          "enum": [
+            "BLOCK_VERIFIED",
+            "BLOCK_ATTEMPTED_UNVERIFIED",
+            "NOT_BLOCKED"
+          ]
+        }
+      }
+    }
+  }
+}

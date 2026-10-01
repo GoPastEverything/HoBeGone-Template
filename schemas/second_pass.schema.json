@@ -1,0 +1,356 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "second_pass.schema.json",
+  "title": "Second-pass (disconfirmation) record",
+  "type": "object",
+  "required": [
+    "handle",
+    "status",
+    "verdict",
+    "checks"
+  ],
+  "properties": {
+    "handle": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "PENDING",
+        "COMPLETE"
+      ]
+    },
+    "verdict": {
+      "enum": [
+        "PENDING",
+        "CONFIRMED",
+        "DOWNGRADE_TO_REVIEW",
+        "INCONCLUSIVE"
+      ]
+    },
+    "reviewer": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "date": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "candidate_run": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "candidate_features": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "checks": {
+      "type": "object",
+      "properties": {
+        "additional_items_sampled": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "integer",
+              "minimum": 0
+            }
+          ]
+        },
+        "unrelated_threads_checked": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "integer",
+              "minimum": 0
+            }
+          ]
+        },
+        "older_content_checked": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "quotes_verified": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "identity_claim_exact_wording": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "elon_rule_exact_wording": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "domains_verified": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "enum": [
+                true,
+                false,
+                "N/A"
+              ]
+            }
+          ]
+        },
+        "repeated_text_verified": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "enum": [
+                true,
+                false,
+                "N/A"
+              ]
+            }
+          ]
+        },
+        "network_matches_verified": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "enum": [
+                true,
+                false,
+                "N/A"
+              ]
+            }
+          ]
+        },
+        "contrary_human_evidence_searched": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "sample_exhausted": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "visible_items_total": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "integer",
+              "minimum": 0
+            }
+          ]
+        },
+        "visible_reply_threads_total": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "integer",
+              "minimum": 0
+            }
+          ]
+        }
+      }
+    },
+    "blocked_view_hides_bio": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    },
+    "quote_verifications": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "feature_id",
+              "quote",
+              "method"
+            ],
+            "properties": {
+              "feature_id": {
+                "type": "string"
+              },
+              "quote": {
+                "type": "string"
+              },
+              "method": {
+                "enum": [
+                  "RE_FOUND_LIVE",
+                  "PRE_BLOCK_FIRST_PASS_VERBATIM"
+                ]
+              },
+              "verbatim": {
+                "anyOf": [
+                  {
+                    "const": "UNKNOWN"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "source": {
+                "anyOf": [
+                  {
+                    "const": "UNKNOWN"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "date": {
+                "anyOf": [
+                  {
+                    "const": "UNKNOWN"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "const": "UNKNOWN"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "notes": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "contrary_findings": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "significant_contrary_evidence": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    },
+    "new_features_found": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    }
+  }
+}

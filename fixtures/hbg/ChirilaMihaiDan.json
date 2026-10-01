@@ -1,0 +1,119 @@
+{
+  "record_version": "v0.5",
+  "handle": "ChirilaMihaiDan",
+  "profile_url": "https://x.com/ChirilaMihaiDan",
+  "date_collected": "2026-09-27",
+  "account_age": {
+    "joined": "2011-09",
+    "raw": "joined September 2011"
+  },
+  "followers": 0,
+  "following": 0,
+  "post_count": 0,
+  "display_name": "Kindly Send Me A Follow Request. 🚀👏❤️",
+  "bio": "Click On This Link Below 👇👇 And Send Me A Private Message t.me/teslastock_giv…",
+  "recent_original_posts": {
+    "sampled_count": 0,
+    "date_range": "UNKNOWN",
+    "items": [],
+    "summary": "0 posts"
+  },
+  "recent_replies": {
+    "sampled_count": 0,
+    "date_range": "UNKNOWN",
+    "items": [],
+    "summary": "no replies"
+  },
+  "older_activity_sample": {
+    "sampled_count": 0,
+    "date_range": "UNKNOWN",
+    "items": [],
+    "summary": "No earlier content visible; 2011 account now showing an Elon Musk persona (repurposing suspected, earlier identity not observed)."
+  },
+  "reply_target_diversity": "UNKNOWN",
+  "duplicate_text_count": "UNKNOWN",
+  "near_duplicate_text_count": "UNKNOWN",
+  "generic_reply_ratio": "UNKNOWN",
+  "original_content_ratio": "UNKNOWN",
+  "promotion_ratio": "UNKNOWN",
+  "link_ratio": "UNKNOWN",
+  "reply_ratio": "UNKNOWN",
+  "repost_ratio": "UNKNOWN",
+  "estimated_activity_hours": "UNKNOWN",
+  "posting_regularities": "UNKNOWN",
+  "identity_changes": {
+    "username_changes": 0,
+    "notes": "About page"
+  },
+  "suspicious_domains": [
+    {
+      "value": "t.me/teslastock_giv…",
+      "where": "bio",
+      "verified": "UNKNOWN",
+      "notes": "not opened"
+    },
+    {
+      "value": "teslaphoton.grok.me",
+      "where": "notification text",
+      "verified": "UNKNOWN",
+      "notes": "not opened"
+    }
+  ],
+  "wallet_addresses": "UNKNOWN",
+  "telegram_or_whatsapp_destinations": [
+    {
+      "value": "t.me/teslastock_giv…",
+      "where": "bio",
+      "verified": "UNKNOWN",
+      "notes": "not opened"
+    }
+  ],
+  "referral_codes": "UNKNOWN",
+  "profile_claimed_location": "UNKNOWN",
+  "x_account_country": "UNKNOWN",
+  "location_consistency": "UNKNOWN",
+  "network_fingerprints": [],
+  "automation_features": [],
+  "spam_features": [
+    {
+      "feature_id": "S010",
+      "evidence": "Bio pushes an off-platform Telegram link: 't.me/teslastock_giv…'",
+      "count": 1
+    }
+  ],
+  "scam_features": [
+    {
+      "feature_id": "S005",
+      "evidence": "Bio: 'Click On This Link Below 👇👇 And Send Me A Private Message'; display name 'Kindly Send Me A Follow Request.'",
+      "count": 1
+    },
+    {
+      "feature_id": "S006",
+      "evidence": "Giveaway-style links: 't.me/teslastock_giv…' in bio; notification text 'enjoy @elonmusk - teslaphoton.grok.me'",
+      "count": 2
+    }
+  ],
+  "impersonation_features": [
+    {
+      "feature_id": "I003",
+      "evidence": "Avatar is an Elon Musk photo; no parody/fan/unofficial label anywhere",
+      "count": 1
+    }
+  ],
+  "deception_features": [],
+  "human_continuity_features": [],
+  "evidence_quality": {
+    "level": "MEDIUM",
+    "items_sampled": 0,
+    "replies_sampled": 0,
+    "posts_sampled": 0,
+    "older_sample_checked": true,
+    "about_page_checked": true,
+    "collection_protocol_version": "v0.4 COLLECTION_PROTOCOL deep read (read-only)",
+    "notes": "test fixture from a real example (liked the owner's post); profile header, bio, About page read; 0 posts / 0 replies exist"
+  },
+  "provenance": {
+    "source_file": "fixtures/hbg/ChirilaMihaiDan.json",
+    "collection": "FIXTURE (Ho Be Gone v0.2 must-auto-block)"
+  }
+}

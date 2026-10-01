@@ -1,0 +1,87 @@
+{
+  "title": "v0.6 owner policy",
+  "type": "object",
+  "required": [
+    "POLICY_ID",
+    "OWNER",
+    "POLICY_VERSION",
+    "PROTECTED_IDENTITIES",
+    "RULE_ANSWERS"
+  ],
+  "properties": {
+    "PROTECTED_IDENTITIES": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "ID",
+          "PERSON_NAMES",
+          "ORGANIZATIONS",
+          "RULES",
+          "ENFORCEMENT"
+        ],
+        "properties": {
+          "RULES": {
+            "type": "object",
+            "properties": {
+              "CLAIM_TO_BE": {
+                "type": "boolean"
+              },
+              "CLAIM_TO_OWN_OR_RUN_ORG": {
+                "type": "boolean"
+              },
+              "PRIZE_PROMOTION": {
+                "type": "boolean"
+              }
+            }
+          },
+          "ENFORCEMENT": {
+            "enum": [
+              "BLOCK_ELIGIBLE",
+              "REVIEW"
+            ]
+          }
+        }
+      }
+    },
+    "RULE_ANSWERS": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "QUESTION_ID",
+          "QUESTION",
+          "ANSWER",
+          "STATUS",
+          "EFFECT",
+          "EVIDENCE"
+        ],
+        "properties": {
+          "ANSWER": {
+            "enum": [
+              "YES",
+              "NO",
+              "UNANSWERED"
+            ]
+          },
+          "STATUS": {
+            "enum": [
+              "FORMAL",
+              "INFERRED_SINGLE_REACTION"
+            ]
+          },
+          "EFFECT": {
+            "enum": [
+              "REVIEW_FLOOR",
+              "EXTRACTOR_RULE",
+              "NONE"
+            ]
+          },
+          "EVIDENCE": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  }
+}

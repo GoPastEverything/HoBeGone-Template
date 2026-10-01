@@ -1,0 +1,68 @@
+{
+  "title": "v0.6 export manifest",
+  "type": "object",
+  "required": [
+    "EXPORT_VERSION",
+    "GENERATED_AT",
+    "VERSIONS",
+    "ACCOUNTS",
+    "ENFORCEMENT_COUNTS",
+    "FILES"
+  ],
+  "properties": {
+    "EXPORT_VERSION": {
+      "const": "0.6.0"
+    },
+    "VERSIONS": {
+      "type": "object",
+      "required": [
+        "SKILL_VERSION",
+        "FEATURE_REGISTRY_VERSION",
+        "SCORING_VERSION",
+        "DECISION_ENGINE_VERSION",
+        "CALIBRATION_VERSION"
+      ],
+      "properties": {
+        "SKILL_VERSION": {
+          "type": "string",
+          "pattern": ".+"
+        },
+        "FEATURE_REGISTRY_VERSION": {
+          "type": "string",
+          "pattern": ".+"
+        },
+        "SCORING_VERSION": {
+          "type": "string",
+          "pattern": ".+"
+        },
+        "DECISION_ENGINE_VERSION": {
+          "type": "string",
+          "pattern": ".+"
+        },
+        "CALIBRATION_VERSION": {
+          "type": "string",
+          "pattern": ".+"
+        }
+      }
+    },
+    "ACCOUNTS": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "FILES": {
+      "type": "object",
+      "required": [
+        "summary_report",
+        "full_account_audit",
+        "owner_adjudications",
+        "score_changes",
+        "block_verification_log",
+        "network_clusters",
+        "unresolved_cases",
+        "evidence_coverage_stats",
+        "disagreement_cases",
+        "calibration_updates"
+      ]
+    }
+  }
+}

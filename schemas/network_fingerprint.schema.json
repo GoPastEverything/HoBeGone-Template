@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "network_fingerprint.schema.json",
+  "title": "Network fingerprint / cluster database v0.5",
+  "type": "object",
+  "required": [
+    "db_version",
+    "fingerprint_types",
+    "clusters",
+    "indicators"
+  ],
+  "properties": {
+    "db_version": {
+      "type": "string"
+    },
+    "last_updated": {
+      "type": "string"
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "fingerprint_types": {
+      "type": "object",
+      "description": "type -> default strength"
+    },
+    "clusters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "cluster_id",
+          "members",
+          "fingerprints"
+        ],
+        "properties": {
+          "cluster_id": {
+            "type": "string"
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "first_seen": {
+            "anyOf": [
+              {
+                "const": "UNKNOWN"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "last_seen": {
+            "anyOf": [
+              {
+                "const": "UNKNOWN"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "legacy_status": {
+            "anyOf": [
+              {
+                "const": "UNKNOWN"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "const": "UNKNOWN"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "ACTIVE",
+              "SUPERSEDED"
+            ],
+            "description": "SUPERSEDED clusters are kept for history and ignored by engine.py."
+          },
+          "superseded_by": {
+            "anyOf": [
+              {
+                "const": "UNKNOWN"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "supersedes": {
+            "anyOf": [
+              {
+                "const": "UNKNOWN"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "fingerprints": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "fingerprint_id",
+                "type",
+                "strength",
+                "description"
+              ],
+              "properties": {
+                "fingerprint_id": {
+                  "type": "string"
+                },
+                "type": {
+                  "enum": [
+                    "DUPLICATE_PHRASE",
+                    "UNUSUAL_MATCHING_BIO",
+                    "DOMAIN",
+                    "REFERRAL_ID",
+                    "WALLET",
+                    "TELEGRAM_WHATSAPP_DESTINATION",
+                    "REUSED_IMAGE",
+                    "SHARED_TARGET_ACCOUNTS",
+                    "SYNCHRONIZED_POSTING",
+                    "REPLY_WAVE",
+                    "MUTUAL_AMPLIFICATION",
+                    "CONTENT_SEQUENCE",
+                    "PERSONA_TEMPLATE",
+                    "FOLLOW_WINDOW",
+                    "RENAME_WINDOW",
+                    "IDENTICAL_POST_SAME_DATE",
+                    "HIDDEN_HISTORY"
+                  ]
+                },
+                "strength": {
+                  "enum": [
+                    "STRONG",
+                    "MODERATE",
+                    "WEAK"
+                  ]
+                },
+                "description": {
+                  "type": "string"
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "const": "UNKNOWN"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "members": {
+                  "anyOf": [
+                    {
+                      "const": "UNKNOWN"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  ]
+                },
+                "independent_of": {
+                  "anyOf": [
+                    {
+                      "const": "UNKNOWN"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  ]
+                },
+                "is_topic_or_slogan": {
+                  "type": "boolean"
+                },
+                "evidence_source": {
+                  "anyOf": [
+                    {
+                      "const": "UNKNOWN"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "date": {
+                  "anyOf": [
+                    {
+                      "const": "UNKNOWN"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "indicators": {
+      "type": "array",
+      "description": "Single-account indicators kept for future matching (domains, referral IDs, wallets, destinations, phrases).",
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "value",
+          "seen_on"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          },
+          "seen_on": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "const": "UNKNOWN"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "watch_list": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

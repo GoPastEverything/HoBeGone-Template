@@ -1,0 +1,194 @@
+{
+  "title": "v0.6 owner adjudication record",
+  "type": "object",
+  "required": [
+    "HANDLE",
+    "PROFILE_URL",
+    "OWNER_ACTION",
+    "OWNER_REASON",
+    "MODEL_DECISION_BEFORE",
+    "MODEL_SCORES_BEFORE",
+    "MODEL_EVIDENCE_BEFORE",
+    "AGREEMENT_WITH_OWNER",
+    "ADJUDICATED_LABEL",
+    "MODEL_CHANGE_AFTER_REVIEW",
+    "OWNER_ACCOUNT_NATURE_LABEL",
+    "MODEL_CLASSIFICATION",
+    "ADJUDICATION_REASON",
+    "USER_LABEL"
+  ],
+  "properties": {
+    "HANDLE": {
+      "type": "string"
+    },
+    "PROFILE_URL": {
+      "type": "string"
+    },
+    "OWNER_ACTION": {
+      "anyOf": [
+        {
+          "enum": [
+            "OWNER_ACTION_KEEP",
+            "OWNER_ACTION_BLOCK"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "OWNER_REASON": {
+      "type": "string"
+    },
+    "OWNER_ACCOUNT_NATURE_LABEL": {
+      "anyOf": [
+        {
+          "enum": [
+            "BOT_LIKELY",
+            "HUMAN_LIKELY"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "USER_LABEL": {
+      "anyOf": [
+        {
+          "enum": [
+            "BOT_LIKELY",
+            "HUMAN_LIKELY"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "MODEL_DECISION_BEFORE": {
+      "enum": [
+        "KEEP",
+        "REVIEW",
+        "BLOCK_CANDIDATE",
+        "BLOCK_CONFIRMED"
+      ]
+    },
+    "MODEL_CLASSIFICATION": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "NORMAL",
+          "SPAM",
+          "SCAM",
+          "IMPERSONATION",
+          "COORDINATED_NETWORK",
+          "REPURPOSED_ACCOUNT"
+        ]
+      }
+    },
+    "MODEL_SCORES_BEFORE": {
+      "type": "object",
+      "required": [
+        "AUTOMATION",
+        "SPAM",
+        "SCAM",
+        "IMPERSONATION",
+        "DECEPTION",
+        "NETWORK_COORDINATION",
+        "HUMAN_CONTINUITY",
+        "REPURPOSED_ACCOUNT",
+        "EVIDENCE_COVERAGE"
+      ],
+      "properties": {
+        "AUTOMATION": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "SPAM": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "SCAM": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "IMPERSONATION": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "DECEPTION": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "NETWORK_COORDINATION": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "HUMAN_CONTINUITY": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "REPURPOSED_ACCOUNT": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "EVIDENCE_COVERAGE": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "MODEL_EVIDENCE_BEFORE": {
+      "type": "object"
+    },
+    "AGREEMENT_WITH_OWNER": {
+      "enum": [
+        "AGREE",
+        "DISAGREE",
+        "REVIEW_RESOLVED_BLOCK",
+        "REVIEW_RESOLVED_KEEP",
+        "NO_OWNER_ACTION"
+      ]
+    },
+    "ADJUDICATED_LABEL": {
+      "type": "object",
+      "required": [
+        "ENFORCEMENT",
+        "ACCOUNT_NATURE"
+      ],
+      "properties": {
+        "ENFORCEMENT": {
+          "enum": [
+            "BLOCK",
+            "KEEP",
+            "UNRESOLVED"
+          ]
+        },
+        "ACCOUNT_NATURE": {
+          "enum": [
+            "BOT_LIKELY",
+            "HUMAN_LIKELY",
+            "UNKNOWN"
+          ]
+        }
+      }
+    },
+    "ADJUDICATION_REASON": {
+      "type": "string"
+    },
+    "MODEL_CHANGE_AFTER_REVIEW": {
+      "type": "string",
+      "pattern": "^NONE"
+    }
+  }
+}

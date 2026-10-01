@@ -1,0 +1,1386 @@
+{
+  "REGISTRY_NAME": "FollowerIntegritySkill feature registry",
+  "REGISTRY_VERSION": "v0.5",
+  "SCORES": [
+    "AUTOMATION",
+    "SPAM",
+    "SCAM",
+    "IMPERSONATION",
+    "DECEPTION",
+    "NETWORK_COORDINATION",
+    "HUMAN_CONTINUITY"
+  ],
+  "CATEGORIES": [
+    "AUTOMATION",
+    "SPAM",
+    "SCAM",
+    "IMPERSONATION",
+    "DECEPTION",
+    "NETWORK",
+    "HUMAN"
+  ],
+  "POLICY": {
+    "MALICIOUS_SCORES": [
+      "AUTOMATION",
+      "SPAM",
+      "SCAM",
+      "IMPERSONATION",
+      "DECEPTION"
+    ],
+    "BLOCK_SCORE": 90,
+    "REVIEW_SCORE": 65,
+    "GATE_90_REQUIRES": "STRONG",
+    "GATE_65_REQUIRES": "MODERATE",
+    "WEAK_TOTAL_CAP_PER_SCORE": 15,
+    "PATH2_MIN_STRONG_GROUPS": 3,
+    "PATH2_MIN_TOP_SCORE": 65,
+    "REVIEW_MIN_MODERATE_GROUPS": 2,
+    "CONTRARY_HUMAN_CONTINUITY": 30,
+    "NETWORK_REVIEW_SCORE": 65,
+    "CLUSTER_MIN_STRONG": 1,
+    "CLUSTER_MIN_MODERATE": 3,
+    "CANDIDATE_CLUSTER_NETWORK_CAP": 49,
+    "W006_FOLLOW_RATIO": 10,
+    "W006_MIN_FOLLOWING": 300,
+    "SECOND_PASS_DOWNGRADE_FLOOR": "REVIEW",
+    "CLUSTER_MEMBER_NEEDS_DIRECT_MODERATE_LINK": true,
+    "UNKNOWN_OR_LOW_COUNT_RULE": "If the recorded count is below MIN_COUNT (count unknown counts as the recorded lower bound, default 1), the feature is downgraded one strength level and its weight halved; a WEAK feature below MIN_COUNT contributes 0."
+  },
+  "FORBIDDEN_PROXIES": [
+    {
+      "ID": "FP_POLITICS",
+      "DESCRIPTION": "Political views, slogans, or affiliation"
+    },
+    {
+      "ID": "FP_RACE",
+      "DESCRIPTION": "Race or ethnicity"
+    },
+    {
+      "ID": "FP_NATIONALITY",
+      "DESCRIPTION": "Nationality"
+    },
+    {
+      "ID": "FP_RELIGION",
+      "DESCRIPTION": "Religion"
+    },
+    {
+      "ID": "FP_GENDER",
+      "DESCRIPTION": "Gender, or a gendered name"
+    },
+    {
+      "ID": "FP_SEXUAL_ORIENTATION",
+      "DESCRIPTION": "Sexual orientation"
+    },
+    {
+      "ID": "FP_LANGUAGE",
+      "DESCRIPTION": "Language used"
+    },
+    {
+      "ID": "FP_POOR_GRAMMAR",
+      "DESCRIPTION": "Poor grammar or spelling"
+    },
+    {
+      "ID": "FP_USERNAME_DIGITS",
+      "DESCRIPTION": "Digits in the username (by itself; W002 is supporting-only)"
+    },
+    {
+      "ID": "FP_ACCOUNT_AGE",
+      "DESCRIPTION": "Account age by itself (W001 is supporting-only)"
+    },
+    {
+      "ID": "FP_FOLLOWER_COUNT",
+      "DESCRIPTION": "Follower count by itself (W004 is supporting-only)"
+    },
+    {
+      "ID": "FP_COUNTRY",
+      "DESCRIPTION": "Country (only a MISMATCH with the account's own claim is usable, as D001)"
+    },
+    {
+      "ID": "FP_VPN_SUSPICION",
+      "DESCRIPTION": "VPN suspicion"
+    },
+    {
+      "ID": "FP_DISAGREES_WITH_OWNER",
+      "DESCRIPTION": "Disagreeing with the account owner"
+    },
+    {
+      "ID": "FP_UNUSUAL_OPINIONS",
+      "DESCRIPTION": "Unusual or unpopular opinions"
+    },
+    {
+      "ID": "FP_ANONYMOUS",
+      "DESCRIPTION": "Being anonymous or pseudonymous"
+    },
+    {
+      "ID": "FP_LOW_ACTIVITY_AS_HUMAN",
+      "DESCRIPTION": "Low activity treated as evidence of a human (never allowed)"
+    }
+  ],
+  "FEATURES": [
+    {
+      "FEATURE_ID": "A001",
+      "CATEGORY": "AUTOMATION",
+      "DESCRIPTION": "Repeated near-identical reply sent to 10 or more unrelated accounts.",
+      "WEIGHT": {
+        "AUTOMATION": 25,
+        "SPAM": 10,
+        "HUMAN_CONTINUITY": -10
+      },
+      "MAX_CONTRIBUTION": 35,
+      "EVIDENCE_STRENGTH": "STRONG",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "REPEATED_OUTBOUND_TEXT",
+      "MIN_COUNT": 10,
+      "COUNT_SCALING_PER_EXTRA": 1,
+      "HOW_TO_OBSERVE": "Replies tab: count distinct unrelated reply targets receiving the same or near-identical text (>=90% token overlap).",
+      "NOTES": "Owner spec: AUTOMATION +25, STRONG, cannot trigger a block alone (a benign bot or a human pasting a thank-you is possible)."
+    },
+    {
+      "FEATURE_ID": "A002",
+      "CATEGORY": "AUTOMATION",
+      "DESCRIPTION": "Repeated near-identical reply sent to 3-9 unrelated accounts.",
+      "WEIGHT": {
+        "AUTOMATION": 20,
+        "SPAM": 10,
+        "HUMAN_CONTINUITY": -5
+      },
+      "MAX_CONTRIBUTION": 20,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "REPEATED_OUTBOUND_TEXT",
+      "MIN_COUNT": 3,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Replies tab: same text to 3-9 distinct unrelated targets.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "A003",
+      "CATEGORY": "AUTOMATION",
+      "DESCRIPTION": "Generic replies that would fit almost any post (one-word compliments, emoji-only, 'GM', 'Wow', bare number strings).",
+      "WEIGHT": {
+        "AUTOMATION": 15,
+        "SPAM": 10,
+        "HUMAN_CONTINUITY": -10
+      },
+      "MAX_CONTRIBUTION": 25,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "GENERIC_REPLIES",
+      "MIN_COUNT": 5,
+      "COUNT_SCALING_PER_EXTRA": 1,
+      "HOW_TO_OBSERVE": "Count replies in the ~30-reply sample that contain no reference to the parent post.",
+      "NOTES": "Language and grammar are never judged; only whether the reply depends on the parent post."
+    },
+    {
+      "FEATURE_ID": "A004",
+      "CATEGORY": "AUTOMATION",
+      "DESCRIPTION": "Generic-reply ratio >= 0.5 on a sample of at least 30 replies (derived from generic_reply_ratio).",
+      "WEIGHT": {
+        "AUTOMATION": 25,
+        "SPAM": 10,
+        "HUMAN_CONTINUITY": -20
+      },
+      "MAX_CONTRIBUTION": 25,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "GENERIC_REPLIES",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Derived automatically by engine.py.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "A005",
+      "CATEGORY": "AUTOMATION",
+      "DESCRIPTION": "Isolated replies: 20+ replies to distinct targets and the account never continues any thread.",
+      "WEIGHT": {
+        "AUTOMATION": 10,
+        "HUMAN_CONTINUITY": -15
+      },
+      "MAX_CONTRIBUTION": 10,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "THREAD_DEPTH",
+      "MIN_COUNT": 20,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Open 5+ reply threads; check whether the account ever replies a second time.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "A006",
+      "CATEGORY": "AUTOMATION",
+      "DESCRIPTION": "No original content: original_content_ratio < 0.05 on 30+ items.",
+      "WEIGHT": {
+        "AUTOMATION": 10,
+        "HUMAN_CONTINUITY": -10
+      },
+      "MAX_CONTRIBUTION": 10,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "CONTENT_MIX",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Derived automatically from original_content_ratio when the sample is >= 30.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "A007",
+      "CATEGORY": "AUTOMATION",
+      "DESCRIPTION": "Account mostly follows, replies, or amplifies: reply_ratio + repost_ratio >= 0.9 on 30+ items.",
+      "WEIGHT": {
+        "AUTOMATION": 10,
+        "SPAM": 5,
+        "HUMAN_CONTINUITY": -10
+      },
+      "MAX_CONTRIBUTION": 10,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "CONTENT_MIX",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Derived automatically from reply_ratio and repost_ratio.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "A008",
+      "CATEGORY": "AUTOMATION",
+      "DESCRIPTION": "Low-volume synchronized posting: the account's OWN posts land in the same minute/hour windows as other accounts on 3+ occasions.",
+      "WEIGHT": {
+        "AUTOMATION": 10
+      },
+      "MAX_CONTRIBUTION": 10,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "SYNC_POSTING",
+      "MIN_COUNT": 3,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Compare timestamps with the matched accounts in fingerprints_db.json.",
+      "NOTES": "Requires corroboration by the account's own behavior; cluster membership alone never raises AUTOMATION."
+    },
+    {
+      "FEATURE_ID": "A009",
+      "CATEGORY": "AUTOMATION",
+      "DESCRIPTION": "Machine-like timing: activity spread over >= 20 hours/day for 7+ days with no rest gap, or fixed-interval posting.",
+      "WEIGHT": {
+        "AUTOMATION": 20
+      },
+      "MAX_CONTRIBUTION": 20,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "TIMING",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Derived from estimated_activity_hours >= 20 or recorded posting_regularities.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "A010",
+      "CATEGORY": "AUTOMATION",
+      "DESCRIPTION": "Reply bursts: 20+ replies to unrelated targets within about 10 minutes.",
+      "WEIGHT": {
+        "AUTOMATION": 15,
+        "SPAM": 5
+      },
+      "MAX_CONTRIBUTION": 15,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "TIMING",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Replies tab timestamps.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "A011",
+      "CATEGORY": "AUTOMATION",
+      "DESCRIPTION": "Dormant shell: zero or near-zero content while following many accounts.",
+      "WEIGHT": {
+        "AUTOMATION": 5
+      },
+      "MAX_CONTRIBUTION": 5,
+      "EVIDENCE_STRENGTH": "WEAK",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "SHELL",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Profile header plus Posts tab.",
+      "NOTES": "Supporting only. Never raises AUTOMATION by itself. Dormancy is not evidence of a human either."
+    },
+    {
+      "FEATURE_ID": "A012",
+      "CATEGORY": "AUTOMATION",
+      "DESCRIPTION": "Hidden-history image persona: the account never replies, posts only short image captions, and the visible posts are far below the post count (visible <= 25% of post_count, post_count >= 20), i.e. history removed or hidden.",
+      "WEIGHT": {
+        "AUTOMATION": 10,
+        "DECEPTION": 10,
+        "HUMAN_CONTINUITY": -5
+      },
+      "MAX_CONTRIBUTION": 10,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.5",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "HIDDEN_HISTORY_PERSONA",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Profile header post count vs every visible item on Posts and Replies; Replies tab shows no replies.",
+      "NOTES": "v0.5 (calibration, feature b). Requires corroboration by another non-WEAK feature raising the same score: a human can delete old posts and never reply. Language, looks, and topic are never judged."
+    },
+    {
+      "FEATURE_ID": "S001",
+      "CATEGORY": "SPAM",
+      "DESCRIPTION": "Engagement-farm bait: 'comment 444 to claim', follow-for-follow, like-and-repost-to-win, bait polls.",
+      "WEIGHT": {
+        "SPAM": 25
+      },
+      "MAX_CONTRIBUTION": 35,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "ENGAGEMENT_BAIT",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 5,
+      "HOW_TO_OBSERVE": "Posts tab, pinned post (the account's OWN posts).",
+      "NOTES": "Outbound follow-back replies to other accounts are S018 (a different fact)."
+    },
+    {
+      "FEATURE_ID": "S002",
+      "CATEGORY": "SPAM",
+      "DESCRIPTION": "Giveaway-entry or engagement-farm replies repeated 5+ times ('done', 'good luck', 'sent').",
+      "WEIGHT": {
+        "SPAM": 15,
+        "AUTOMATION": 10,
+        "HUMAN_CONTINUITY": -5
+      },
+      "MAX_CONTRIBUTION": 15,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "REPEATED_OUTBOUND_TEXT",
+      "MIN_COUNT": 5,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Replies tab.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "S003",
+      "CATEGORY": "SPAM",
+      "DESCRIPTION": "Repeated unsolicited promotional message or link (non-scam) sent to 5+ unrelated users.",
+      "WEIGHT": {
+        "SPAM": 30,
+        "AUTOMATION": 10
+      },
+      "MAX_CONTRIBUTION": 40,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "REPEATED_OUTBOUND_TEXT",
+      "MIN_COUNT": 5,
+      "COUNT_SCALING_PER_EXTRA": 2,
+      "HOW_TO_OBSERVE": "Replies tab.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "S004",
+      "CATEGORY": "SCAM",
+      "DESCRIPTION": "The same scam or DM-funnel script sent repeatedly to unrelated users (2+ distinct unrelated recipients).",
+      "WEIGHT": {
+        "SCAM": 35,
+        "SPAM": 35,
+        "AUTOMATION": 10
+      },
+      "MAX_CONTRIBUTION": 50,
+      "EVIDENCE_STRENGTH": "STRONG",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": true,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "REPEATED_OUTBOUND_TEXT",
+      "MIN_COUNT": 2,
+      "COUNT_SCALING_PER_EXTRA": 5,
+      "HOW_TO_OBSERVE": "Replies tab and quote-posts: record each recipient, date and exact text. v0.5 clarification: the same DM-funnel script posted as quote-posts of DIFFERENT accounts counts one recipient per quoted account.",
+      "NOTES": "Owner spec: SCAM/SPAM +35, STRONG. +5 per extra recipient, capped at 50."
+    },
+    {
+      "FEATURE_ID": "S005",
+      "CATEGORY": "SCAM",
+      "DESCRIPTION": "DM or inbox funnel: asks strangers to DM, check their inbox, or 'reply to my message'.",
+      "WEIGHT": {
+        "SCAM": 20,
+        "SPAM": 15
+      },
+      "MAX_CONTRIBUTION": 30,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "DM_FUNNEL",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 5,
+      "HOW_TO_OBSERVE": "Replies tab, pinned post.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "S006",
+      "CATEGORY": "SCAM",
+      "DESCRIPTION": "Crypto airdrop, free-token, or 'zero fee' buy pitch link in the account's own content.",
+      "WEIGHT": {
+        "SCAM": 35,
+        "SPAM": 20
+      },
+      "MAX_CONTRIBUTION": 35,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "CRYPTO_AIRDROP",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Posts tab; record the exact domain.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "S007",
+      "CATEGORY": "SPAM",
+      "DESCRIPTION": "Referral code or referral link in the account's own content.",
+      "WEIGHT": {
+        "SPAM": 15,
+        "SCAM": 5
+      },
+      "MAX_CONTRIBUTION": 15,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "REFERRAL",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Record the exact referral ID.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "S008",
+      "CATEGORY": "SCAM",
+      "DESCRIPTION": "Destination verified malicious during second pass (domain on a phishing or drainer reputation list, fake exchange, confirmed drainer wallet).",
+      "WEIGHT": {
+        "SCAM": 45,
+        "SPAM": 10
+      },
+      "MAX_CONTRIBUTION": 45,
+      "EVIDENCE_STRENGTH": "STRONG",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": true,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "MALICIOUS_DESTINATION",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Second pass only: check the domain or wallet on a public reputation source, never by visiting or connecting a wallet.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "S009",
+      "CATEGORY": "SPAM",
+      "DESCRIPTION": "Templated repetitive promotional posts: the same template posted 5+ times (for example near-daily).",
+      "WEIGHT": {
+        "SPAM": 25,
+        "AUTOMATION": 10
+      },
+      "MAX_CONTRIBUTION": 30,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "TEMPLATED_PROMO",
+      "MIN_COUNT": 5,
+      "COUNT_SCALING_PER_EXTRA": 1,
+      "HOW_TO_OBSERVE": "Posts tab across weeks.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "S010",
+      "CATEGORY": "SPAM",
+      "DESCRIPTION": "Off-platform funnel: Telegram, WhatsApp, LINE, Signal, a phone number or an email pushed in outreach or a pinned post.",
+      "WEIGHT": {
+        "SPAM": 25,
+        "SCAM": 20
+      },
+      "MAX_CONTRIBUTION": 35,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "OFFPLATFORM_FUNNEL",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 5,
+      "HOW_TO_OBSERVE": "Record the destination value.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "S011",
+      "CATEGORY": "SPAM",
+      "DESCRIPTION": "Adult or escort service advertising: an adult-cam or adult redirect link, or explicit paid sexual/escort-service advertising (for example hashtags offering paid offline meetings), in the bio or the account's own posts.",
+      "WEIGHT": {
+        "SPAM": 40,
+        "SCAM": 15
+      },
+      "MAX_CONTRIBUTION": 40,
+      "EVIDENCE_STRENGTH": "STRONG",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "ADULT_FUNNEL",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Bio link (record the domain) or the exact post text/hashtags with date.",
+      "NOTES": "STRONG, but it cannot trigger a block alone: a real adult performer may link their own page. v0.5 broadened from links only to explicit service ads. Sexual orientation or gender is never a feature."
+    },
+    {
+      "FEATURE_ID": "S012",
+      "CATEGORY": "SCAM",
+      "DESCRIPTION": "Giveaway or prize lure NOT tied to a real public figure ('I follow you, you win', free phone or cash polls).",
+      "WEIGHT": {
+        "SCAM": 25,
+        "SPAM": 15
+      },
+      "MAX_CONTRIBUTION": 25,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "GIVEAWAY_LURE",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Bio, pinned post, polls.",
+      "NOTES": "If the account presents itself as the public figure offering the prize, tag I001 instead. An owner's optional protected-identity rule (owner_policy.json) can make promoting a named person's prize block-eligible for that owner only."
+    },
+    {
+      "FEATURE_ID": "S013",
+      "CATEGORY": "SCAM",
+      "DESCRIPTION": "Unsolicited befriending or romance openers to strangers ('Hey how are you doing', 'can we be friends', 'hope you don't mind me intruding').",
+      "WEIGHT": {
+        "SCAM": 10,
+        "SPAM": 5
+      },
+      "MAX_CONTRIBUTION": 10,
+      "EVIDENCE_STRENGTH": "WEAK",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "BEFRIENDING_OPENERS",
+      "MIN_COUNT": 2,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Replies tab.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "S014",
+      "CATEGORY": "SCAM",
+      "DESCRIPTION": "Amplifies known impersonator or scam accounts (reposts or quotes them).",
+      "WEIGHT": {
+        "SCAM": 10,
+        "SPAM": 10
+      },
+      "MAX_CONTRIBUTION": 10,
+      "EVIDENCE_STRENGTH": "WEAK",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "AMPLIFIES_SCAM",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Reposts tab.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "S015",
+      "CATEGORY": "SPAM",
+      "DESCRIPTION": "Self-promotion burst: own product, token, or link pushed repeatedly (human-compatible).",
+      "WEIGHT": {
+        "SPAM": 20
+      },
+      "MAX_CONTRIBUTION": 20,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "SELF_PROMO",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Posts tab.",
+      "NOTES": "Real creators do this. Never lowers or raises AUTOMATION."
+    },
+    {
+      "FEATURE_ID": "S016",
+      "CATEGORY": "SCAM",
+      "DESCRIPTION": "Investment or wealth-recruitment solicitation ('join for wealth', 'opportunities for investors', payment pressure).",
+      "WEIGHT": {
+        "SCAM": 30
+      },
+      "MAX_CONTRIBUTION": 30,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "INVESTMENT_SOLICITATION",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Bio, pinned post, posts.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "S018",
+      "CATEGORY": "SPAM",
+      "DESCRIPTION": "Follow-back farming: follow-back solicitation replies ('Follow back', 'フォローバック', 'You're welcome follow back') sent to 2+ distinct accounts.",
+      "WEIGHT": {
+        "SPAM": 15
+      },
+      "MAX_CONTRIBUTION": 20,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.5",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "FOLLOW_BACK_FARMING",
+      "MIN_COUNT": 2,
+      "COUNT_SCALING_PER_EXTRA": 5,
+      "HOW_TO_OBSERVE": "Replies tab: count distinct accounts receiving a follow-back solicitation.",
+      "NOTES": "v0.5 (feature f). A follow ratio above 10:1 is recorded separately as the WEAK derived W006; the ratio is never required and never scored alone. Language is never judged (the Japanese and English forms are the same request)."
+    },
+    {
+      "FEATURE_ID": "I001",
+      "CATEGORY": "IMPERSONATION",
+      "DESCRIPTION": "Explicit false identity claim: first-person claim to BE a real public figure, or their bio/titles copied as the account's own with no parody label. An owner's optional protected-identity rule (owner_policy.json, off by default) can extend this, for that owner only, to claiming to own or run a named organization or promoting that person's prize.",
+      "WEIGHT": {
+        "IMPERSONATION": 90,
+        "DECEPTION": 20
+      },
+      "MAX_CONTRIBUTION": 90,
+      "EVIDENCE_STRENGTH": "STRONG",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": true,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "IDENTITY_CLAIM",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Display name, bio, pinned post: copy the exact wording.",
+      "NOTES": "NOT I001 by themselves: fan names, a famous first name inside a handle, the figure's family names, claiming to work with/for the figure (use I002/I003). Still goes through the second pass."
+    },
+    {
+      "FEATURE_ID": "I002",
+      "CATEGORY": "IMPERSONATION",
+      "DESCRIPTION": "Misleading affiliation or insider claim: works with/for, designs for, manages, or is family of a public figure; ambiguous executive title.",
+      "WEIGHT": {
+        "IMPERSONATION": 40,
+        "DECEPTION": 15
+      },
+      "MAX_CONTRIBUTION": 40,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "IDENTITY_CLAIM",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Bio, display name, replies.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "I003",
+      "CATEGORY": "IMPERSONATION",
+      "DESCRIPTION": "Public-figure or brand presentation with no parody/fan label: their photo, an official-looking name, or a banner.",
+      "WEIGHT": {
+        "IMPERSONATION": 45
+      },
+      "MAX_CONTRIBUTION": 45,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "PERSONA_PRESENTATION",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Profile header.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "I004",
+      "CATEGORY": "IMPERSONATION",
+      "DESCRIPTION": "Copied personal facts of a public figure (for example their real birth date) placed on the profile.",
+      "WEIGHT": {
+        "IMPERSONATION": 30
+      },
+      "MAX_CONTRIBUTION": 30,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "PERSONA_FACTS",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Profile header, About page.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "I005",
+      "CATEGORY": "IMPERSONATION",
+      "DESCRIPTION": "Fake-representative language: 'my boss', 'on behalf of', manager or assistant of a public figure.",
+      "WEIGHT": {
+        "SCAM": 30,
+        "IMPERSONATION": 20
+      },
+      "MAX_CONTRIBUTION": 30,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "FAKE_REPRESENTATIVE",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Replies and DMs quoted publicly.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "D001",
+      "CATEGORY": "DECEPTION",
+      "DESCRIPTION": "Location mismatch: profile-claimed location contradicts the X 'account based in' country.",
+      "WEIGHT": {
+        "DECEPTION": 25
+      },
+      "MAX_CONTRIBUTION": 25,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "LOCATION_MISMATCH",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "About this account page. Derived automatically from location_consistency = MISMATCH.",
+      "NOTES": "DECEPTION only. The country itself is never scored. VPNs, travel and app-store region are confounders, so corroboration is required."
+    },
+    {
+      "FEATURE_ID": "D002",
+      "CATEGORY": "DECEPTION",
+      "DESCRIPTION": "Self-contradictory identity: the bio, profile fields, posts and About page make incompatible claims.",
+      "WEIGHT": {
+        "DECEPTION": 25
+      },
+      "MAX_CONTRIBUTION": 25,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "IDENTITY_CONTRADICTION",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Profile plus About page.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "D003",
+      "CATEGORY": "DECEPTION",
+      "DESCRIPTION": "Fake stats or fake verification text in the bio or name.",
+      "WEIGHT": {
+        "DECEPTION": 20
+      },
+      "MAX_CONTRIBUTION": 20,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "FAKE_STATS",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Profile header.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "D004",
+      "CATEGORY": "DECEPTION",
+      "DESCRIPTION": "Bland generic filler posts with no personal specifics.",
+      "WEIGHT": {
+        "DECEPTION": 10
+      },
+      "MAX_CONTRIBUTION": 10,
+      "EVIDENCE_STRENGTH": "WEAK",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "SYNTHETIC_PERSONA",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Posts tab.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "D005",
+      "CATEGORY": "DECEPTION",
+      "DESCRIPTION": "Synthetic persona: 2+ of (bland filler over 30+ items; display identity unrelated to the handle plus a rename; bio identity contradicted by posts/About; stock or model avatar confirmed by reverse-image match).",
+      "WEIGHT": {
+        "DECEPTION": 25
+      },
+      "MAX_CONTRIBUTION": 25,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "SYNTHETIC_PERSONA",
+      "MIN_COUNT": 2,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Count the components; count = number present.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "D006",
+      "CATEGORY": "DECEPTION",
+      "DESCRIPTION": "'Backup page', 'private account', or 'new account, old one hacked' claim.",
+      "WEIGHT": {
+        "DECEPTION": 35,
+        "SCAM": 15
+      },
+      "MAX_CONTRIBUTION": 35,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "BACKUP_CLAIM",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Bio, display name, pinned post.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "D007",
+      "CATEGORY": "DECEPTION",
+      "DESCRIPTION": "Repurposed account: an OBSERVED coherent earlier identity or topic (old posts), then dormancy and/or renames, then an unrelated new persona. A rename, an old join date, or dormancy alone is never D007 (use W005).",
+      "WEIGHT": {
+        "DECEPTION": 20,
+        "AUTOMATION": 10,
+        "HUMAN_CONTINUITY": -15
+      },
+      "MAX_CONTRIBUTION": 20,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [
+        "AUTOMATION"
+      ],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "IDENTITY_CHANGE",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "About page (joined, username changes) plus the older activity sample; quote one old item and one new-persona item.",
+      "NOTES": "v0.5: the AUTOMATION +10 applies only when another non-WEAK AUTOMATION feature from a different fact group is present (per-score corroboration). DECEPTION needs no corroboration. The old content's language or topic is never judged, only the discontinuity of identity."
+    },
+    {
+      "FEATURE_ID": "W001",
+      "CATEGORY": "AUTOMATION",
+      "DESCRIPTION": "New account (joined within about 90 days).",
+      "WEIGHT": {
+        "AUTOMATION": 5,
+        "SPAM": 5,
+        "SCAM": 5
+      },
+      "MAX_CONTRIBUTION": 5,
+      "EVIDENCE_STRENGTH": "WEAK",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "ACCOUNT_AGE",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Derived from account_age.",
+      "NOTES": "Account age by itself is a forbidden proxy. Supporting only."
+    },
+    {
+      "FEATURE_ID": "W002",
+      "CATEGORY": "AUTOMATION",
+      "DESCRIPTION": "Digit-suffix or random-looking username.",
+      "WEIGHT": {
+        "AUTOMATION": 3,
+        "DECEPTION": 3
+      },
+      "MAX_CONTRIBUTION": 3,
+      "EVIDENCE_STRENGTH": "WEAK",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "USERNAME_PATTERN",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "",
+      "NOTES": "Digits by themselves are a forbidden proxy. Supporting only."
+    },
+    {
+      "FEATURE_ID": "W003",
+      "CATEGORY": "DECEPTION",
+      "DESCRIPTION": "Display name unrelated to the handle.",
+      "WEIGHT": {
+        "DECEPTION": 5,
+        "AUTOMATION": 3
+      },
+      "MAX_CONTRIBUTION": 5,
+      "EVIDENCE_STRENGTH": "WEAK",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "DISPLAY_NAME_MISMATCH",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "",
+      "NOTES": "Supporting only."
+    },
+    {
+      "FEATURE_ID": "W004",
+      "CATEGORY": "AUTOMATION",
+      "DESCRIPTION": "Follow-graph asymmetry: following >= 20x followers AND fewer than 20 posts.",
+      "WEIGHT": {
+        "AUTOMATION": 5,
+        "SPAM": 3
+      },
+      "MAX_CONTRIBUTION": 5,
+      "EVIDENCE_STRENGTH": "WEAK",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "FOLLOW_GRAPH",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Derived from followers/following/post_count.",
+      "NOTES": "Follower count by itself is a forbidden proxy. Supporting only."
+    },
+    {
+      "FEATURE_ID": "W005",
+      "CATEGORY": "DECEPTION",
+      "DESCRIPTION": "Recent username change (within about 60 days) or 3+ lifetime renames.",
+      "WEIGHT": {
+        "DECEPTION": 5
+      },
+      "MAX_CONTRIBUTION": 5,
+      "EVIDENCE_STRENGTH": "WEAK",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "IDENTITY_CHANGE",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Derived from identity_changes.",
+      "NOTES": "A rename never raises AUTOMATION (tested)."
+    },
+    {
+      "FEATURE_ID": "W006",
+      "CATEGORY": "SPAM",
+      "DESCRIPTION": "Extreme follow ratio: following >= 10x followers (and following >= 300).",
+      "WEIGHT": {
+        "SPAM": 5
+      },
+      "MAX_CONTRIBUTION": 5,
+      "EVIDENCE_STRENGTH": "WEAK",
+      "REQUIRES_CORROBORATION": true,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.5",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "FOLLOW_GRAPH",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Derived from followers/following.",
+      "NOTES": "v0.5 (supports feature f). Follower count by itself is a forbidden proxy: supporting only, needs corroboration, never raises AUTOMATION, and shares the FOLLOW_GRAPH group with W004 (counted once)."
+    },
+    {
+      "FEATURE_ID": "N001",
+      "CATEGORY": "NETWORK",
+      "DESCRIPTION": "Shares a STRONG fingerprint (same wallet, referral ID, off-platform destination, reused unusual full bio, or an identical non-stock post caption published by 2+ accounts on the same date, with the value recorded) with another account.",
+      "WEIGHT": {
+        "NETWORK_COORDINATION": 60
+      },
+      "MAX_CONTRIBUTION": 60,
+      "EVIDENCE_STRENGTH": "STRONG",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "NETWORK",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Derived from fingerprints_db.json.",
+      "NOTES": "Only NETWORK_COORDINATION moves. Cluster membership never raises another score."
+    },
+    {
+      "FEATURE_ID": "N002",
+      "CATEGORY": "NETWORK",
+      "DESCRIPTION": "Shares a MODERATE fingerprint (duplicate phrase, synchronized posting incl. the same posting-date sequence across accounts, reply wave, mutual amplification, reused image).",
+      "WEIGHT": {
+        "NETWORK_COORDINATION": 20
+      },
+      "MAX_CONTRIBUTION": 60,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "NETWORK",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Derived from fingerprints_db.json.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "N003",
+      "CATEGORY": "NETWORK",
+      "DESCRIPTION": "Shares a WEAK fingerprint (handle template, persona template, shared target accounts, same follow window).",
+      "WEIGHT": {
+        "NETWORK_COORDINATION": 5
+      },
+      "MAX_CONTRIBUTION": 15,
+      "EVIDENCE_STRENGTH": "WEAK",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "NETWORK",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Derived from fingerprints_db.json.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "H001",
+      "CATEGORY": "HUMAN",
+      "DESCRIPTION": "Context-dependent replies: 3+ replies that reference specifics of the parent post.",
+      "WEIGHT": {
+        "HUMAN_CONTINUITY": 15,
+        "AUTOMATION": -5
+      },
+      "MAX_CONTRIBUTION": 15,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "H_CONTEXT_REPLIES",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Replies tab.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "H002",
+      "CATEGORY": "HUMAN",
+      "DESCRIPTION": "References to past interactions or earlier events in the account's own life or threads.",
+      "WEIGHT": {
+        "HUMAN_CONTINUITY": 10,
+        "AUTOMATION": -5
+      },
+      "MAX_CONTRIBUTION": 10,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "H_PAST_REFERENCES",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "H003",
+      "CATEGORY": "HUMAN",
+      "DESCRIPTION": "Several natural multi-turn conversations (3+ threads of 3+ turns) with unrelated established accounts.",
+      "WEIGHT": {
+        "AUTOMATION": -15,
+        "HUMAN_CONTINUITY": 20
+      },
+      "MAX_CONTRIBUTION": 20,
+      "EVIDENCE_STRENGTH": "STRONG",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "H_CONVERSATIONS",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Open reply threads.",
+      "NOTES": "Owner spec: AUTOMATION -15, HUMAN_CONTINUITY +20. Never lowers SPAM, SCAM or DECEPTION."
+    },
+    {
+      "FEATURE_ID": "H004",
+      "CATEGORY": "HUMAN",
+      "DESCRIPTION": "Coherent long-term interests: context-specific posts or replies on the same (often niche) topic spanning 12+ months, or persisting between the older sample and recent activity.",
+      "WEIGHT": {
+        "HUMAN_CONTINUITY": 15,
+        "AUTOMATION": -5
+      },
+      "MAX_CONTRIBUTION": 15,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "H_LONG_TERM",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Older activity sample.",
+      "NOTES": "v0.5: HUMAN_CONTINUITY +10 -> +15 and scope widened to niche-topic continuity over years."
+    },
+    {
+      "FEATURE_ID": "H005",
+      "CATEGORY": "HUMAN",
+      "DESCRIPTION": "Original observations: original posts with personal specifics, not templated.",
+      "WEIGHT": {
+        "HUMAN_CONTINUITY": 10,
+        "AUTOMATION": -5
+      },
+      "MAX_CONTRIBUTION": 10,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "H_ORIGINAL",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Posts tab.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "H006",
+      "CATEGORY": "HUMAN",
+      "DESCRIPTION": "Natural activity changes: irregular rhythm, rest gaps, life-event-driven shifts.",
+      "WEIGHT": {
+        "HUMAN_CONTINUITY": 5
+      },
+      "MAX_CONTRIBUTION": 5,
+      "EVIDENCE_STRENGTH": "WEAK",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "H_RHYTHM",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Timestamps across the sample.",
+      "NOTES": "Low activity is NEVER evidence of a human."
+    },
+    {
+      "FEATURE_ID": "H007",
+      "CATEGORY": "HUMAN",
+      "DESCRIPTION": "Recognition by established unrelated accounts (they reply substantively or address the person by name).",
+      "WEIGHT": {
+        "HUMAN_CONTINUITY": 15,
+        "AUTOMATION": -5
+      },
+      "MAX_CONTRIBUTION": 15,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "H_RECOGNITION",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Reply threads.",
+      "NOTES": ""
+    },
+    {
+      "FEATURE_ID": "H008",
+      "CATEGORY": "HUMAN",
+      "DESCRIPTION": "Honest labeling: parody, fan, or unofficial clearly stated in the name or bio.",
+      "WEIGHT": {
+        "IMPERSONATION": -40
+      },
+      "MAX_CONTRIBUTION": 40,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.4",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "H_HONEST_LABEL",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Profile header.",
+      "NOTES": "Lowers IMPERSONATION only."
+    },
+    {
+      "FEATURE_ID": "H009",
+      "CATEGORY": "HUMAN",
+      "DESCRIPTION": "Personal-life details: consistent specifics about the account's own life (family, a place, a device or game owned, a routine) in replies or posts.",
+      "WEIGHT": {
+        "HUMAN_CONTINUITY": 10,
+        "AUTOMATION": -5
+      },
+      "MAX_CONTRIBUTION": 10,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.5",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "H_PERSONAL",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Replies and posts; quote the item. Do not tag the same item as H005.",
+      "NOTES": "v0.5. A claimed identity (name, job title, location field) is NOT a personal detail; it must appear inside ordinary conversation."
+    },
+    {
+      "FEATURE_ID": "H010",
+      "CATEGORY": "HUMAN",
+      "DESCRIPTION": "Some real back-and-forth: 1-2 threads where the account replies again (2+ turns) to a distinct unrelated account (below the H003 bar).",
+      "WEIGHT": {
+        "HUMAN_CONTINUITY": 10,
+        "AUTOMATION": -5
+      },
+      "MAX_CONTRIBUTION": 10,
+      "EVIDENCE_STRENGTH": "MODERATE",
+      "REQUIRES_CORROBORATION": false,
+      "CORROBORATION_SCORES": [],
+      "CAN_TRIGGER_BLOCK": false,
+      "SINCE": "v0.5",
+      "SEEN_ON": [],
+      "UNDERLYING_FACT_GROUP": "H_CONVERSATIONS",
+      "MIN_COUNT": 1,
+      "COUNT_SCALING_PER_EXTRA": 0,
+      "HOW_TO_OBSERVE": "Open reply threads.",
+      "NOTES": "v0.5. Shares the H_CONVERSATIONS group with H003, so an account never gets both."
+    }
+  ],
+  "PROPOSED_NOT_ADOPTED": [
+    {
+      "ID": "P-d",
+      "DESCRIPTION": "Content carrying another person's name or brand that differs from the account persona.",
+      "SEEN_ON": [],
+      "STATUS": "NOT ADOPTED: seen on 1 account. The observed case is tagged with the existing D002 (self-contradictory identity)."
+    },
+    {
+      "ID": "P-g",
+      "DESCRIPTION": "Generic aphorism replies to large accounts with no follow-up.",
+      "SEEN_ON": [],
+      "STATUS": "NOT ADOPTED: seen on 1 account, and the replies are topical (AI, geopolitics), so they are not A003-generic. WATCH."
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "POLICY_ID": "neutral-template",
+  "OWNER": "UNCONFIGURED",
+  "POLICY_VERSION": "0.6.0",
+  "DESCRIPTION": "Ho Be Gone neutral base rules: the generic rubric only. No protected identities and no owner rule answers. Every new owner starts from a copy of this file; nothing is ever copied from another owner's instance.",
+  "PROTECTED_IDENTITIES": [],
+  "RULE_ANSWERS": [],
+  "ENFORCEMENT_PREFERENCES": {
+    "NOTE": "Learned from this owner's own reactions as enforcement preferences only; never treated as truth about automation.",
+    "OBSERVED": []
+  }
+}

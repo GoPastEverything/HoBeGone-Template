@@ -1,0 +1,31 @@
+{
+  "POLICY_ID": "example-celebrity-impersonation",
+  "OWNER": "EXAMPLE (copy into your own instance to use)",
+  "POLICY_VERSION": "0.6.0",
+  "DESCRIPTION": "OPTIONAL EXAMPLE, OFF BY DEFAULT. A protected-identity rule for owners whose followers are often targeted by fake 'Elon Musk' / Tesla / SpaceX accounts and giveaway scams. Turn it on only for your own instance with `python3 -m fis owner-policy --instance I --add-example celebrity-impersonation`; remove it with `--remove-identity ELON_MUSK`. Edit the names to protect a different public figure or brand.",
+  "PROTECTED_IDENTITIES": [
+    {
+      "ID": "ELON_MUSK",
+      "PERSON_NAMES": [
+        "Elon Musk",
+        "Elon"
+      ],
+      "ORGANIZATIONS": [
+        "Tesla",
+        "SpaceX"
+      ],
+      "RULES": {
+        "CLAIM_TO_BE": true,
+        "CLAIM_TO_OWN_OR_RUN_ORG": true,
+        "PRIZE_PROMOTION": true
+      },
+      "ENFORCEMENT": "BLOCK_ELIGIBLE",
+      "SOURCE": "examples/owner_policy.celebrity_impersonation.example.json (optional example; enabled only by the owner)"
+    }
+  ],
+  "RULE_ANSWERS": [],
+  "ENFORCEMENT_PREFERENCES": {
+    "NOTE": "Example file: no learned preferences.",
+    "OBSERVED": []
+  }
+}

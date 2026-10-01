@@ -1,0 +1,1100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "account_record.schema.json",
+  "title": "FollowerIntegritySkill account record v0.5",
+  "description": "One audited account. Any field that could not be verified MUST be the string UNKNOWN. Absence of evidence is never evidence of a human.",
+  "type": "object",
+  "required": [
+    "handle",
+    "evidence_quality"
+  ],
+  "$defs": {
+    "feature_instance": {
+      "type": "object",
+      "required": [
+        "feature_id",
+        "evidence"
+      ],
+      "properties": {
+        "feature_id": {
+          "type": "string",
+          "description": "Must exist in feature_registry; forbidden-proxy IDs are rejected by engine.py."
+        },
+        "evidence": {
+          "type": "string",
+          "description": "Exact quote or recorded observation. Never invented."
+        },
+        "source": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "count": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "integer",
+              "minimum": 0
+            }
+          ]
+        },
+        "count_min": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Lower bound supported by the evidence when the exact count is UNKNOWN."
+        },
+        "observed_dates": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "item_urls": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "fact_key": {
+          "type": "string",
+          "description": "Optional override of the registry UNDERLYING_FACT_GROUP when this instance describes the same observed items as another feature."
+        },
+        "verified": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "properties": {
+    "record_version": {
+      "type": "string"
+    },
+    "handle": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_]{1,15}$"
+    },
+    "profile_url": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "date_collected": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "account_age": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "joined": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^[0-9]{4}(-[0-9]{2})?$"
+                }
+              ]
+            },
+            "raw": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "followers": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        }
+      ]
+    },
+    "following": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        }
+      ]
+    },
+    "post_count": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        }
+      ]
+    },
+    "display_name": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "bio": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "profile_claimed_location": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "x_account_country": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "x_connected_via": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "read_context": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "location_consistency": {
+      "enum": [
+        "CONSISTENT",
+        "MISMATCH",
+        "UNKNOWN"
+      ]
+    },
+    "recent_original_posts": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "sampled_count": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              ]
+            },
+            "date_range": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "items": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "anyOf": [
+                          {
+                            "const": "UNKNOWN"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "date": {
+                        "anyOf": [
+                          {
+                            "const": "UNKNOWN"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "text": {
+                        "anyOf": [
+                          {
+                            "const": "UNKNOWN"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "target": {
+                        "anyOf": [
+                          {
+                            "const": "UNKNOWN"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "summary": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "recent_replies": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "sampled_count": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              ]
+            },
+            "date_range": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "items": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "anyOf": [
+                          {
+                            "const": "UNKNOWN"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "date": {
+                        "anyOf": [
+                          {
+                            "const": "UNKNOWN"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "text": {
+                        "anyOf": [
+                          {
+                            "const": "UNKNOWN"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "target": {
+                        "anyOf": [
+                          {
+                            "const": "UNKNOWN"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "summary": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "older_activity_sample": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "sampled_count": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              ]
+            },
+            "date_range": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "items": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "anyOf": [
+                          {
+                            "const": "UNKNOWN"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "date": {
+                        "anyOf": [
+                          {
+                            "const": "UNKNOWN"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "text": {
+                        "anyOf": [
+                          {
+                            "const": "UNKNOWN"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "target": {
+                        "anyOf": [
+                          {
+                            "const": "UNKNOWN"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "summary": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "reply_target_diversity": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      ]
+    },
+    "duplicate_text_count": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        }
+      ]
+    },
+    "near_duplicate_text_count": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        }
+      ]
+    },
+    "generic_reply_ratio": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      ]
+    },
+    "original_content_ratio": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      ]
+    },
+    "promotion_ratio": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      ]
+    },
+    "link_ratio": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      ]
+    },
+    "reply_ratio": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      ]
+    },
+    "repost_ratio": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      ]
+    },
+    "estimated_activity_hours": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 24
+        }
+      ]
+    },
+    "posting_regularities": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "identity_changes": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "username_changes": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              ]
+            },
+            "last_change": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "notes": {
+              "anyOf": [
+                {
+                  "const": "UNKNOWN"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "suspicious_domains": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "value"
+            ],
+            "properties": {
+              "value": {
+                "type": "string"
+              },
+              "where": {
+                "anyOf": [
+                  {
+                    "const": "UNKNOWN"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "verified": {
+                "anyOf": [
+                  {
+                    "const": "UNKNOWN"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "notes": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "wallet_addresses": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "value"
+            ],
+            "properties": {
+              "value": {
+                "type": "string"
+              },
+              "where": {
+                "anyOf": [
+                  {
+                    "const": "UNKNOWN"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "verified": {
+                "anyOf": [
+                  {
+                    "const": "UNKNOWN"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "notes": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "telegram_or_whatsapp_destinations": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "value"
+            ],
+            "properties": {
+              "value": {
+                "type": "string"
+              },
+              "where": {
+                "anyOf": [
+                  {
+                    "const": "UNKNOWN"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "verified": {
+                "anyOf": [
+                  {
+                    "const": "UNKNOWN"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "notes": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "referral_codes": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "value"
+            ],
+            "properties": {
+              "value": {
+                "type": "string"
+              },
+              "where": {
+                "anyOf": [
+                  {
+                    "const": "UNKNOWN"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "verified": {
+                "anyOf": [
+                  {
+                    "const": "UNKNOWN"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "notes": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "network_fingerprints": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "human_continuity_features": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/feature_instance"
+          }
+        }
+      ]
+    },
+    "automation_features": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/feature_instance"
+          }
+        }
+      ]
+    },
+    "spam_features": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/feature_instance"
+          }
+        }
+      ]
+    },
+    "scam_features": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/feature_instance"
+          }
+        }
+      ]
+    },
+    "impersonation_features": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/feature_instance"
+          }
+        }
+      ]
+    },
+    "deception_features": {
+      "anyOf": [
+        {
+          "const": "UNKNOWN"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/feature_instance"
+          }
+        }
+      ]
+    },
+    "evidence_quality": {
+      "type": "object",
+      "required": [
+        "level"
+      ],
+      "properties": {
+        "level": {
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW",
+            "NONE"
+          ]
+        },
+        "items_sampled": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "integer",
+              "minimum": 0
+            }
+          ]
+        },
+        "replies_sampled": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "integer",
+              "minimum": 0
+            }
+          ]
+        },
+        "posts_sampled": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "integer",
+              "minimum": 0
+            }
+          ]
+        },
+        "older_sample_checked": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "about_page_checked": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "collection_protocol_version": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "const": "UNKNOWN"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Where the record came from. engine.py never reads it for scoring."
+    },
+    "change_log": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Append-only notes on evidence updates (what changed, from which source). engine.py never reads it."
+    }
+  }
+}

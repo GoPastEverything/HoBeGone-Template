@@ -1,0 +1,35 @@
+{
+  "title": "v0.6 enforcement (block verification) record",
+  "type": "object",
+  "required": [
+    "HANDLE",
+    "BLOCK_ATTEMPTED",
+    "BLOCK_VERIFIED",
+    "BLOCK_TIMESTAMP"
+  ],
+  "properties": {
+    "BLOCK_ATTEMPTED": {
+      "type": "boolean"
+    },
+    "BLOCK_VERIFIED": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "BLOCK_TIMESTAMP": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

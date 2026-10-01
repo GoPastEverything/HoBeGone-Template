@@ -1,0 +1,162 @@
+{
+  "title": "v0.6 resumable checkpoint",
+  "type": "object",
+  "required": [
+    "CHECKPOINT_VERSION",
+    "JOB_ID",
+    "OWNER",
+    "MODE",
+    "STATUS",
+    "VERSIONS",
+    "DISCOVERY",
+    "LAST_FOLLOWER_PROCESSED",
+    "ACCOUNTS_COMPLETED",
+    "PENDING_SECOND_PASS",
+    "PENDING_OWNER_REVIEW",
+    "BLOCKS_COMPLETED",
+    "BLOCKS_FAILED",
+    "RATE_LIMIT",
+    "SECURITY_PAUSE"
+  ],
+  "properties": {
+    "CHECKPOINT_VERSION": {
+      "const": "0.6.0"
+    },
+    "MODE": {
+      "enum": [
+        "AUTO_CLEAN",
+        "AUDIT_ONLY",
+        "REVIEW_WITH_ME",
+        "HIGH_CONFIDENCE_AUTO_CLEAN",
+        "ACTIVE_SCOUTING"
+      ]
+    },
+    "STATUS": {
+      "enum": [
+        "RUNNING",
+        "PAUSED_RATE_LIMIT",
+        "PAUSED_SECURITY",
+        "COMPLETE",
+        "MIGRATED"
+      ]
+    },
+    "VERSIONS": {
+      "type": "object",
+      "required": [
+        "SKILL_VERSION",
+        "FEATURE_REGISTRY_VERSION",
+        "SCORING_VERSION",
+        "DECISION_ENGINE_VERSION",
+        "CALIBRATION_VERSION"
+      ],
+      "properties": {
+        "SKILL_VERSION": {
+          "type": "string",
+          "pattern": ".+"
+        },
+        "FEATURE_REGISTRY_VERSION": {
+          "type": "string",
+          "pattern": ".+"
+        },
+        "SCORING_VERSION": {
+          "type": "string",
+          "pattern": ".+"
+        },
+        "DECISION_ENGINE_VERSION": {
+          "type": "string",
+          "pattern": ".+"
+        },
+        "CALIBRATION_VERSION": {
+          "type": "string",
+          "pattern": ".+"
+        }
+      }
+    },
+    "DISCOVERY": {
+      "type": "object",
+      "required": [
+        "FOLLOWERS_DISCOVERED",
+        "DISCOVERY_COMPLETE",
+        "ORDER"
+      ],
+      "properties": {
+        "ORDER": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "LAST_FOLLOWER_PROCESSED": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ACCOUNTS_COMPLETED": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "PENDING_SECOND_PASS": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "PENDING_OWNER_REVIEW": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "BLOCKS_COMPLETED": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "BLOCKS_FAILED": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "HANDLE",
+          "REASON"
+        ]
+      }
+    },
+    "RATE_LIMIT": {
+      "type": "object",
+      "required": [
+        "STATE"
+      ],
+      "properties": {
+        "STATE": {
+          "enum": [
+            "OK",
+            "BACKOFF",
+            "PAUSED"
+          ]
+        }
+      }
+    },
+    "SECURITY_PAUSE": {
+      "type": "object",
+      "required": [
+        "ACTIVE"
+      ],
+      "properties": {
+        "ACTIVE": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

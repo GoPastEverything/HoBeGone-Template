@@ -1,0 +1,14 @@
+# Owner data never goes into the template
+instances/*
+!instances/_template/
+!instances/_template/**
+calibration/
+runs/
+records/
+second_pass/
+reports/
+*.sqlite
+*.sqlite-journal
+__pycache__/
+*.pyc
+.DS_Store

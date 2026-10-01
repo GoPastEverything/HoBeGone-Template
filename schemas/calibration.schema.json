@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "calibration.schema.json",
+  "title": "Calibration row (calibration/calibration_set_v*.csv)",
+  "description": "HUMAN_RESULT is the owner's manual label: a target to investigate, NEVER a feature. engine.py never reads calibration files.",
+  "type": "object",
+  "required": [
+    "HANDLE",
+    "MODEL_RESULT",
+    "HUMAN_RESULT",
+    "AGREEMENT",
+    "FALSE_POSITIVE",
+    "FALSE_NEGATIVE",
+    "MISSED_FEATURES",
+    "OVERWEIGHTED_FEATURES",
+    "NOTES"
+  ],
+  "properties": {
+    "HANDLE": {
+      "type": "string"
+    },
+    "MODEL_RESULT": {
+      "enum": [
+        "KEEP",
+        "REVIEW",
+        "BLOCK_CANDIDATE_PENDING_2ND_PASS",
+        "BLOCK",
+        "UNKNOWN"
+      ]
+    },
+    "HUMAN_RESULT": {
+      "enum": [
+        "BOT_OR_FAKE",
+        "HUMAN_KEEP",
+        "UNLABELED",
+        "UNKNOWN"
+      ]
+    },
+    "AGREEMENT": {
+      "enum": [
+        "AGREE",
+        "PARTIAL",
+        "DISAGREE",
+        "N/A"
+      ]
+    },
+    "FALSE_POSITIVE": {
+      "enum": [
+        "YES",
+        "NO",
+        "REVIEW_ONLY",
+        "N/A"
+      ]
+    },
+    "FALSE_NEGATIVE": {
+      "enum": [
+        "YES",
+        "NO",
+        "REVIEW_ONLY",
+        "N/A"
+      ]
+    },
+    "MISSED_FEATURES": {
+      "type": "string"
+    },
+    "OVERWEIGHTED_FEATURES": {
+      "type": "string"
+    },
+    "NOTES": {
+      "type": "string"
+    },
+    "CALIBRATION_SET_VERSION": {
+      "type": "string"
+    },
+    "DEEP_EVIDENCE_STATUS": {
+      "enum": [
+        "SUPPORTS_LABEL",
+        "DISPUTES_LABEL",
+        "MIXED",
+        "INSUFFICIENT",
+        "NOT_DEEP_READ"
+      ]
+    }
+  }
+}

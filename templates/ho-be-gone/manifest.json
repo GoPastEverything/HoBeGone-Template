@@ -1,0 +1,125 @@
+{
+  "TEMPLATE_ID": "ho-be-gone",
+  "DISPLAY_NAME": "Ho Be Gone",
+  "VERSION": "Ho Be Gone @BOT v0.2.0",
+  "HO_BE_GONE_VERSION": "v0.2.0",
+  "SHORT_DESCRIPTION": "Audit your X followers for bots, spam, scams, impersonators and coordinated fake accounts, and automatically block them. Undo any block with \"unblock @handle\".",
+  "LONG_DESCRIPTION": "Ho Be Gone checks your X followers and the accounts that interact with your posts, and automatically blocks scams, impersonators, spam bots and coordinated fake accounts. It asks you no setup questions, sends a short daily summary only when it blocked something, learns from your \"unblock @handle\" and \"this one was right\" replies, and never blocks anyone for politics, beliefs, background or opinions.",
+  "BACKEND_VERSIONS": {
+    "SKILL_VERSION": "FollowerIntegritySkill v0.6.0",
+    "FEATURE_REGISTRY_VERSION": "v0.5 (template build; see `python3 -m fis versions`)",
+    "SCORING_VERSION": "scoring-v0.6.0",
+    "DECISION_ENGINE_VERSION": "decision-v0.6.0",
+    "CALIBRATION_VERSION": "NONE until the owner freezes their own set (python3 -m fis calibration freeze)",
+    "AUTO_BLOCK_VERSION": "decision-v0.7.0 (BLOCK_CONFIRMED | AUTO_BLOCK_PATTERN | OWNER_TRAINED over decision-v0.6.0)",
+    "OWNER_MODEL_VERSION": "per instance, per refit (om-<instance>-r<N>-<sha8>)"
+  },
+  "ENGINE": {
+    "LOCATION": "repo root (the folder HoBeGone-Template was cloned into)",
+    "ENTRYPOINT": "python3 -m fis",
+    "CLI": "fis/cli.py",
+    "VERSIONS_COMMAND": "python3 -m fis versions"
+  },
+  "DEFAULT_MODE": "AUTO_CLEAN",
+  "MODES": {
+    "AUTO_CLEAN": "AUTO-CLEAN (default; no mode question)",
+    "REVIEW_WITH_ME": "REVIEW WITH ME (only when the owner asks in words)",
+    "AUDIT_ONLY": "AUDIT ONLY (only when the owner asks in words)",
+    "ACTIVE_SCOUTING": "ACTIVE SCOUTING (on by default, auto-block on)",
+    "HIGH_CONFIDENCE_AUTO_CLEAN": "HIGH-CONFIDENCE AUTO-CLEAN (legacy v0.1; BLOCK_CONFIRMED only; owner words)"
+  },
+  "PIPELINE_STAGES": [
+    "DISCOVERY",
+    "ACCOUNT_COLLECTION",
+    "BEHAVIOR_EXTRACTION",
+    "HUMAN_CONTINUITY_ANALYSIS",
+    "NETWORK_ANALYSIS",
+    "PRIMARY_SCORING",
+    "EVIDENCE_SUFFICIENCY",
+    "SECOND_PASS",
+    "DECISION_ENGINE",
+    "AUTO_BLOCK",
+    "OWNER_ADJUDICATION",
+    "ENFORCEMENT",
+    "AUDIT_LOG"
+  ],
+  "SCOUTING_PIPELINE": [
+    "INTERACTION_DETECTED",
+    "ACCOUNT_DEDUPLICATION",
+    "PRIORITY_ASSESSMENT",
+    "FollowerIntegritySkill (EVIDENCE_COLLECTION -> SCORING -> SECOND_PASS if required)",
+    "AUTO_BLOCK (decision-v0.7.0)",
+    "AUDIT_LOG"
+  ],
+  "OPERATOR_PROMPTS": [
+    "operator_prompts/discovery.md",
+    "operator_prompts/collection_batch.md",
+    "operator_prompts/second_pass.md",
+    "operator_prompts/block_batch.md",
+    "operator_prompts/notifications_scan.md",
+    "operator_prompts/light_check.md",
+    "operator_prompts/unblock_batch.md"
+  ],
+  "INSTANCE_RULE": "Every X account -> its own instances/<handle>, created on first start from instances/_template (neutral base rules, empty owner model). Owner-specific rules are added only on the owner's words (owner-policy command).",
+  "REQUIRES": [
+    "the owner is already signed in to X in the bot's browser (the owner types their own credentials)",
+    "this repo cloned on the bot's computer, with Python 3.10+ (standard library only)"
+  ],
+  "NEVER": [
+    "ask for or store passwords, cookies, tokens, 2FA codes or passkeys",
+    "bypass X security checks, CAPTCHAs or rate limits",
+    "embed scoring weights or gates in the template",
+    "treat ❌ as a bot label",
+    "claim a block that was not reload-verified",
+    "use nationality, race, religion, gender or politics, or treat disagreement/criticism/fandom/opinion as suspicious",
+    "block an owner-kept account",
+    "auto-block on automation, repurposing, network membership or any excluded trait alone",
+    "unblock except on the owner's request"
+  ],
+  "FILES": {
+    "TEMPLATE": "TEMPLATE.md",
+    "GETTING_STARTED": "GETTING_STARTED.md",
+    "LOCAL_LIVE_TEST": "LOCAL_LIVE_TEST.md",
+    "SKILLS": [
+      "../../skills/ho-be-gone-runbook/SKILL.md",
+      "../../skills/ho-be-gone-getting-started/SKILL.md",
+      "../../skills/ho-be-gone-manual/SKILL.md"
+    ],
+    "USER_MANUAL": "../../USER_MANUAL.md",
+    "BASE_RULES": "../../rules/BASE_RULES.md",
+    "STARTER_INSTANCE": "../../instances/_template/"
+  },
+  "FIRST_CONVERSATION": "zero questions: start line, x.com/home signed-in handle check, `python3 -m fis start --x-account @handle`, clean immediately, create quiet daily routine",
+  "AUTO_BLOCK_TIERS": [
+    "A BLOCK_CONFIRMED (v0.6 engine verdict)",
+    "B AUTO_BLOCK_PATTERN (strong scam/impersonation feature or persona+funnel+lure compound; evidence >= PARTIAL; no substantial human continuity)",
+    "C OWNER_TRAINED (owner-only model, zero-FP CV threshold, needs a scam/spam/impersonation basis)"
+  ],
+  "NEVER_A_BASIS": [
+    "automation",
+    "repurposing",
+    "network membership",
+    "politics",
+    "religion",
+    "nationality",
+    "race",
+    "gender",
+    "language",
+    "grammar",
+    "digits",
+    "age",
+    "follower count",
+    "country",
+    "opinions",
+    "anonymity"
+  ],
+  "OWNER_MESSAGES": [
+    "start line",
+    "progress line at most every ~50 accounts",
+    "completion report",
+    "security stops",
+    "daily summary only when something was blocked or a problem happened",
+    "answers to the owner"
+  ],
+  "UNDO": "owner says \"unblock @handle\" -> unblock-request (records KEEP + disagreement) -> unblock-plan -> operator_prompts/unblock_batch.md -> ingest-unblock-report"
+}

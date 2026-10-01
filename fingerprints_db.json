@@ -1,0 +1,39 @@
+{
+  "db_version": "v2.7-template (FollowerIntegritySkill v0.5 rules; empty: no clusters, indicators or watch list ship with the template)",
+  "last_updated": "2026-09-30",
+  "rules": [
+    "A cluster is CONFIRMED only with >= 1 STRONG shared fingerprint OR >= 3 independent MODERATE shared fingerprints.",
+    "A STRONG fingerprint must have its value recorded (the actual text, domain, ID, wallet or destination). If value is UNKNOWN, engine.py grades it as MODERATE until the value is recorded.",
+    "A shared topic, theme, opinion, slogan, claimed location, or public-figure name is never a fingerprint (is_topic_or_slogan = true entries are listed for transparency and ignored).",
+    "Copying the same PUBLIC source (for example a celebrity's real bio) is a WEAK persona-template fingerprint, because unrelated copycats produce it independently.",
+    "Cluster membership only moves NETWORK_COORDINATION. It never raises AUTOMATION, SPAM, SCAM, IMPERSONATION or DECEPTION by itself.",
+    "CANDIDATE clusters (below the bar) have NETWORK_COORDINATION capped at 49 and are shown as '<id> (candidate)'.",
+    "v0.5: IDENTICAL_POST_SAME_DATE (an identical non-stock caption published by 2+ accounts on the same calendar date) is STRONG only with its value, its date and 2+ named accounts in the fingerprint's members; otherwise it is graded MODERATE.",
+    "v0.5: the same posting-date sequence across accounts is a MODERATE CONTENT_SEQUENCE fingerprint (day-level; it never raises AUTOMATION by itself; A008 needs minute/hour windows).",
+    "v0.5: when fingerprints list their members, every cluster member must directly share at least one MODERATE+ fingerprint; a member linked only by WEAK fingerprints is treated as candidate-only (NET capped at 49).",
+    "v0.5: SUPERSEDED clusters stay in the file for history (status SUPERSEDED, superseded_by) and are ignored by engine.py."
+  ],
+  "fingerprint_types": {
+    "WALLET": "STRONG",
+    "REFERRAL_ID": "STRONG",
+    "TELEGRAM_WHATSAPP_DESTINATION": "STRONG",
+    "UNUSUAL_MATCHING_BIO": "STRONG",
+    "DOMAIN": "STRONG (if the domain is not a mainstream site)",
+    "DUPLICATE_PHRASE": "MODERATE (WEAK if the phrase is a widely used stock line)",
+    "REUSED_IMAGE": "MODERATE",
+    "SYNCHRONIZED_POSTING": "MODERATE",
+    "REPLY_WAVE": "MODERATE",
+    "MUTUAL_AMPLIFICATION": "MODERATE",
+    "CONTENT_SEQUENCE": "MODERATE",
+    "SHARED_TARGET_ACCOUNTS": "WEAK",
+    "PERSONA_TEMPLATE": "WEAK",
+    "FOLLOW_WINDOW": "WEAK",
+    "RENAME_WINDOW": "WEAK",
+    "IDENTICAL_POST_SAME_DATE": "STRONG (value + date + 2+ members required)",
+    "HIDDEN_HISTORY": "WEAK"
+  },
+  "clusters": [],
+  "indicators": [],
+  "watch_list": [],
+  "NOTE": "Each install builds its own fingerprint clusters from its own collected evidence. The template ships the rules and fingerprint types only; no accounts, domains, wallets or destinations from anyone else's audit."
+}

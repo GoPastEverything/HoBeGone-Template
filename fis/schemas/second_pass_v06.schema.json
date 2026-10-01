@@ -1,0 +1,317 @@
+{
+  "title": "v0.6 second-pass record (adaptive completion)",
+  "type": "object",
+  "required": [
+    "HANDLE",
+    "STATUS",
+    "BLOCK_BASIS_FEATURES",
+    "AVAILABLE_BEHAVIOR_TYPES",
+    "SAMPLED_BEHAVIOR_TYPES",
+    "UNOBSERVABLE_BEHAVIOR_TYPES",
+    "ALL_AVAILABLE_EXAMINED",
+    "QUOTE_REVERIFICATIONS",
+    "DISPROOF_CHECKS",
+    "STRONGEST_LEGITIMATE_CASE",
+    "WHAT_MUST_BE_FALSE_FOR_BLOCK_TO_FAIL",
+    "SIGNIFICANT_CONTRARY_EVIDENCE"
+  ],
+  "properties": {
+    "HANDLE": {
+      "type": "string"
+    },
+    "STATUS": {
+      "enum": [
+        "PENDING",
+        "DONE"
+      ]
+    },
+    "BLOCK_BASIS_FEATURES": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "BASIS_BEHAVIOR_TYPES": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "PROFILE_HISTORY",
+          "ORIGINAL_POSTS",
+          "REPLIES",
+          "REPOSTS",
+          "QUOTES",
+          "EXTERNAL_LINKS",
+          "OLDER_CONTENT"
+        ]
+      }
+    },
+    "AVAILABLE_BEHAVIOR_TYPES": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "PROFILE_HISTORY",
+          "ORIGINAL_POSTS",
+          "REPLIES",
+          "REPOSTS",
+          "QUOTES",
+          "EXTERNAL_LINKS",
+          "OLDER_CONTENT"
+        ]
+      }
+    },
+    "SAMPLED_BEHAVIOR_TYPES": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "PROFILE_HISTORY",
+          "ORIGINAL_POSTS",
+          "REPLIES",
+          "REPOSTS",
+          "QUOTES",
+          "EXTERNAL_LINKS",
+          "OLDER_CONTENT"
+        ]
+      }
+    },
+    "UNOBSERVABLE_BEHAVIOR_TYPES": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "TYPE",
+          "REASON"
+        ],
+        "properties": {
+          "TYPE": {
+            "enum": [
+              "PROFILE_HISTORY",
+              "ORIGINAL_POSTS",
+              "REPLIES",
+              "REPOSTS",
+              "QUOTES",
+              "EXTERNAL_LINKS",
+              "OLDER_CONTENT"
+            ]
+          },
+          "REASON": {
+            "type": "string",
+            "pattern": ".+"
+          }
+        }
+      }
+    },
+    "ALL_AVAILABLE_EXAMINED": {
+      "type": "boolean"
+    },
+    "ITEMS_EXAMINED": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "const": "UNKNOWN"
+        }
+      ]
+    },
+    "QUOTE_REVERIFICATIONS": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "FEATURE_ID",
+          "QUOTE",
+          "METHOD",
+          "VERBATIM"
+        ],
+        "properties": {
+          "METHOD": {
+            "enum": [
+              "RE_FOUND_LIVE",
+              "PRE_BLOCK_FIRST_PASS_VERBATIM"
+            ]
+          },
+          "VERBATIM": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "KEY_QUOTES_SEARCHED_NOT_FOUND": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "DISPROOF_CHECKS": {
+      "type": "object",
+      "properties": {
+        "real_conversations": {
+          "type": "object",
+          "required": [
+            "CHECKED"
+          ],
+          "properties": {
+            "CHECKED": {
+              "type": "boolean"
+            },
+            "FINDING": {
+              "type": "string"
+            },
+            "SUPPORTS_LEGITIMACY": {
+              "type": "boolean"
+            },
+            "SUBSTANTIAL": {
+              "type": "boolean"
+            }
+          }
+        },
+        "long_term_continuity": {
+          "type": "object",
+          "required": [
+            "CHECKED"
+          ],
+          "properties": {
+            "CHECKED": {
+              "type": "boolean"
+            },
+            "FINDING": {
+              "type": "string"
+            },
+            "SUPPORTS_LEGITIMACY": {
+              "type": "boolean"
+            },
+            "SUBSTANTIAL": {
+              "type": "boolean"
+            }
+          }
+        },
+        "older_posts": {
+          "type": "object",
+          "required": [
+            "CHECKED"
+          ],
+          "properties": {
+            "CHECKED": {
+              "type": "boolean"
+            },
+            "FINDING": {
+              "type": "string"
+            },
+            "SUPPORTS_LEGITIMACY": {
+              "type": "boolean"
+            },
+            "SUBSTANTIAL": {
+              "type": "boolean"
+            }
+          }
+        },
+        "contradictory_evidence": {
+          "type": "object",
+          "required": [
+            "CHECKED"
+          ],
+          "properties": {
+            "CHECKED": {
+              "type": "boolean"
+            },
+            "FINDING": {
+              "type": "string"
+            },
+            "SUPPORTS_LEGITIMACY": {
+              "type": "boolean"
+            },
+            "SUBSTANTIAL": {
+              "type": "boolean"
+            }
+          }
+        },
+        "duplicated_text_legit_explanation": {
+          "type": "object",
+          "required": [
+            "CHECKED"
+          ],
+          "properties": {
+            "CHECKED": {
+              "type": "boolean"
+            },
+            "FINDING": {
+              "type": "string"
+            },
+            "SUPPORTS_LEGITIMACY": {
+              "type": "boolean"
+            },
+            "SUBSTANTIAL": {
+              "type": "boolean"
+            }
+          }
+        },
+        "account_predates_behavior": {
+          "type": "object",
+          "required": [
+            "CHECKED"
+          ],
+          "properties": {
+            "CHECKED": {
+              "type": "boolean"
+            },
+            "FINDING": {
+              "type": "string"
+            },
+            "SUPPORTS_LEGITIMACY": {
+              "type": "boolean"
+            },
+            "SUBSTANTIAL": {
+              "type": "boolean"
+            }
+          }
+        },
+        "common_public_source_quote": {
+          "type": "object",
+          "required": [
+            "CHECKED"
+          ],
+          "properties": {
+            "CHECKED": {
+              "type": "boolean"
+            },
+            "FINDING": {
+              "type": "string"
+            },
+            "SUPPORTS_LEGITIMACY": {
+              "type": "boolean"
+            },
+            "SUBSTANTIAL": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "LINK_REPUTATION": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "VALUE",
+          "CHECKED"
+        ]
+      }
+    },
+    "STRONGEST_LEGITIMATE_CASE": {
+      "type": "string"
+    },
+    "WHAT_MUST_BE_FALSE_FOR_BLOCK_TO_FAIL": {
+      "type": "string"
+    },
+    "CONTRARY_FINDINGS": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "SIGNIFICANT_CONTRARY_EVIDENCE": {
+      "type": "boolean"
+    }
+  }
+}
