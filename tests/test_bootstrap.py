@@ -54,6 +54,9 @@ class TestBootstrapFresh(unittest.TestCase):
         log = [json.loads(l) for l in open(os.path.join(inst, "deploy_log.jsonl"), encoding="utf-8")]
         self.assertEqual(log[-1]["COMMIT"], kv["HOBEGONE_COMMIT"])
         self.assertEqual(sorted(os.listdir(os.path.join(dest, "instances"))), ["_template", "newowner_1"])
+        loc = subprocess.run(["bash", BOOT, "--x-account", "@other_owner", "--locate", "--no-existing-scan"], env=self.env, capture_output=True, text=True)
+        self.assertEqual(loc.returncode, 0, loc.stdout + loc.stderr); self.assertIn("HOBEGONE_STATUS=NEW", loc.stdout)
+        self.assertFalse(os.path.exists(os.path.join(dest, "instances", "other_owner")))  # --locate starts nothing
         r2, kv2 = self.boot("@newowner_1")
         self.assertEqual(r2.returncode, 0, r2.stdout + r2.stderr); self.assertEqual(kv2["HOBEGONE_STATUS"], "RESUMED")
         self.assertIn(kv2["HOBEGONE_UPDATE"], ("UP_TO_DATE", "UPDATED"))

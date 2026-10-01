@@ -10,6 +10,7 @@
 # 4. Picks the owner's instance and refuses one that belongs to another X account.
 # 5. Runs `python3 -m fis start --x-account @handle` (new owner: fresh neutral instance; returning owner: resume).
 # 6. Records the commit/version in the instance (deploy_log.jsonl) and prints machine-readable HOBEGONE_* lines.
+# --locate: steps 1-4 only (self-check, no tests); prints where this owner would run and starts nothing.
 #
 # It never copies, imports or migrates data from anywhere. The only data it ever runs on is the owner's own instance.
 # If an earlier install on this computer already holds an instance for this exact X account, it runs that install
@@ -23,9 +24,9 @@ REPO_URL="${HOBEGONE_REPO_URL:-https://github.com/TheRetardedElon/HoBeGone-Templ
 BRANCH="${HOBEGONE_BRANCH:-main}"
 BASE="${HOBEGONE_HOME:-$HOME/hobegone}"
 DEST="$BASE/HoBeGone-Template"
-HANDLE=""; SMOKE=0; FORCE_TESTS=0; SCAN_EXISTING=1; NEW_RUN=0
+HANDLE=""; SMOKE=0; FORCE_TESTS=0; SCAN_EXISTING=1; NEW_RUN=0; LOCATE=0
 
-usage() { sed -n '2,6p' "$0" 2>/dev/null; echo "options: --x-account @handle [--smoke] [--force-tests] [--no-existing-scan] [--new]"; }
+usage() { sed -n '2,6p' "$0" 2>/dev/null; echo "options: --x-account @handle [--smoke] [--force-tests] [--no-existing-scan] [--new] [--locate]"; }
 while [ $# -gt 0 ]; do
   case "$1" in
     --x-account) HANDLE="${2:-}"; shift 2 ;;
@@ -34,6 +35,7 @@ while [ $# -gt 0 ]; do
     --force-tests) FORCE_TESTS=1; shift ;;
     --no-existing-scan) SCAN_EXISTING=0; shift ;;
     --new) NEW_RUN=1; shift ;;
+    --locate) LOCATE=1; SMOKE=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "unknown option: $1" >&2; usage >&2; exit 6 ;;
   esac
@@ -148,6 +150,11 @@ cd "$ENGINE"
 INSTANCE="$("$PY" -m fis select-instance --x-account "@$HANDLE" | "$PY" -c 'import json,sys; print(json.load(sys.stdin)["INSTANCE"])')"
 if [ -f "$INSTANCE/instance.json" ] && [ "$(owner_of "$INSTANCE/instance.json")" != "$SLUG" ]; then
   fail 5 "$INSTANCE belongs to another X account; refusing to reuse it"
+fi
+
+if [ "$LOCATE" = 1 ]; then  # report only: which engine/instance this owner would use; nothing is started or written
+  echo "HOBEGONE_ENGINE=$ENGINE"; echo "HOBEGONE_INSTANCE=$INSTANCE"; echo "HOBEGONE_COMMIT=$COMMIT"; echo "HOBEGONE_STATUS=$STATUS"
+  exit 0
 fi
 
 # ---- 5. start (resume by default; --new only on the owner's words)

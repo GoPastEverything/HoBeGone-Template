@@ -55,6 +55,9 @@ Exit codes: `0` ok · `2` repo unreachable · `3` Python missing or too old · `
 `5` refused (another owner's instance, or the target folder isn't this repo) · `6` usage (bad or missing handle).
 On failure it prints `HOBEGONE_ERROR=<reason>`.
 
+`--locate` runs steps 1–4 (with the self-check only) and prints `HOBEGONE_ENGINE`, `HOBEGONE_INSTANCE`, `HOBEGONE_COMMIT`
+and `HOBEGONE_STATUS` without starting anything or writing to any instance.
+
 ## Self-check
 
 `python3 -m fis doctor [--x-account @handle]` prints the engine folder, commit, Python and version stamps, confirms the
