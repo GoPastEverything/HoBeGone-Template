@@ -29,5 +29,138 @@
     "discord.gg",
     "discord.com"
   ],
-  "LINKS": []
+  "LINKS": [
+    {
+      "domain": "t.me",
+      "url": "t.me/ceo_of_space_x_company2",
+      "match_type": "prefix",
+      "pattern": "t.me/ceo_of_space_x_company2*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "first_seen_handle": "kindlysend5vbo",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/elon57n",
+      "match_type": "exact",
+      "pattern": "t.me/elon57n",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "first_seen_handle": "elon43n",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/elon_musk_8879",
+      "match_type": "exact",
+      "pattern": "t.me/elon_musk_8879",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "first_seen_handle": "aimeeuc",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/elon_reeve_mus",
+      "match_type": "prefix",
+      "pattern": "t.me/elon_reeve_mus*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "first_seen_handle": "elon_8926",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/elonmusk_officialceox",
+      "match_type": "prefix",
+      "pattern": "t.me/elonmusk_officialceox*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "first_seen_handle": "muskelon33367",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/elonmuskxfamily",
+      "match_type": "exact",
+      "pattern": "t.me/elonmuskxfamily",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "first_seen_handle": "khulanamalik",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/mrmusk0fficial1",
+      "match_type": "exact",
+      "pattern": "t.me/mrmusk0fficial1",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "first_seen_handle": "mrmusk0ffivial",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/official_elon_musk_ipo",
+      "match_type": "prefix",
+      "pattern": "t.me/official_elon_musk_ipo*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "first_seen_handle": "rakhil975838",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/r_e_musky",
+      "match_type": "exact",
+      "pattern": "t.me/r_e_musky",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "first_seen_handle": "mrmuskceoq",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/rocketman45577",
+      "match_type": "exact",
+      "pattern": "t.me/rocketman45577",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "first_seen_handle": "bismas007",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/teslastock_giveawa",
+      "match_type": "prefix",
+      "pattern": "t.me/teslastock_giveawa*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "first_seen_handle": "ariff_rkl",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/therealelon1of1",
+      "match_type": "exact",
+      "pattern": "t.me/therealelon1of1",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "first_seen_handle": "theceoofgrok",
+      "added": "2026-10-03"
+    }
+  ]
 }

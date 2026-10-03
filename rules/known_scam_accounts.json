@@ -3,6 +3,187 @@
   "LIST_VERSION": "1",
   "UPDATED": "2026-10-03",
   "DESCRIPTION": "Shared base rule (every owner). Any account whose handle is listed here is auto-blocked (layer known_scam_list), unless that owner chose ✅ keep / asked to unblock it. Add with `python3 -m fis known-list ingest`, remove with `python3 -m fis known-list remove --handle h --reason \"...\"`. Entries: handle (lowercase), display_name, reason, source, added, evidence (first 200 characters of the bio when listed).",
-  "ACCOUNTS": [],
+  "ACCOUNTS": [
+    {
+      "handle": "aimeeuc",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST NOW",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "CLICK ON THE LINK BELOW",
+      "verified": false
+    },
+    {
+      "handle": "ariff_rkl",
+      "display_name": "Kindly Send Me A Follow Request ",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "Send Me A Direct Message Via The Link Below http:// T.me/teslastock_giv eawa …",
+      "verified": false
+    },
+    {
+      "handle": "bismas007",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST ",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "click the link below to message on Telegram",
+      "verified": false
+    },
+    {
+      "handle": "elon43n",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "click on the link https:// t.me/elon57n",
+      "verified": false
+    },
+    {
+      "handle": "elon_8897",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "click on the link",
+      "verified": false
+    },
+    {
+      "handle": "elon_8926",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "click on the link below",
+      "verified": false
+    },
+    {
+      "handle": "elon_8979",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "click on the link",
+      "verified": false
+    },
+    {
+      "handle": "elon_rm_1",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "click on the link below",
+      "verified": false
+    },
+    {
+      "handle": "g_fatherxspace1",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "Parody account",
+      "verified": false
+    },
+    {
+      "handle": "gabrielgldb",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST ",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "click on the link BELOW",
+      "verified": false
+    },
+    {
+      "handle": "khulanamalik",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "Click on the link http:// t.me/elonmuskxfamily",
+      "verified": false
+    },
+    {
+      "handle": "kindlysend5vbo",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "TAP THE LINK TO MESSAGE ME ON TELEGRAM https:// t.me/CEO_OF_SPACE_X _COMPANY2 …",
+      "verified": false
+    },
+    {
+      "handle": "kindlysendrjrq",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "MESSAGE ME ON TELEGRAM TO CLAIM YOUR PRICE. CLICK THE LINK BELOW",
+      "verified": false
+    },
+    {
+      "handle": "kindlysendwzc",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "CLICK ON THE LINK BELOW AND MESSAGE ME NOW ON TELEGRAM TO CLAIM YOUR PRIZE",
+      "verified": false
+    },
+    {
+      "handle": "kindlysendzxnu",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "CLICK ON THE LINK BELOW AND MESSAGE ME NOW ON TELEGRAM TO CLAIM YOUR PRIZE",
+      "verified": false
+    },
+    {
+      "handle": "mrmusk0ffivial",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "TAP THE LINK TO MESSAGE ME VIA TELEGRAM https:// t.me/MRMUSK0FFICIAL1",
+      "verified": false
+    },
+    {
+      "handle": "mrmuskceoq",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST NOW",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "Parody account CLICK THE LINK BELOW TO REACH OUT TO ME FOR FURTHER DISCUSSIONS https:// t.me/r_E_musky",
+      "verified": false
+    },
+    {
+      "handle": "muskelon33367",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST ",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "Kindly click on my link below and send me a message on my private telegram account I have something special for you https:// t.me/ElonMusk_Offic ialCEOX …",
+      "verified": false
+    },
+    {
+      "handle": "rakhil975838",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST ",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "CLICK ON THE LINK BELOW AND MESSAGE ME NOW ON TELEGRAM TO CLAIM YOUR PRIZE https:// t.me/OFFICIAL_ELON_ MUSK_IPO …",
+      "verified": false
+    },
+    {
+      "handle": "theceoofgrok",
+      "display_name": "KINDLY SEND ME A FOLLOW REQUEST",
+      "reason": "known scam account (found via x-search:Kindly Send Me A Follow Request (2026-10-03))",
+      "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
+      "added": "2026-10-03",
+      "evidence": "Parody account CLICK ON THE LiNK http:// t.me/TherealElon1of1",
+      "verified": false
+    }
+  ],
   "REMOVED": []
 }
