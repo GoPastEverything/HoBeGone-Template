@@ -12,7 +12,7 @@ decision-v0.7.1 auto-block layer), the base rules, operator prompts for a browse
 manual, a test suite and a neutral starter instance. It contains **no owner data**: no follower lists, no reactions and
 no trained model. Every owner starts from zero.
 
-> Status: template v0.2.2 (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1). The license is MIT; see [LICENSE](LICENSE).
+> Status: template v0.2.3 (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1). The license is MIT; see [LICENSE](LICENSE).
 
 ---
 
@@ -102,8 +102,14 @@ python3 -m fis known-list remove --handle someone --reason "real person, listed 
 `ingest` dedupes, keeps the first 200 characters of each bio as evidence, skips allowlisted handles, and adds every link
 from `links[]` and the bio. X splits links over lines and cuts them off with "…": those pieces are joined, and a cut-off
 link is stored as a prefix entry (`match_type: "prefix"`, e.g. `t.me/elon_reeve_mus*`). Links are normalized (lowercase
-host, no `www.`, no http/https, no trailing slash, tracking parameters removed, Telegram paths lowercased). Commit and
-push the changed `rules/*.json` so every install picks them up.
+host, no `www.`, no http/https, no trailing slash, tracking parameters removed, Telegram paths lowercased, a leading `@`
+in `t.me/@name` dropped). Labels such as "Parody account" are not links and are dropped; words X auto-linked inside a
+sentence (`PROSE_AUTOLINK_IGNORE`, e.g. "fit in.Here") and official domains (`NEVER_WATCHLIST_DOMAINS`) are skipped.
+Commit and push the changed `rules/*.json` so every install picks them up.
+
+Current lists (template v0.2.3): **242 known scam accounts** and **73 watchlisted links (33 exact, 40 prefix)**, all
+from the X people search "Kindly Send Me A Follow Request" (collected 2026-10-03). `python3 -m fis known-list show`
+prints the live counts.
 
 ### Optional owner-specific rules
 By default there are **no** owner-specific rules. The Elon Musk / Tesla / SpaceX **name** rule is now a shared base rule

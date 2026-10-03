@@ -740,7 +740,7 @@ def cmd_known_list(a):
         if c["SKIPPED_REMOVED_EARLIER"] or c["SKIPPED_INVALID"]:
             print(f"Skipped (removed earlier): {c['SKIPPED_REMOVED_EARLIER']} · skipped (not a valid handle): {c['SKIPPED_INVALID']}")
         print(f"Links added: {c['LINKS_ADDED']} (already listed {c['LINKS_ALREADY_PRESENT']}, skipped {c['LINKS_SKIPPED']} "
-              "official/cut-off/bare-platform links)")
+              "official/cut-off/bare-platform/prose-word links)")
         print("JSON " + json.dumps(c))
         print("These lists apply to every owner after the change is committed and pushed (bootstrap.sh fast-forwards each install).")
     elif a.action == "show":
@@ -748,7 +748,8 @@ def cmd_known_list(a):
         print(f"Known scam accounts: {len(acc.get('ACCOUNTS', []))} (removed: {len(acc.get('REMOVED', []))})")
         for e in acc.get("ACCOUNTS", [])[: a.limit]:
             print(f"  @{e['handle']} — {e.get('display_name') or ''} [{e.get('source')}, {e.get('added')}]")
-        print(f"Scam-link watchlist: {len(wl.get('LINKS', []))}")
+        mts = [e.get("match_type", "exact") for e in wl.get("LINKS", [])]
+        print(f"Scam-link watchlist: {len(mts)} ({mts.count('exact')} exact, {mts.count('prefix')} prefix)")
         for e in wl.get("LINKS", [])[: a.limit]:
             print(f"  {e['url']} ({e.get('kind')}; first seen @{e.get('first_seen_handle')}, {e.get('added')})")
         print("Never matched / never listed: " + ", ".join("@" + (x["handle"] if isinstance(x, dict) else x) for x in allow.get("HANDLES", [])))

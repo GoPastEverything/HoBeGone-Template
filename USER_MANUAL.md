@@ -1,4 +1,4 @@
-# Ho Be Gone — User Manual (v0.2.0, template v0.2.2)
+# Ho Be Gone — User Manual (v0.2.0, template v0.2.3)
 
 ## QUICK START
 1. Make sure you're signed in to X in the bot's browser. That's all the setup there is.

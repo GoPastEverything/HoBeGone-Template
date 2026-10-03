@@ -7,6 +7,6 @@ FEATURE_REGISTRY_VERSION: v0.5 (template build; weights identical to v0.5, notes
 SCORING_VERSION: scoring-v0.6.0 (v0.5 feature weights unchanged; adds REPURPOSED_ACCOUNT and EVIDENCE_COVERAGE scores)
 DECISION_ENGINE_VERSION: decision-v0.6.0 (gated block policy, adaptive second pass, three enforcement modes)
 CALIBRATION_VERSION: NONE until you freeze your own set (`python3 -m fis calibration freeze --instance I --set-id S --activate`)
-TEMPLATE_VERSION: HoBeGone-Template v0.2.2 (2026-10-03; bootstrap.sh deploys from https://github.com/GoPastEverything/HoBeGone-Template)
-SHARED_LISTS: rules/known_scam_accounts.json, rules/link_watchlist.json, rules/impersonation_allowlist.json (counts: `python3 -m fis known-list show`)
+TEMPLATE_VERSION: HoBeGone-Template v0.2.3 (2026-10-03; bootstrap.sh deploys from https://github.com/GoPastEverything/HoBeGone-Template)
+SHARED_LISTS: rules/known_scam_accounts.json (242 accounts), rules/link_watchlist.json (73 links: 33 exact, 40 prefix), rules/impersonation_allowlist.json (counts: `python3 -m fis known-list show`)
 LAST_UPDATED: 2026-10-03

@@ -51,7 +51,9 @@ private message", a Telegram giveaway link) must auto-block for every owner unde
   `api.whatsapp.com/send?phone=N` → `wa.me/N`. X splits links over lines and cuts them off with "…": the pieces are
   joined, and a cut-off link is stored as a **prefix** entry (`match_type: "prefix"`, shown as `t.me/elon_reeve_mus*`).
   Only an **exact** Telegram/WhatsApp match blocks on its own; a prefix match needs a lure/impersonation feature.
-  Official domains (x.com, tesla.com, spacex.com…) are never watchlisted.
+  Official domains (x.com, tesla.com, spacex.com, terafab.ai…) are never watchlisted. `t.me/@name` is stored as
+  `t.me/name`; labels like "Parody account" are not links; words X auto-linked inside a sentence ("fit in.Here",
+  "X Corp and X.Al.") are listed in `PROSE_AUTOLINK_IGNORE` and skipped.
 - Every watchlisted link found on an account is listed in the verdict's `DETAILS`, blocked or not.
 - The lists are re-checked at decision time, so an update applies to accounts that were already audited.
 - Maintain them with `python3 -m fis known-list ingest --accounts FILE.jsonl --source "..."`, `known-list show` and

@@ -79,6 +79,8 @@ ELLIPSIS = ("…", "...")
 def normalize_url(u):
     """'HTTPS://www.T.me/XYZ/?utm_source=a' -> 't.me/xyz'. Returns (normalized, domain, kind, truncated) or None."""
     s = str(u or "").strip().strip(".,;:!?'\"")
+    while s.endswith(")") and s.count(")") > s.count("("):   # 'TELEGRAM NOW (https://t.me/x)' -> drop the unbalanced ')'
+        s = s[:-1].rstrip(".,;:!?'\"")
     if not s:
         return None
     truncated = s.endswith(ELLIPSIS)
@@ -104,6 +106,7 @@ def normalize_url(u):
         host = "t.me"; path = path.lower()
         if path.startswith("s/"):
             path = path[2:]
+        path = path.lstrip("@")                                 # 't.me/@RocketMan' is the same chat as 't.me/rocketman'
         q = []
     elif kind == "whatsapp":
         phone = dict(q).get("phone")
@@ -138,7 +141,12 @@ def links_from_text(text):
         ln = lines[i]
         start = None
         if SCHEME_ONLY.match(ln) and i + 1 < len(lines) and URL_START.match(lines[i + 1]):
-            start, i = ln + lines[i + 1], i + 2
+            first, _, more = lines[i + 1].partition(" ")
+            start, i = ln + first, i + 2
+            if more.strip():   # 'https://' + 't.me/x click on the link': the link is the first word only, nothing glued on
+                out.append(start)
+                out += [m.group(0) + ("…" if more[m.end(): m.end() + 1] == "…" else "") for m in URL_RE.finditer(more)]
+                continue
         elif TOKEN_LINE.match(ln) and URL_START.match(ln):
             start, i = ln, i + 1
         if start is None:
@@ -372,6 +380,7 @@ def ingest(rows, source, d=None, reason=None, today=None):
     removed = {handle_key(e["handle"]) for e in acc.setdefault("REMOVED", [])}
     urls = {(e["url"], e.get("match_type", "exact")) for e in wl.setdefault("LINKS", [])}
     never = {x.lower() for x in wl.get("NEVER_WATCHLIST_DOMAINS", [])}
+    prose = {x.lower() for x in wl.get("PROSE_AUTOLINK_IGNORE", [])}
     no_domain_only = {x.lower() for x in wl.get("DOMAIN_ONLY_NEVER", [])} | set(CHAT_HOSTS) | SHORTENERS | {"t.me", "wa.me"}
     c = {"ACCOUNTS_ADDED": 0, "ALREADY_PRESENT": 0, "SKIPPED_ALLOWLIST": 0, "SKIPPED_REMOVED_EARLIER": 0, "SKIPPED_INVALID": 0,
          "LINKS_ADDED": 0, "LINKS_ALREADY_PRESENT": 0, "LINKS_SKIPPED": 0}
@@ -394,7 +403,7 @@ def ingest(rows, source, d=None, reason=None, today=None):
         cands = [normalize_url(link_field(x)) for x in r.get("links") or []] + \
                 [normalize_url(x) for x in links_from_text(r.get("bio") or "")]
         for n in _dedupe([n for n in cands if n]):
-            if n["domain"] in never or any(n["domain"].endswith("." + x) for x in never) \
+            if n["domain"] in never or any(n["domain"].endswith("." + x) for x in never) or n["url"] in prose \
                     or ("/" not in n["url"] and "?" not in n["url"] and (n["truncated"] or n["domain"] in no_domain_only)) \
                     or (n["truncated"] and len(_path(n["url"])) < MIN_PREFIX_PATH):
                 c["LINKS_SKIPPED"] += 1; continue

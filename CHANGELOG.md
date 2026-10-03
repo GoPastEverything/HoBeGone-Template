@@ -1,5 +1,19 @@
 # Changelog
 
+## Template v0.2.3 (2026-10-03)
+Shared-list data update (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule or weight changes).
+- `rules/known_scam_accounts.json`: now **242** accounts (222 added). Every account from a fuller scroll of the X people
+  search "Kindly Send Me A Follow Request" (collected 2026-10-03), source `x-search:Kindly Send Me A Follow Request
+  (2026-10-03)`. Handles are in `fixtures/known_lists/kindly_send_me_a_follow_request_2026-10-03.handles.txt`.
+- `rules/link_watchlist.json`: now **73** links (61 added): **33 exact, 40 prefix** (cut-off "…" links). 72 Telegram,
+  1 Zangi (`services.zangi.com/dl/…`).
+- `known-list ingest` link cleanup: `t.me/@name` → `t.me/name`; an unbalanced trailing `)` is dropped; after a bare
+  `https://` line only the first word of the next line is the link ("t.me/x click on the link" → `t.me/x`); new
+  `PROSE_AUTOLINK_IGNORE` list (`in.here`, `x.al`: sentence words X auto-linked) is skipped; `terafab.ai` (official
+  Tesla/SpaceX Terafab site) added to `NEVER_WATCHLIST_DOMAINS`.
+- Tests: messy X link fields, prose/official-domain skips, and a check that the shipped list holds all 242 handles and
+  stores a cut-off link as a prefix entry.
+
 ## Template v0.2.2 (2026-10-03)
 Auto-block layer decision-v0.7.1 (engine Ho Be Gone @BOT v0.2.0; v0.6 weights, gates and calibration unchanged).
 New shared base rules for every owner. The owner's ✅ keep / "unblock @handle" always wins over all of them.

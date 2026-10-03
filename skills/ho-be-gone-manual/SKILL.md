@@ -7,7 +7,7 @@ description: >-
 ---
 Send this guide to the owner when they say "manual" or "help" (condense only if it's too long for one message). Answer specific questions from it in plain words.
 
-# Ho Be Gone — User Manual (v0.2.0, template v0.2.2)
+# Ho Be Gone — User Manual (v0.2.0, template v0.2.3)
 
 ## Quick start
 1. Make sure you're signed in to X in the bot's browser. That's all the setup there is.

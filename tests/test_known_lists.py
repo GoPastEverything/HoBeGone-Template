@@ -121,6 +121,51 @@ class TestLinkWatchlist(Rules):
         self.assertTrue(v3["AUTO_BLOCK"]); self.assertEqual(v3["DETAILS"]["KNOWN_LISTS"]["LINK_MATCHES"][0]["MATCH"], "prefix")
 
 
+    def test_messy_x_link_fields(self):
+        n = kl.normalize_url
+        self.assertEqual(n(kl.link_field("http://\nt.me/@ROCKETMAN0031"))["url"], "t.me/rocketman0031")      # '@' dropped
+        self.assertEqual(n("https://t.me/xspaceceoowner)")["url"], "t.me/xspaceceoowner")              # unbalanced ')' dropped
+        t = n(kl.link_field("https://\nt.me/EL0N_MUSK_0ffi\ncial_Page01\n…"))
+        self.assertEqual((t["url"], t["match_type"]), ("t.me/el0n_musk_0fficial_page01", "prefix"))
+        self.assertIsNone(n(kl.link_field("Parody account")))                                           # not a link
+        self.assertEqual(kl.links_from_text("3301776336 my Zangi number\nhttps://\nt.me/elon390n click on the link"),
+                         ["https://t.me/elon390n"])                                                   # first word only
+        self.assertEqual(kl.links_from_text("NOW (\nhttps://\nt.me/xspaceceoowner)"), ["https://t.me/xspaceceoowner)"])
+
+    def test_ingest_skips_prose_autolinks_and_official_domains(self):
+        p = os.path.join(self.d, kl.LINKS_FILE)
+        wl = kl.load_links(self.d)
+        wl["NEVER_WATCHLIST_DOMAINS"] = ["terafab.ai"]; wl["PROSE_AUTOLINK_IGNORE"] = ["in.here"]
+        with open(p, "w", encoding="utf-8") as fh:
+            json.dump(wl, fh)
+        c = kl.ingest([{"handle": "seed_acct", "bio": "Not here to fit\nhttp://\nin.Here to build",
+                        "links": ["http://\nin.Here", "http://\nTerafab.ai", "Fan account", "http://\nt.me/@Scam_Desk9"]}], SRC)
+        self.assertEqual(c["LINKS_ADDED"], 1); self.assertEqual(c["LINKS_SKIPPED"], 2)
+        self.assertEqual([e["url"] for e in kl.load_links(self.d)["LINKS"]], ["t.me/scam_desk9"])
+
+
+class TestShippedKindlyList(unittest.TestCase):
+    """The real, committed rules/ lists (read only): every account from the 2026-10-03 X people search
+    "Kindly Send Me A Follow Request" is listed, and cut-off links are prefix entries."""
+    RULES = os.path.join(ROOT, "rules")
+    HANDLES = os.path.join(ROOT, "fixtures", "known_lists", "kindly_send_me_a_follow_request_2026-10-03.handles.txt")
+
+    def test_all_242_handles_listed_and_truncated_link_is_prefix(self):
+        want = [l.strip() for l in open(self.HANDLES, encoding="utf-8") if l.strip() and not l.startswith("#")]
+        self.assertEqual(len(want), 242); self.assertEqual(len(set(want)), 242)
+        acc = kl.load_accounts(self.RULES)
+        have = {kl.handle_key(e["handle"]) for e in acc["ACCOUNTS"]}
+        self.assertEqual(sorted(set(want) - have), [])
+        self.assertGreaterEqual(len(have), 242)
+        links = {(e["url"], e["match_type"]): e for e in kl.load_links(self.RULES)["LINKS"]}
+        e = links.get(("t.me/el0n_musk_0fficial_page01", "prefix"))   # shown on X as 't.me/EL0N_MUSK_0ffi' 'cial_Page01' '…'
+        self.assertIsNotNone(e); self.assertTrue(e["truncated"]); self.assertEqual(e["pattern"], "t.me/el0n_musk_0fficial_page01*")
+        self.assertNotIn(("t.me/el0n_musk_0fficial_page01", "exact"), links)
+        self.assertIn(("t.me/therealelon1of1", "exact"), links)
+        self.assertFalse([u for u, _ in links if " " in u or "@" in u or u.endswith(")")])
+        self.assertFalse([u for u, _ in links if u.split("/")[0] in ("in.here", "x.al", "terafab.ai")])
+
+
 class TestElonTeslaNameRule(Rules):
     POS = ["ElonMusk_7", "El0nMusk", "MrMuskOfficial", "TeslaCEO_Elon", "Elon____", "Elon_Musk", "iam_elon", "real elon",
            "tesla_ceo", "SpaceXCEO", "CEO of Tesla", "Elon's Assistant", "Еlon Musk", "3l0n_musk", "MRMUSK0FFIVIAL", "Elon_8926"]
