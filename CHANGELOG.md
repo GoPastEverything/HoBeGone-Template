@@ -1,5 +1,27 @@
 # Changelog
 
+## Template v0.2.7 (2026-10-03)
+Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
+gate or calibration changes).
+- **known.botslist: 294 accounts** (13 added via `known-list ingest --maintainer`), all from the X people search "Kindly
+  Send Me A Follow" (source `x-search:Kindly Send Me A Follow (2026-10-03)`):
+  - 12 "KINDLY SEND A FOLLOW MESSAGE ME PRIVATE" accounts with a Telegram "claim your prize" / "message me on Telegram"
+    lure, plus **@ColbyRobertson1** ("Kindly Follow me and send a message Alina Habba", using a public figure's name).
+  - Input cleaned the same way as before: `@` stripped, whitespace collapsed, X's check mark recorded as `verified`
+    (none = false). Bios whose `t.me/ceofspace…` link X had cut off (the "…" was lost in collection) are marked cut off,
+    so that link is stored only as a prefix.
+  - Handle fixture: `fixtures/known_lists/kindly_send_me_a_follow_2026-10-03.handles.txt`.
+- **Link watchlist: 79 links (38 exact, 41 prefix)**, 4 Telegram links added:
+  - exact `t.me/ceoofspacex229` (@ceoofspacex443, @ceooftesla6547, @ceofspacex8678), `t.me/ceofspacex43` (@ceofSpaceX54,
+    @mutia_dyah) and `t.me/spaceman6121` (@grannymayaaa).
+  - prefix `t.me/ceofspace*` (the cut-off link of @ceofspacex544, @ceofspacex56, @ceofspacex643, @ceofspacex545,
+    @ceofspacex44, @ceofspacex4). Like every prefix entry, it counts only together with a lure/impersonation feature.
+- Never-list unchanged (@elonmusk, @ElonMuskAOC, @Teslahubs).
+- README, VERSION.md, the user manual, skills, operator prompt and manifest say template v0.2.7 (counts updated).
+- Tests: `tests/test_v027_lists.py` (the 13 handles and their source, the 4 links and counts, the cut-off link stored only
+  as a prefix, the never-list untouched, an exact contact blocking on its own while the prefix does not).
+  `tests/test_botslist.py` now expects 294 handles = the four fixture files; 168 tests pass.
+
 ## Template v0.2.6 (2026-10-03)
 Shared-list update ordered by the maintainer, plus Zangi and the never-list (engine Ho Be Gone @BOT v0.2.0, auto-block
 decision-v0.7.1; no weight, gate or calibration changes).

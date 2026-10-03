@@ -35,7 +35,7 @@ class TestShippedV026(unittest.TestCase):
         self.assertIs(by["the_teslaguy12"]["verified"], True); self.assertIs(by["tesla_hub"]["verified"], False)   # gold check / none
         self.assertNotIn("\ufffd", open(BOTSLIST, encoding="utf-8").read())
         wl = {e["url"]: e for e in kl.load_links(RULES)["LINKS"]}
-        self.assertEqual(len(wl), 75)
+        self.assertGreaterEqual(len(wl), 75)                                       # 75 in v0.2.6; later versions add more
         z = wl["services.zangi.com/dl/3415158270"]
         self.assertEqual((z["kind"], z["first_seen_handle"], z["match_type"]), ("zangi", "teslahub234", "exact"))
         self.assertEqual(wl["services.zangi.com/dl/5270574074"]["kind"], "zangi")

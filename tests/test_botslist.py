@@ -13,8 +13,9 @@ HANDLES = os.path.join(ROOT, "fixtures", "known_lists", "kindly_send_me_a_follow
 FIXTURES = [os.path.join(ROOT, "fixtures", "known_lists", f) for f in (
     "kindly_send_me_a_follow_request_2026-10-03.handles.txt",   # template v0.2.3: 242
     "elon_rocket_man_2026-10-03.handles.txt",                   # template v0.2.6: 20
-    "tesla_hub_2026-10-03.handles.txt")]                        # template v0.2.6: 19 (@Teslahubs is on the never-list)
-TOTAL = 281
+    "tesla_hub_2026-10-03.handles.txt",                         # template v0.2.6: 19 (@Teslahubs is on the never-list)
+    "kindly_send_me_a_follow_2026-10-03.handles.txt")]          # template v0.2.7: 13
+TOTAL = 294
 FPDB = json.load(open(os.path.join(ROOT, "fingerprints_db.json"), encoding="utf-8"))
 SRC = "x-search:test (synthetic)"
 
