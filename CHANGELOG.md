@@ -1,5 +1,25 @@
 # Changelog
 
+## Template v0.2.11 (2026-10-03)
+Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
+gate or calibration changes).
+- **known.botslist: 452 accounts** (58 added via `known-list ingest --maintainer`), all from the X people search "Elon
+  CEO" (source `x-search:Elon CEO (2026-10-03)`): Elon/Tesla/SpaceX CEO impersonators, Rocket Man / parody accounts, and
+  Telegram "claim your prize" contacts. Every account from the search that was not already listed (and not on the
+  never-list) was added — no ordinary-looking holdbacks. Two search hits (`Longplaychile`, `elonceo_spacexx`) were
+  already on the list from earlier ingest.
+- **Link watchlist: 96 links (55 exact, 41 prefix)**, 4 Telegram exact added:
+  - `t.me/coeofteslamana` (@elonravemusk236), `t.me/ce0elonspacex` (@CeoElonspacex_x), `t.me/teslamuskx346`
+    (@elonceo136), `t.me/cheifelonreeve` (@elonCeoMrMusk1).
+  - Junk prose scraps (`tesla.ceo`, `spacex.ceo` from "Tesla.CEO" / "SpaceX.CEO" in bios) were dropped. `t.me/muskreevecto`
+    from @elonceo_spacexx was already listed.
+- Never-list unchanged (@elonmusk, @ElonMuskAOC, @Teslahubs).
+- Handle fixture: `fixtures/known_lists/elon_ceo_2026-10-03.handles.txt`.
+- README, VERSION.md, the user manual, skills, operator prompt and manifest say template v0.2.11 (counts updated).
+- Tests: `tests/test_v0211_lists.py` (the 58 handles and their source, the 4 links and counts, never-list untouched).
+  `tests/test_botslist.py` now expects 452 handles = the eight fixture files; `tests/test_v0210_lists.py` expects at least 394.
+
+
 ## Template v0.2.10 (2026-10-03)
 Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
 gate or calibration changes).

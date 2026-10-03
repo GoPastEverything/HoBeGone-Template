@@ -1,4 +1,4 @@
-# Ho Be Gone @BOT v0.2.0 (template v0.2.9) — LOCAL LIVE TEST checklist
+# Ho Be Gone @BOT v0.2.0 (template v0.2.11) — LOCAL LIVE TEST checklist
 
 This is for the first end-to-end run on the owner's own machine, with the engine at
 the folder HoBeGone-Template was cloned into, and the owner signed in to X in the bot's browser.

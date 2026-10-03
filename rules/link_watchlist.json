@@ -93,6 +93,17 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/ce0elonspacex",
+      "match_type": "exact",
+      "pattern": "t.me/ce0elonspacex",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:Elon CEO (2026-10-03)",
+      "first_seen_handle": "ceoelonspacex_x",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/ce_o_elonmusk",
       "match_type": "exact",
       "pattern": "t.me/ce_o_elonmusk",
@@ -188,6 +199,28 @@
       "kind": "telegram",
       "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
       "first_seen_handle": "elonspact",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/cheifelonreeve",
+      "match_type": "exact",
+      "pattern": "t.me/cheifelonreeve",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:Elon CEO (2026-10-03)",
+      "first_seen_handle": "elonceomrmusk1",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/coeofteslamana",
+      "match_type": "exact",
+      "pattern": "t.me/coeofteslamana",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:Elon CEO (2026-10-03)",
+      "first_seen_handle": "elonravemusk236",
       "added": "2026-10-03"
     },
     {
@@ -980,6 +1013,17 @@
       "kind": "telegram",
       "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
       "first_seen_handle": "el0nspacex5744",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/teslamuskx346",
+      "match_type": "exact",
+      "pattern": "t.me/teslamuskx346",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:Elon CEO (2026-10-03)",
+      "first_seen_handle": "elonceo136",
       "added": "2026-10-03"
     },
     {
