@@ -1,0 +1,7 @@
+# Ho Be Gone: the shared lists are maintainer-only.
+# Only the maintainers update this list. Owners' bots read it and never edit it; to suggest an account, open an issue.
+# Every change to known.botslist (the canonical list of known bot/scam accounts every owner blocks and reports) and to
+# the shared rules/ (link watchlist, impersonation allowlist, base rules) needs review by @GoPastEverything.
+/known.botslist @GoPastEverything
+/rules/ @GoPastEverything
+/.github/CODEOWNERS @GoPastEverything

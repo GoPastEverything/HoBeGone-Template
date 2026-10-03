@@ -1,5 +1,41 @@
 # Changelog
 
+## Template v0.2.4 (2026-10-03)
+known.botslist, maintainer-only shared list, and reporting known bots to X (engine Ho Be Gone @BOT v0.2.0, auto-block
+decision-v0.7.1; no rule, weight, gate or calibration changes).
+- **`known.botslist`** (repo root): the single canonical list of known bot/scam accounts every owner auto-blocks: step
+  one of purging these bots from everyone. Format `hobegone-botslist/1`: a `#` comment header, then one JSON object per
+  account per line, sorted by handle (`handle`, `display_name`, `bio` excerpt, `links`, `source`, `added`, optional
+  `verified`); `removed` + `removed_reason` lines are tombstones; a bare `@handle` line is also accepted. All **242**
+  accounts migrated from `rules/known_scam_accounts.json` (same handles, names, bio excerpts, sources, dates), with each
+  account's links taken from `rules/link_watchlist.json` (155 links on 155 accounts; all 73 watchlist links attached).
+  `rules/known_scam_accounts.json` is removed; the engine reads it only as a read-only fallback when a checkout has no
+  `known.botslist`. `rules/link_watchlist.json` stays as it is and is referenced from the list header.
+- **Maintainer-only**: `.github/CODEOWNERS` makes @GoPastEverything the owner of `known.botslist` and `rules/`. Header
+  in the file, README and new `CONTRIBUTING.md`: "Only the maintainers update this list. Owners' bots read it and never
+  edit it; to suggest an account, open an issue." `known-list ingest` and `known-list remove` now refuse (exit 2)
+  without `--maintainer`; `fis.known_lists.ingest/remove` raise `MaintainerOnly` unless `maintainer=True`. `known-list
+  show` is unchanged for everyone. Owner instances never write the list; keeps/unblocks/reports stay in the instance.
+- **Report known bots**: after a reload-verified block of an account on `known.botslist`, the bot also reports it to X
+  (SPAM, or IMPERSONATION when the listed name/@handle pretends to be Elon Musk / Tesla / SpaceX leadership). Default ON
+  (`REPORT_KNOWN_BOTS` in the instance's `scout_settings.json`), and only for `known.botslist` accounts, never the
+  owner's other blocks; owner-kept/unblocked accounts are never reported. New `fis/reporting.py`, commands
+  `reporting on|off|status` ("stop reporting" / "start reporting"), `report-plan`, `ingest-report-results`; new operator
+  prompt `operator_prompts/report_batch.md` (open profile, `…` > Report, spam or impersonation, submit, REPORTED /
+  REPORT_FAILED; stop at any login, CAPTCHA, rate limit or security check; never click bio links). Outcomes are stored
+  in the instance (`x_reports` table); failures are retried up to 3 times, suspended/missing accounts are not; a stop
+  pauses the job like a block stop. `ingest-enforcement-report` and `daily-plan` point to the report step; the daily
+  summary adds "Also reported N known bot(s)…" when there were reports. `block_batch.md` says not to report there.
+- Skills (getting-started, runbook, manual), `USER_MANUAL.md`, README, BASE_RULES, template card/manifest updated. The
+  manual's audit-only example now reads "Just audit, don't block anything" (so "report" only means reporting to X).
+- `doctor` checks `known.botslist` and `operator_prompts/report_batch.md`.
+- Fix: `scout settings --set KEY=VALUE` (e.g. "turn off scouting") crashed with `unknown settings: ['OWNER_CHANGED']`;
+  the OWNER_CHANGED marker it writes is now accepted.
+- Tests: `tests/test_botslist.py` (list loads 242 handles from known.botslist and is the default source; CODEOWNERS and
+  docs note; owner instance can't write without the maintainer flag, CLI and API; owner keep stays in the instance;
+  reporting default ON for known-list hits only, stop/start, outcomes recorded, retries, security stop). Test sandboxes
+  get an empty `known.botslist` next to their temp rules.
+
 ## Template v0.2.3 (2026-10-03)
 Shared-list data update (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule or weight changes).
 - `rules/known_scam_accounts.json`: now **242** accounts (222 added). Every account from a fuller scroll of the X people

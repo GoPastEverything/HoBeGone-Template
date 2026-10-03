@@ -31,7 +31,7 @@ private message", a Telegram giveaway link) must auto-block for every owner unde
 
 | Rule | File | Blocks when | Layer / pattern |
 |---|---|---|---|
-| Known-scam account list | `known_scam_accounts.json` | the handle is listed | tier KNOWN_SCAM_LIST, layer `known_scam_list` |
+| Known bots list | [`known.botslist`](../known.botslist) (repo root, maintainer-only) | the handle is listed | tier KNOWN_SCAM_LIST, layer `known_scam_list` |
 | Scam-link watchlist, exact Telegram/WhatsApp | `link_watchlist.json` | the profile, website or posts show the same `t.me/…` / `wa.me/…` contact | tier KNOWN_SCAM_LIST, layer `link_watchlist` |
 | Scam-link watchlist, any other match | `link_watchlist.json` | a watchlisted link (exact, prefix of a cut-off link, or a whole listed domain) **plus** an existing lure or impersonation feature (I001–I005, S004, S006, S012, S016), under the section-1 guards | pattern `WATCHLISTED_LINK_PLUS_LURE` |
 | Elon Musk / Tesla / SpaceX name rule | `impersonation_allowlist.json` (allowlist) | the @handle or display name impersonates Elon Musk or Tesla/SpaceX leadership: "elon" + anything (`Elon____`, `ElonMusk_7`, `Elon_Musk`, `iam_elon`, "real elon"), `mrmusk`, "musk" with elon/tesla/spacex/ceo, `teslaceo`, `tesla_ceo`, `spacexceo`, "ceo of tesla", "Elon's assistant/manager/team"… | pattern `ELON_TESLA_NAME_IMPERSONATION` |
@@ -56,8 +56,13 @@ private message", a Telegram giveaway link) must auto-block for every owner unde
   "X Corp and X.Al.") are listed in `PROSE_AUTOLINK_IGNORE` and skipped.
 - Every watchlisted link found on an account is listed in the verdict's `DETAILS`, blocked or not.
 - The lists are re-checked at decision time, so an update applies to accounts that were already audited.
-- Maintain them with `python3 -m fis known-list ingest --accounts FILE.jsonl --source "..."`, `known-list show` and
-  `known-list remove --handle h --reason "..."`; commit and push so every install gets the change.
+- Only the maintainers update these lists (`.github/CODEOWNERS`; see CONTRIBUTING.md):
+  `python3 -m fis known-list ingest --maintainer --accounts FILE.jsonl --source "..."` and
+  `known-list remove --maintainer --handle h --reason "..."`, then commit and push so every install gets the change.
+  `known-list show` is for everyone. Owner instances never write them; an owner's keep stays in their own instance.
+- Reporting (template v0.2.4): after a reload-verified block of an account on `known.botslist`, the owner's bot also
+  reports it to X (spam, or impersonation for fake Elon/Tesla/SpaceX names). Default on, known.botslist accounts only;
+  the owner's other blocks are never reported. "stop reporting" / "start reporting" toggles it (`fis/reporting.py`).
 - None of these rules look at any never-evidence trait (section 3). Digits in a handle are only normalized as look-alike
   letters; they're never a reason on their own.
 

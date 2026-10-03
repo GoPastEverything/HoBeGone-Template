@@ -12,7 +12,7 @@ decision-v0.7.1 auto-block layer), the base rules, operator prompts for a browse
 manual, a test suite and a neutral starter instance. It contains **no owner data**: no follower lists, no reactions and
 no trained model. Every owner starts from zero.
 
-> Status: template v0.2.3 (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1). The license is MIT; see [LICENSE](LICENSE).
+> Status: template v0.2.4 (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1). The license is MIT; see [LICENSE](LICENSE).
 
 ---
 
@@ -22,8 +22,10 @@ no trained model. Every owner starts from zero.
 |---|---|
 | `fis/` | The engine (`python3 -m fis <command>`): evidence store, feature scoring, human-continuity and network analysis, second-pass verifier, the v0.6 decision engine, the v0.7 auto-block tiers (`autoblock.py`), the per-owner model (`owner_model.py`), backtest, Active Scouting (`scout.py`), and the product layer (`hbg.py`, `cli.py`). |
 | `engine.py`, `validator.py`, `feature_registry.json`, `schemas/` | The frozen v0.5 scorer, the second-pass validator, the feature registry (weights and gates) and the JSON schemas. |
-| `rules/` | **Base rules**: [`BASE_RULES.md`](rules/BASE_RULES.md) (scam/impersonation patterns, decision layers, never-evidence list), [`SCORING_RUBRIC.md`](rules/SCORING_RUBRIC.md) and [`FEATURES.md`](rules/FEATURES.md) (generated from the registry), and the **shared lists** every owner uses: `known_scam_accounts.json`, `link_watchlist.json` and `impersonation_allowlist.json`. |
-| `operator_prompts/` | Task prompts for the browser agent that reads X and clicks Block/Unblock: discovery, collection, second pass, block, unblock, notifications scan, light check. |
+| [`known.botslist`](known.botslist) | **The shared list of known bots**: the single canonical list of known bot/scam accounts that every Ho Be Gone owner auto-blocks and reports to X. One account per line (JSON), maintainer-only (see below). |
+| `rules/` | **Base rules**: [`BASE_RULES.md`](rules/BASE_RULES.md) (scam/impersonation patterns, decision layers, never-evidence list), [`SCORING_RUBRIC.md`](rules/SCORING_RUBRIC.md) and [`FEATURES.md`](rules/FEATURES.md) (generated from the registry), and the other **shared lists** every owner uses: `link_watchlist.json` (scam links) and `impersonation_allowlist.json`. |
+| `.github/CODEOWNERS`, [`CONTRIBUTING.md`](CONTRIBUTING.md) | `known.botslist` and `rules/` are owned by @GoPastEverything; how to suggest an account (open an issue). |
+| `operator_prompts/` | Task prompts for the browser agent that reads X and clicks Block/Unblock/Report: discovery, collection, second pass, block, report (known bots only), unblock, notifications scan, light check. |
 | `skills/` | Three agent skills: `ho-be-gone-getting-started` (first conversation), `ho-be-gone-runbook` (every command), `ho-be-gone-manual` (the owner's guide). |
 | `bootstrap.sh`, `BOOTSTRAP.md` | The one-command deploy/update script for every bot (clone or fast-forward, Python check, tests, clean instance, start) and its documentation. |
 | `USER_MANUAL.md` | The plain-language guide that's sent when the owner says "manual" or "help". |
@@ -45,8 +47,8 @@ no trained model. Every owner starts from zero.
 3. **Decide.** The v0.6 decision engine gives KEEP / REVIEW / BLOCK_CANDIDATE / BLOCK_CONFIRMED. On top of it, the
    v0.7 auto-block layer blocks automatically when any tier holds (details in [`rules/BASE_RULES.md`](rules/BASE_RULES.md)):
    - **A. BLOCK_CONFIRMED**: the engine's own verdict after a complete second pass.
-   - **L. Shared known lists** (v0.7.1): the handle is on `rules/known_scam_accounts.json`, or the account shows an exact
-     Telegram/WhatsApp contact from `rules/link_watchlist.json`.
+   - **L. Shared known lists** (v0.7.1): the handle is on [`known.botslist`](known.botslist), or the account shows an
+     exact Telegram/WhatsApp contact from `rules/link_watchlist.json`.
    - **B. Base pattern**: a STRONG scam/impersonation feature (claims to be a real public figure or company; a repeated
      scam/DM-funnel script; a verified malicious link) or the compound *celebrity persona + "message me"/Telegram funnel
      + giveaway/crypto/prize lure*. It also needs readable evidence and no substantial human-continuity evidence.
@@ -60,6 +62,11 @@ no trained model. Every owner starts from zero.
    membership alone, or for any excluded trait.
 4. **Enforce and verify.** The browser agent blocks one account at a time, reloads, and checks that X shows "@handle is
    blocked". Only reload-verified blocks count. Failures go on a retry list.
+   **Report known bots** (template v0.2.4): after a verified block of an account on `known.botslist`, the agent also
+   reports it to X (spam, or impersonation for fake Elon/Tesla/SpaceX names) to help get it suspended
+   (`report-plan` → `operator_prompts/report_batch.md` → `ingest-report-results`; outcomes REPORTED / REPORT_FAILED are
+   stored in the owner's instance). On by default, and only for `known.botslist` accounts: the owner's other blocks are
+   never reported. The owner says "stop reporting" / "start reporting" to toggle it.
 5. **Learn.** The owner's ❌ / "this one was right" and ✅ / "unblock @handle" replies are stored in their instance. The
    owner model is refit (with a new version) when the reactions change.
 
@@ -89,27 +96,42 @@ For an agent: install the three skills from `skills/`. The getting-started skill
 runbook covers every command after that. Both run the bootstrap first, then work from the folder it reports
 (`HOBEGONE_ENGINE`).
 
-### Shared known lists (all owners)
-Ho Be Gone keeps a shared list of known scam accounts and scam links in `rules/`. They ship with the repo, so every
-owner gets them on the next bootstrap. The owner's ✅ keep / "unblock @handle" always wins over every list.
+### known.botslist: the shared list of known bots (all owners)
+[`known.botslist`](known.botslist) is step one of purging these bots from everyone: the single canonical list of known
+bot/scam accounts that every Ho Be Gone owner auto-blocks (tier KNOWN_SCAM_LIST) and, after the block is verified,
+reports to X. It ships with the repo, so every owner gets it on the next bootstrap. Scam links live next to it in
+`rules/link_watchlist.json`. The owner's ✅ keep / "keep @handle" / "unblock @handle" always wins, for that owner only.
+
+**Only the maintainers update this list. Owners' bots read it and never edit it; to suggest an account, open an issue.**
+(<https://github.com/GoPastEverything/HoBeGone-Template/issues>; details in [CONTRIBUTING.md](CONTRIBUTING.md).)
+`.github/CODEOWNERS` makes @GoPastEverything the owner of `known.botslist` and `rules/`. The engine never writes it from
+an owner instance: owners' blocks, keeps, unblocks and reports stay in `instances/<handle>/`.
+
+Format (diff-friendly, readable on GitHub): a `#` comment header, then one account per line as one JSON object, sorted
+by handle: `handle`, `display_name`, `bio` (first 200 characters when listed), `links` (normalized; a trailing `*` marks
+a link X cut off with "…"), `source`, `added`, optional `verified`. A line with `removed` + `removed_reason` is a
+tombstone (not blocked, never re-added). A bare `@handle` line is also accepted.
 
 ```bash
-python3 -m fis known-list ingest --accounts accounts.jsonl --source "x-search:<query> (<date>)"   # lines: {handle, display_name, bio, verified, links[]}
-python3 -m fis known-list show
-python3 -m fis known-list remove --handle someone --reason "real person, listed by mistake"
+python3 -m fis known-list show                                                  # anyone
+# maintainers only (Jay and his maintainer bot), in the maintainer's own checkout; then commit + push known.botslist:
+python3 -m fis known-list ingest --maintainer --accounts accounts.jsonl --source "x-search:<query> (<date>)"   # lines: {handle, display_name, bio, verified, links[]}
+python3 -m fis known-list remove --maintainer --handle someone --reason "real person, listed by mistake"
 ```
 
-`ingest` dedupes, keeps the first 200 characters of each bio as evidence, skips allowlisted handles, and adds every link
-from `links[]` and the bio. X splits links over lines and cuts them off with "…": those pieces are joined, and a cut-off
-link is stored as a prefix entry (`match_type: "prefix"`, e.g. `t.me/elon_reeve_mus*`). Links are normalized (lowercase
-host, no `www.`, no http/https, no trailing slash, tracking parameters removed, Telegram paths lowercased, a leading `@`
-in `t.me/@name` dropped). Labels such as "Parody account" are not links and are dropped; words X auto-linked inside a
-sentence (`PROSE_AUTOLINK_IGNORE`, e.g. "fit in.Here") and official domains (`NEVER_WATCHLIST_DOMAINS`) are skipped.
-Commit and push the changed `rules/*.json` so every install picks them up.
+Without `--maintainer`, `ingest` and `remove` refuse (exit 2) and point to the issue tracker. `ingest` dedupes, keeps the
+first 200 characters of each bio, skips allowlisted handles, records each account's links, and adds every link from
+`links[]` and the bio to the watchlist. X splits links over lines and cuts them off with "…": those pieces are joined,
+and a cut-off link is stored as a prefix entry (`match_type: "prefix"`, e.g. `t.me/elon_reeve_mus*`). Links are
+normalized (lowercase host, no `www.`, no http/https, no trailing slash, tracking parameters removed, Telegram paths
+lowercased, a leading `@` in `t.me/@name` dropped). Labels such as "Parody account" are not links and are dropped; words
+X auto-linked inside a sentence (`PROSE_AUTOLINK_IGNORE`, e.g. "fit in.Here") and official domains
+(`NEVER_WATCHLIST_DOMAINS`) are skipped.
 
-Current lists (template v0.2.3): **242 known scam accounts** and **73 watchlisted links (33 exact, 40 prefix)**, all
-from the X people search "Kindly Send Me A Follow Request" (collected 2026-10-03). `python3 -m fis known-list show`
-prints the live counts.
+Current lists (template v0.2.4): **242 known bots** in `known.botslist` and **73 watchlisted links (33 exact, 40
+prefix)**, all from the X people search "Kindly Send Me A Follow Request" (collected 2026-10-03). `python3 -m fis
+known-list show` prints the live counts. (Template ≤ v0.2.3 kept the accounts in `rules/known_scam_accounts.json`; that
+file is gone, and the engine reads it only as a fallback if a checkout has no `known.botslist`.)
 
 ### Optional owner-specific rules
 By default there are **no** owner-specific rules. The Elon Musk / Tesla / SpaceX **name** rule is now a shared base rule
@@ -138,6 +160,8 @@ for your own names. Policy patterns only ever count inside the instance that def
 | "pause" / "resume" | Stops / restarts all blocking. | `pause` / `resume` |
 | "review with me" / "just audit" | Switches mode (only on your words). | `set-mode --owner-words "..."` |
 | "turn off scouting" | Stops checking accounts that interact with your posts. | `scout settings --set ACTIVE_SCOUTING_ENABLED=false` |
+| "stop reporting" / "start reporting" | Stops / restarts reporting known bots (known.botslist) to X after blocking them. They're still blocked. | `reporting off` / `reporting on` |
+| "keep @h" for a known bot | Keeps it for you only (never blocked or reported for you); known.botslist doesn't change. | `adjudicate --reaction ✅` |
 
 Security stops: on a login page, CAPTCHA, 2FA/passkey prompt, rate limit, automation warning or account lock, the bot stops
 immediately and hands you the browser. It never bypasses a check.

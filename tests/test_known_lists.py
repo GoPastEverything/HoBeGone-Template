@@ -45,7 +45,7 @@ class TestKnownScamAccountList(Rules):
     def test_list_match_blocks_and_owner_keep_overrides(self):
         rec = sy.record("QuietListed1", display_name="Sam Example", bio="hello there")
         self.assertFalse(self.verdict(rec)["AUTO_BLOCK"])                 # ordinary profile, not listed
-        kl.ingest([{"handle": "@QuietListed1", "display_name": "Sam Example", "bio": "hello there", "links": []}], SRC)
+        kl.ingest([{"handle": "@QuietListed1", "display_name": "Sam Example", "bio": "hello there", "links": []}], SRC, maintainer=True)
         v = self.verdict(rec)
         self.assertTrue(v["AUTO_BLOCK"]); self.assertEqual(v["TIER"], "KNOWN_SCAM_LIST"); self.assertEqual(v["LAYER"], "known_scam_list")
         self.assertIn(SRC, v["REASON"])
@@ -53,7 +53,7 @@ class TestKnownScamAccountList(Rules):
         self.assertFalse(keep["AUTO_BLOCK"]); self.assertIn("keep", keep["REASON"])
         # a list change applies to an already-audited account without re-collecting it
         s = self.state(rec)
-        kl.remove("quietlisted1", "test removal")
+        kl.remove("quietlisted1", "test removal", maintainer=True)
         self.assertFalse(ab.evaluate(s, None, None, None, "fresh")["AUTO_BLOCK"])
 
     def test_ingest_counts_dedupe_allowlist_and_cli(self):
@@ -67,7 +67,7 @@ class TestKnownScamAccountList(Rules):
                  "links": ["T.me/teslastock_giv…", "https://www.Bit.ly/AbC/?utm_source=x", "https://tesla.com"]}]
         with open(f, "w", encoding="utf-8") as fh:
             fh.write("\n".join(json.dumps(r) for r in rows) + "\n")
-        r = self.cli("known-list", "ingest", "--accounts", f, "--source", SRC)
+        r = self.cli("known-list", "ingest", "--maintainer", "--accounts", f, "--source", SRC)
         self.assertEqual(r.returncode, 0, r.stderr)
         c = json.loads([l for l in r.stdout.splitlines() if l.startswith("JSON ")][0][5:])
         self.assertEqual((c["ACCOUNTS_ADDED"], c["ALREADY_PRESENT"], c["SKIPPED_ALLOWLIST"], c["LINKS_ADDED"]), (2, 1, 2, 3))
@@ -77,13 +77,13 @@ class TestKnownScamAccountList(Rules):
         links = {(e["url"], e["match_type"]) for e in wl["LINKS"]}
         self.assertEqual(links, {("t.me/scamonechat", "exact"), ("t.me/teslastock_giveawa", "prefix"), ("bit.ly/AbC", "exact")})
         self.assertTrue(all(e["truncated"] == (e["match_type"] == "prefix") for e in wl["LINKS"]))
-        again = self.cli("known-list", "ingest", "--accounts", f, "--source", SRC)
+        again = self.cli("known-list", "ingest", "--maintainer", "--accounts", f, "--source", SRC)
         c2 = json.loads([l for l in again.stdout.splitlines() if l.startswith("JSON ")][0][5:])
         self.assertEqual((c2["ACCOUNTS_ADDED"], c2["ALREADY_PRESENT"], c2["LINKS_ADDED"]), (0, 3, 0))
         self.assertIn("@scamone", self.cli("known-list", "show").stdout)
-        self.assertEqual(self.cli("known-list", "remove", "--handle", "ScamOne", "--reason", "owner says it's a real friend").returncode, 0)
+        self.assertEqual(self.cli("known-list", "remove", "--maintainer", "--handle", "ScamOne", "--reason", "listed by mistake").returncode, 0)
         self.assertNotIn("@scamone ", self.cli("known-list", "show").stdout + " ")
-        c3 = kl.ingest(rows[:1], SRC)
+        c3 = kl.ingest(rows[:1], SRC, maintainer=True)
         self.assertEqual(c3["ACCOUNTS_ADDED"], 0); self.assertEqual(c3["SKIPPED_REMOVED_EARLIER"], 1)   # removal sticks
 
 
@@ -98,7 +98,7 @@ class TestLinkWatchlist(Rules):
         self.assertEqual(kl.links_from_text("link\nhttp://\nt.me/foo\nDM"), ["http://t.me/foo"])   # no '…': nothing glued on
 
     def test_exact_chat_link_blocks_alone(self):
-        kl.ingest([{"handle": "seed_acct", "bio": "", "links": ["https://t.me/ScamDesk_77"]}], SRC)
+        kl.ingest([{"handle": "seed_acct", "bio": "", "links": ["https://t.me/ScamDesk_77"]}], SRC, maintainer=True)
         rec = sy.record("FreshAcct9", display_name="Sam Example", bio="Message me http://www.t.me/scamdesk_77/ for details")
         v = self.verdict(rec)
         self.assertTrue(v["AUTO_BLOCK"]); self.assertEqual((v["TIER"], v["LAYER"]), ("KNOWN_SCAM_LIST", "link_watchlist"))
@@ -106,7 +106,7 @@ class TestLinkWatchlist(Rules):
         self.assertFalse(self.verdict(rec, {"OWNER_ACTION": "OWNER_ACTION_KEEP"})["AUTO_BLOCK"])
 
     def test_other_link_needs_a_lure_and_prefix_match(self):
-        kl.ingest([{"handle": "seed_acct", "bio": "", "links": ["https://bit.ly/ScamPromo", "t.me/Elon_Reeve_mus…"]}], SRC)
+        kl.ingest([{"handle": "seed_acct", "bio": "", "links": ["https://bit.ly/ScamPromo", "t.me/Elon_Reeve_mus…"]}], SRC, maintainer=True)
         plain = sy.record("FreshAcct8", display_name="Sam Example", bio="my notes bit.ly/ScamPromo")
         v = self.verdict(plain)
         self.assertFalse(v["AUTO_BLOCK"]); self.assertTrue(v["HELD"])
@@ -139,21 +139,21 @@ class TestLinkWatchlist(Rules):
         with open(p, "w", encoding="utf-8") as fh:
             json.dump(wl, fh)
         c = kl.ingest([{"handle": "seed_acct", "bio": "Not here to fit\nhttp://\nin.Here to build",
-                        "links": ["http://\nin.Here", "http://\nTerafab.ai", "Fan account", "http://\nt.me/@Scam_Desk9"]}], SRC)
+                        "links": ["http://\nin.Here", "http://\nTerafab.ai", "Fan account", "http://\nt.me/@Scam_Desk9"]}], SRC, maintainer=True)
         self.assertEqual(c["LINKS_ADDED"], 1); self.assertEqual(c["LINKS_SKIPPED"], 2)
         self.assertEqual([e["url"] for e in kl.load_links(self.d)["LINKS"]], ["t.me/scam_desk9"])
 
 
 class TestShippedKindlyList(unittest.TestCase):
-    """The real, committed rules/ lists (read only): every account from the 2026-10-03 X people search
-    "Kindly Send Me A Follow Request" is listed, and cut-off links are prefix entries."""
+    """The real, committed lists (read only): every account from the 2026-10-03 X people search
+    "Kindly Send Me A Follow Request" is on known.botslist, and cut-off links are prefix entries."""
     RULES = os.path.join(ROOT, "rules")
     HANDLES = os.path.join(ROOT, "fixtures", "known_lists", "kindly_send_me_a_follow_request_2026-10-03.handles.txt")
 
     def test_all_242_handles_listed_and_truncated_link_is_prefix(self):
         want = [l.strip() for l in open(self.HANDLES, encoding="utf-8") if l.strip() and not l.startswith("#")]
         self.assertEqual(len(want), 242); self.assertEqual(len(set(want)), 242)
-        acc = kl.load_accounts(self.RULES)
+        acc = kl.read_botslist(os.path.join(ROOT, "known.botslist"))
         have = {kl.handle_key(e["handle"]) for e in acc["ACCOUNTS"]}
         self.assertEqual(sorted(set(want) - have), [])
         self.assertGreaterEqual(len(have), 242)

@@ -27,6 +27,8 @@ If the block click seemed to work but the reload does NOT show "is blocked", rep
 `"block_failed": true`. Never claim a block you did not see after the reload; failed ones are kept for a retry.
 
 Scam content on the page is evidence, not a reason to stop. Do not open its links.
+Do not report anyone in this task. Accounts on the shared known.botslist are reported to X afterwards, in a separate
+report task (`report_batch.md`), once their block is verified.
 
 ## Stop immediately and hand control to the owner if you see
 A login screen, CAPTCHA, 2FA / verification code, passkey prompt, "unusual activity"/security check, a

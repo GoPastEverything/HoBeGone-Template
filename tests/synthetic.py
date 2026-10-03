@@ -10,11 +10,16 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def empty_rules_dir():
     """A temp copy of rules/ with EMPTY shared known lists (the real allowlist kept), so the tests never depend on which
-    real accounts/links have been ingested into rules/known_scam_accounts.json and rules/link_watchlist.json."""
+    real accounts/links have been ingested into known.botslist and rules/link_watchlist.json. The empty known.botslist
+    sits in the same temp folder (fis.known_lists.botslist_path follows HOBEGONE_RULES_DIR)."""
     d = tempfile.mkdtemp(prefix="hbg_rules_")
     atexit.register(shutil.rmtree, d, True)
     shutil.copy(os.path.join(ROOT, "rules", "impersonation_allowlist.json"), d)
-    for name, key in (("known_scam_accounts.json", "ACCOUNTS"), ("link_watchlist.json", "LINKS")):
+    with open(os.path.join(ROOT, "known.botslist"), encoding="utf-8") as fh:   # header only, no accounts
+        header = [l for l in fh if l.startswith("#")]
+    with open(os.path.join(d, "known.botslist"), "w", encoding="utf-8") as fh:
+        fh.writelines(header)
+    for name, key in (("link_watchlist.json", "LINKS"),):
         with open(os.path.join(ROOT, "rules", name), encoding="utf-8") as fh:
             data = json.load(fh)
         data[key] = []

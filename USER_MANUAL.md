@@ -1,4 +1,4 @@
-# Ho Be Gone — User Manual (v0.2.0, template v0.2.3)
+# Ho Be Gone — User Manual (v0.2.0, template v0.2.4)
 
 ## QUICK START
 1. Make sure you're signed in to X in the bot's browser. That's all the setup there is.
@@ -24,18 +24,26 @@ about are put on a quiet "held for later" list and left alone.
   touched by this rule. Calling itself a "parody account" doesn't get an impersonator off the hook.
 - Accounts whose name or bio says "Kindly send me a follow request" and then pushes you to Telegram, WhatsApp, a DM,
   "click the link" or "claim your prize".
-- Accounts on Ho Be Gone's shared list of known scam accounts, and accounts that use a known scam link (see below).
+- Accounts on known.botslist, Ho Be Gone's shared list of known bots, and accounts that use a known scam link (see below).
 - Accounts that look just like the ones **you** have blocked before (once you've given it enough examples; see below).
 - Anyone you tell it to block.
 
-## The shared scam lists
-Ho Be Gone also keeps a shared list of known scam accounts and scam links (mostly Telegram and WhatsApp contacts and
-short links that scammers use). Every Ho Be Gone user gets the same lists, and they update on their own.
-- An account on the known-scam list is blocked for you too, even if you never saw it before.
-- An account that shows a known scam Telegram or WhatsApp contact is blocked. Other known scam links count when the
+## The shared list of known bots (known.botslist)
+Ho Be Gone keeps a shared list of known bots called known.botslist. Every owner blocks and reports them automatically.
+Only the Ho Be Gone maintainers add to it; say "keep @handle" to keep one for yourself.
+- A known bot is blocked for you as soon as Ho Be Gone finds it among your followers or the accounts that interact
+  with your posts, even if you never noticed it yourself.
+- **Reporting:** once X confirms the block, Ho Be Gone also reports that known bot to X (as spam, or as impersonation
+  when it pretends to be someone famous), to help get it suspended. It only reports accounts on known.botslist, never
+  the other accounts it blocks for you. Say **"stop reporting"** to turn this off (known bots are still blocked) and
+  **"start reporting"** to turn it back on.
+- There's also a shared list of scam links (mostly Telegram and WhatsApp contacts and short links that scammers use).
+  An account that shows a known scam Telegram or WhatsApp contact is blocked. Other known scam links count when the
   account is also pushing a prize, giveaway, investment or a fake famous name.
-- **You always win:** if you say "keep @handle" or "unblock @handle", that account stays, whatever the lists say.
-  Only your own choice changes your account; it never changes the lists for anyone else.
+- Every Ho Be Gone user gets the same lists, and they update on their own. Your bot only reads them; it never
+  changes them.
+- **You always win:** if you say "keep @handle" or "unblock @handle", that account stays for you (never blocked or
+  reported for you), whatever the lists say. Your choice never changes the lists for anyone else.
 
 ## What it never blocks on
 It never blocks someone just because of their politics, religion, nationality, race, gender, the language they
@@ -71,6 +79,7 @@ page afterwards to make sure X shows it's unblocked, and won't block that accoun
 Ho Be Gone — daily summary: blocked 2 account(s)
 • @FakeElonGiveaway — uses a public figure's name or look + pushes people to DM it + crypto giveaway pitch
 • @PrizeDesk_2211 — sends the same scam script to many people
+Also reported 1 known bot(s) from the shared known.botslist to X.
 Reply "unblock @handle" to undo any of these.
 ```
 On days when nothing was blocked and nothing went wrong, you get no message.
@@ -78,12 +87,13 @@ On days when nothing was blocked and nothing went wrong, you get no message.
 ## Changing how it works
 Just say it in your own words:
 - "Let me review them first" — it sends you each suspicious account and only blocks the ones you say to.
-- "Just report, don't block anything" — audit only; nothing is blocked.
+- "Just audit, don't block anything" — audit only; nothing is blocked (or reported).
+- "Stop reporting" / "start reporting" — stop or restart reporting known bots to X (they're still blocked).
 - "Go back to automatic" — back to the default.
 
 ## Security stops
 If X shows a login screen, a CAPTCHA, a code check, a security warning or a rate limit, Ho Be Gone stops right
-away and asks you to take over the browser. **It will never ask for your password, codes or any login details** —
+away (whether it was blocking or reporting) and asks you to take over the browser. **It will never ask for your password, codes or any login details** —
 if something asks you for those in its name, don't give them. When you've cleared the check, tell it to continue.
 
 ## Privacy
@@ -102,8 +112,16 @@ blocked?" for more detail.
 **How do I turn off scouting (checking people who interact with my posts)?** Say "turn off scouting". Say "turn
 on scouting" to bring it back.
 
-**What's on the shared scam lists?** Ask "show the known scam list". If someone you know is on it by mistake, say
-"keep @handle" (it stays for you right away) and tell the Ho Be Gone maintainers so it can be taken off for everyone.
+**What's on known.botslist?** Ask "show the known bots list". If someone you know is on it by mistake, say
+"keep @handle" (it stays for you right away, and it won't be reported for you) and tell the Ho Be Gone maintainers
+so it can be taken off for everyone.
+
+**Can I add an account to known.botslist?** Only the Ho Be Gone maintainers add to it. To suggest one, open an issue
+on Ho Be Gone's GitHub page (github.com/GoPastEverything/HoBeGone-Template/issues), or say "block @handle" to block it
+just for you.
+
+**Does Ho Be Gone report accounts to X?** Only the known bots on known.botslist, right after it has blocked them. Say
+"stop reporting" to turn that off and "start reporting" to turn it back on.
 
 **Can I see everything it blocked?** Yes — say "show my blocked list". To see the borderline ones, say "show held
 for later".

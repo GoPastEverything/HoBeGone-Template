@@ -1,11 +1,19 @@
-"""decision-v0.7.1 shared known lists (every owner): known scam accounts, a known scam-link watchlist and the
-Elon Musk / Tesla / SpaceX leadership name-impersonation rule.
+"""Shared known lists (every owner): known.botslist (the canonical list of known bot/scam accounts), a known scam-link
+watchlist and the Elon Musk / Tesla / SpaceX leadership name-impersonation rule.
 
-Files (editable, committed, shipped to every owner by bootstrap.sh):
-  rules/known_scam_accounts.json     handles that are auto-blocked for everyone (layer "known_scam_list")
+Files (committed, shipped to every owner by bootstrap.sh; MAINTAINER-ONLY, owners' bots only read them):
+  known.botslist                     (repo root, template v0.2.4) the single canonical list of known bot/scam accounts.
+                                     Every owner auto-blocks them (layer "known_scam_list") and, unless the owner said
+                                     "stop reporting", reports them to X after the block is verified (fis/reporting.py).
+                                     Format: '#' comment header + one JSON object per account per line, sorted by handle.
   rules/link_watchlist.json          normalized scam links (t.me/..., wa.me/..., bit.ly/..., scam domains)
   rules/impersonation_allowlist.json handles the name rule never matches (the real @elonmusk, the labelled parody
                                      @ElonMuskAOC) + words that are never read as "elon" (elongated, melon, felon...)
+  rules/known_scam_accounts.json     (template <= v0.2.3) read only as a fallback when no known.botslist exists
+
+Only the maintainers update known.botslist and the link watchlist: ingest() and remove() refuse unless called with
+maintainer=True (CLI: `known-list ingest|remove --maintainer`). Nothing an owner instance does (runs, blocks, keeps,
+unblocks, reports) writes to them; an owner's ✅ keep / "unblock" stays in that owner's instance.
 
 Matching is done again at decision time against the current files, so a list update applies to accounts that were
 already audited without re-collecting them. The owner's ✅ keep / "unblock" always wins over every list (autoblock.py).
@@ -19,14 +27,37 @@ from urllib.parse import parse_qsl, urlencode
 from .evidence_store import now
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ACCOUNTS_FILE = "known_scam_accounts.json"
+BOTSLIST_FILE = "known.botslist"
+LEGACY_ACCOUNTS_FILE = "known_scam_accounts.json"   # template <= v0.2.3; read-only fallback
 LINKS_FILE = "link_watchlist.json"
 ALLOW_FILE = "impersonation_allowlist.json"
 NAME_RULE_ID = "ELON_TESLA_NAME_IMPERSONATION"
+ISSUES_URL = "https://github.com/GoPastEverything/HoBeGone-Template/issues"
+MAINTAINER_ONLY = ("Only the Ho Be Gone maintainers update known.botslist. Owners' bots read it and never edit it; "
+                   f"to suggest an account, open an issue: {ISSUES_URL}")
+
+
+class MaintainerOnly(PermissionError):
+    """Raised when something other than a maintainer run tries to change known.botslist or the link watchlist."""
+
+
+def _require_maintainer(maintainer):
+    if maintainer is not True:
+        raise MaintainerOnly(MAINTAINER_ONLY)
 
 
 def rules_dir(override=None):
     return override or os.environ.get("HOBEGONE_RULES_DIR") or os.path.join(ROOT, "rules")
+
+
+def botslist_path(override=None):
+    """known.botslist: $HOBEGONE_BOTSLIST, else <rules dir>/known.botslist when the rules dir is overridden (test and
+    maintainer sandboxes keep every list in one folder), else the repo root."""
+    if os.environ.get("HOBEGONE_BOTSLIST"):
+        return os.environ["HOBEGONE_BOTSLIST"]
+    if override or os.environ.get("HOBEGONE_RULES_DIR"):
+        return os.path.join(rules_dir(override), BOTSLIST_FILE)
+    return os.path.join(ROOT, BOTSLIST_FILE)
 
 
 def _load(name, override=None, default=None):
@@ -45,8 +76,132 @@ def _save(name, data, override=None):
     os.replace(tmp, p)
 
 
+# ---------------------------------------------------------------- known.botslist (read: everyone; write: maintainers)
+BOTSLIST_FORMAT = "hobegone-botslist/1"
+BOTSLIST_KEYS = ("handle", "display_name", "bio", "links", "source", "added", "verified", "reason")
+TOMBSTONE_KEYS = ("handle", "removed", "removed_reason", "display_name", "bio", "links", "source", "added")
+BOTSLIST_HEADER = f"""# known.botslist: Ho Be Gone's shared list of known bot/scam accounts ({BOTSLIST_FORMAT})
+#
+# Only the maintainers update this list. Owners' bots read it and never edit it; to suggest an account, open an issue:
+#   {ISSUES_URL}
+#
+# Step one of purging these bots from everyone: every Ho Be Gone owner auto-blocks the accounts below and (unless that
+# owner said "stop reporting") reports them to X after the block is verified. An owner who says "keep @handle" keeps
+# that account for themselves only; that never changes this file.
+#
+# Format: lines starting with # are comments. Every other line is one account, as one JSON object, sorted by handle:
+#   handle        X handle, lowercase, without the @
+#   display_name  display name when it was listed
+#   bio           first 200 characters of the bio when it was listed (evidence only; its links are never opened)
+#   links         links the account showed, normalized; a trailing * marks a link X cut off with "…" (prefix match)
+#   source        where it was found;  added: date added (YYYY-MM-DD);  verified: X badge when listed (true/false/null)
+# A line with "removed" + "removed_reason" is a tombstone: never blocked, and never re-added by a later ingest.
+# A bare handle on its own line (e.g. "@someone") is also read as an entry.
+# Scam links are matched from rules/link_watchlist.json (maintainer-only too).
+# Maintainers: python3 -m fis known-list ingest|remove --maintainer ...  (CONTRIBUTING.md). CODEOWNERS: @GoPastEverything
+"""
+
+
+def default_reason(source):
+    return f"known scam account (found via {source})"
+
+
+def parse_botslist(text, path="known.botslist"):
+    """-> {"ACCOUNTS": [...], "REMOVED": [...], "UPDATED": date or None}. Account dicts carry the file's fields plus the
+    engine's names: evidence (= bio) and reason (default derived from source)."""
+    accounts, removed, updated = [], [], None
+    for n, raw in enumerate(text.splitlines(), 1):
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            m = re.search(r"updated:\s*(\d{4}-\d{2}-\d{2})", line)
+            if m:
+                updated = m.group(1)
+            continue
+        if line.startswith("{"):
+            try:
+                e = json.loads(line)
+            except ValueError as ex:
+                raise ValueError(f"{path}:{n}: not valid JSON ({ex})")
+        elif re.fullmatch(r"@?[A-Za-z0-9_]{1,15}", line):
+            e = {"handle": line}
+        else:
+            raise ValueError(f"{path}:{n}: expected a JSON object or a bare @handle")
+        if not isinstance(e, dict) or not e.get("handle"):
+            raise ValueError(f"{path}:{n}: entry has no handle")
+        e["handle"] = handle_key(e["handle"])
+        if e.get("removed"):
+            removed.append({"handle": e["handle"], "reason": e.get("removed_reason", ""), "removed": e["removed"],
+                            "entry": {k: v for k, v in e.items() if k not in ("removed", "removed_reason")}})
+            continue
+        e.setdefault("display_name", ""); e.setdefault("bio", ""); e.setdefault("links", [])
+        e.setdefault("source", "known.botslist"); e.setdefault("added", None)
+        e["evidence"] = e.get("bio") or ""
+        e["reason"] = e.get("reason") or default_reason(e["source"])
+        accounts.append(e)
+    return {"ACCOUNTS": accounts, "REMOVED": removed, "UPDATED": updated}
+
+
+def _entry_line(e, keys=BOTSLIST_KEYS):
+    out = {}
+    for k in keys:
+        if k == "bio":
+            v = e.get("bio", e.get("evidence"))
+        else:
+            v = e.get(k)
+        if k == "reason" and (not v or v == default_reason(e.get("source"))):
+            continue
+        if k in ("verified", "reason", "removed_reason", "removed") and v is None:
+            continue
+        out[k] = v if v is not None else ("" if k in ("display_name", "bio") else ([] if k == "links" else v))
+    return json.dumps(out, ensure_ascii=False)
+
+
+def render_botslist(acc):
+    accs = sorted(acc.get("ACCOUNTS", []), key=lambda e: handle_key(e["handle"]))
+    rem = sorted(acc.get("REMOVED", []), key=lambda e: handle_key(e["handle"]))
+    lines = [BOTSLIST_HEADER.rstrip("\n"), f"# accounts: {len(accs)} · removed: {len(rem)} · updated: {acc.get('UPDATED') or now()[:10]}", "#"]
+    lines += [_entry_line(e) for e in accs]
+    if rem:
+        lines += ["#", "# Removed (tombstones: not blocked, never re-added by a later ingest)"]
+        for r in rem:
+            ent = dict(r.get("entry") or {}, handle=r["handle"], removed=r.get("removed"), removed_reason=r.get("reason", ""))
+            lines.append(_entry_line(ent, TOMBSTONE_KEYS))
+    return "\n".join(lines) + "\n"
+
+
+def _save_botslist(acc, d=None, maintainer=False):
+    _require_maintainer(maintainer)
+    p = botslist_path(d)
+    tmp = p + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        fh.write(render_botslist(acc))
+    os.replace(tmp, p)
+
+
+def read_botslist(path):
+    with open(path, encoding="utf-8") as fh:
+        out = parse_botslist(fh.read(), path)
+    out["PATH"] = path
+    return out
+
+
 def load_accounts(d=None):
-    return _load(ACCOUNTS_FILE, d, {"ACCOUNTS": [], "REMOVED": []})
+    """Known bot/scam accounts from known.botslist (fallback: a legacy rules/known_scam_accounts.json, read-only)."""
+    p = botslist_path(d)
+    if os.path.exists(p):
+        return read_botslist(p)
+    legacy = _load(LEGACY_ACCOUNTS_FILE, d, {"ACCOUNTS": [], "REMOVED": []})
+    for e in legacy.get("ACCOUNTS", []):
+        e.setdefault("bio", e.get("evidence", "")); e.setdefault("links", [])
+    legacy["PATH"] = os.path.join(rules_dir(d), LEGACY_ACCOUNTS_FILE) if legacy.get("ACCOUNTS") or legacy.get("REMOVED") else p
+    return legacy
+
+
+def known_bot(handle, d=None, acc=None):
+    """The known.botslist entry for this handle (None if not listed)."""
+    acc = acc if acc is not None else load_accounts(d)
+    hk = handle_key(handle)
+    return next((e for e in acc.get("ACCOUNTS", []) if handle_key(e.get("handle")) == hk), None)
 
 
 def load_links(d=None):
@@ -349,13 +504,13 @@ def check(handle, fct, d=None):
     fct = fct or {}
     acc = load_accounts(d); wl = load_links(d); allow = load_allowlist(d)
     hk = handle_key(handle)
-    entry = next((e for e in acc.get("ACCOUNTS", []) if handle_key(e.get("handle")) == hk), None)
+    entry = known_bot(hk, acc=acc)
     is_allow = allowlisted(handle, allow=allow)
     links = link_matches(fct.get("LINKS") or [], wl=wl)
     name = name_impersonation(handle, fct.get("DISPLAY_NAME"), allow=allow)
     phrase = None if is_allow else phrase_rule(fct.get("DISPLAY_NAME"), fct.get("BIO"), fct.get("LINKS"))
     return {"PHRASE_RULE": phrase, "KNOWN_SCAM_ACCOUNT": None if (entry is None or is_allow) else
-            {k: entry.get(k) for k in ("handle", "reason", "source", "added", "evidence")},
+            {k: entry.get(k) for k in ("handle", "reason", "source", "added", "evidence", "links")},
             "LINK_MATCHES": links, "EXACT_CHAT_LINK": any(h["EXACT_CHAT_HANDLE"] for h in links),
             "NAME_IMPERSONATION": name, "ALLOWLISTED": is_allow}
 
@@ -371,9 +526,11 @@ def check_state(state, d=None):
 
 
 # ---------------------------------------------------------------- list maintenance (CLI)
-def ingest(rows, source, d=None, reason=None, today=None):
-    """Add every account + link from JSONL rows {handle, display_name, bio, verified, links[]}. Deduped; allowlisted
+def ingest(rows, source, d=None, reason=None, today=None, maintainer=False):
+    """MAINTAINERS ONLY (maintainer=True; CLI `known-list ingest --maintainer`). Add every account + link from JSONL rows
+    {handle, display_name, bio, verified, links[]} to known.botslist and rules/link_watchlist.json. Deduped; allowlisted
     handles and their links skipped; handles removed earlier (known-list remove) are not re-added."""
+    _require_maintainer(maintainer)
     acc = load_accounts(d); wl = load_links(d); allow = load_allowlist(d)
     today = today or now()[:10]
     have = {handle_key(e["handle"]) for e in acc.setdefault("ACCOUNTS", [])}
@@ -394,11 +551,13 @@ def ingest(rows, source, d=None, reason=None, today=None):
             c["SKIPPED_REMOVED_EARLIER"] += 1
         elif h in have:
             c["ALREADY_PRESENT"] += 1
-        else:
+        new_entry = None
+        if h not in removed and h not in have:
             bio = " ".join(str(r.get("bio") or "").split())
-            acc["ACCOUNTS"].append({"handle": h, "display_name": r.get("display_name") or "",
-                                    "reason": reason or f"known scam account (found via {source})", "source": source,
-                                    "added": today, "evidence": bio[:200], "verified": r.get("verified")})
+            new_entry = {"handle": h, "display_name": r.get("display_name") or "", "bio": bio[:200], "links": [],
+                         "source": source, "added": today, "verified": r.get("verified"),
+                         "reason": reason or default_reason(source)}
+            acc["ACCOUNTS"].append(new_entry)
             have.add(h); c["ACCOUNTS_ADDED"] += 1
         cands = [normalize_url(link_field(x)) for x in r.get("links") or []] + \
                 [normalize_url(x) for x in links_from_text(r.get("bio") or "")]
@@ -407,6 +566,8 @@ def ingest(rows, source, d=None, reason=None, today=None):
                     or ("/" not in n["url"] and "?" not in n["url"] and (n["truncated"] or n["domain"] in no_domain_only)) \
                     or (n["truncated"] and len(_path(n["url"])) < MIN_PREFIX_PATH):
                 c["LINKS_SKIPPED"] += 1; continue
+            if new_entry is not None:
+                new_entry["links"].append(n["url"] + ("*" if n["truncated"] else ""))
             key = (n["url"], n["match_type"])
             if key in urls:
                 c["LINKS_ALREADY_PRESENT"] += 1; continue
@@ -416,11 +577,15 @@ def ingest(rows, source, d=None, reason=None, today=None):
             urls.add(key); c["LINKS_ADDED"] += 1
     acc["ACCOUNTS"].sort(key=lambda e: e["handle"]); wl["LINKS"].sort(key=lambda e: (e["url"], e.get("match_type", "exact")))
     acc["UPDATED"] = wl["UPDATED"] = today
-    _save(ACCOUNTS_FILE, acc, d); _save(LINKS_FILE, wl, d)
+    _save_botslist(acc, d, maintainer=maintainer); _save(LINKS_FILE, wl, d)
     return c
 
 
-def remove(handle, reason, d=None, today=None):
+def remove(handle, reason, d=None, today=None, maintainer=False):
+    """MAINTAINERS ONLY (CLI `known-list remove --maintainer`): take a handle off known.botslist for everyone; a tombstone
+    line keeps a later ingest from re-adding it. An owner who wants to keep one account says "keep @handle" instead
+    (stored in their own instance only)."""
+    _require_maintainer(maintainer)
     acc = load_accounts(d)
     hk = handle_key(handle)
     keep = [e for e in acc.get("ACCOUNTS", []) if handle_key(e["handle"]) != hk]
@@ -430,5 +595,5 @@ def remove(handle, reason, d=None, today=None):
     acc["ACCOUNTS"] = keep
     acc.setdefault("REMOVED", []).append({"handle": hk, "reason": reason, "removed": today or now()[:10], "entry": gone[0]})
     acc["UPDATED"] = today or now()[:10]
-    _save(ACCOUNTS_FILE, acc, d)
+    _save_botslist(acc, d, maintainer=maintainer)
     return gone[0]

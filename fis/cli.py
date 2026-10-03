@@ -7,7 +7,7 @@ clicking) is done by a browser operator following operator_prompts/*.md; these c
 import argparse, glob, json, os, shutil, sys
 
 from .versions import ROOT, versions, HO_BE_GONE_DISPLAY, TEMPLATE_VERSION
-from . import hbg, scout, autoblock as ab, owner_model as om, backtest as bt, known_lists as kl
+from . import hbg, scout, autoblock as ab, owner_model as om, backtest as bt, known_lists as kl, reporting as rpt
 from . import (adjudication as adjm, calibration as cal, checkpoint as ck, enforcement as enfm, evidence_store as es,
                export, metrics, owner_policy as op, pipeline, schema, second_pass as sp2)
 
@@ -385,6 +385,54 @@ def cmd_enf_ingest(a):
     for r in recs:
         if r["PROBLEMS"]:
             print(f"  @{r['HANDLE']}: " + "; ".join(r["PROBLEMS"]))
+    ready = rpt.candidates(store, a.instance)
+    if ready:
+        print(f"{len(ready)} known bot(s) from known.botslist ready to report to X: "
+              f"python3 -m fis report-plan --instance {a.instance} --batch-id R<date>   # then report_batch.md, then ingest-report-results")
+
+
+def cmd_reporting(a):
+    """Owner says "stop reporting" / "start reporting" (or asks whether reporting is on)."""
+    p, cp, store, _ = _open(a.instance)
+    if a.action in ("on", "off"):
+        rpt.set_enabled(a.instance, a.action == "on", store, a.owner_words)
+        print("Reporting is on: known bots from the shared known.botslist are reported to X after they're blocked."
+              if a.action == "on" else
+              "Reporting is off: known bots are still blocked, but no longer reported to X. Say \"start reporting\" to turn it back on.")
+    print(json.dumps(rpt.summary(store, a.instance), indent=2))
+
+
+def cmd_report_plan(a):
+    """Report batch: known.botslist accounts with a reload-verified block, not yet reported (reporting ON only)."""
+    p, cp, store, _ = _open(a.instance)
+    _refuse_if_owner_paused(cp)
+    if cp["SECURITY_PAUSE"]["ACTIVE"] or cp["RATE_LIMIT"]["STATE"] == "PAUSED":
+        sys.exit(f"job paused ({cp['STATUS']}): hand the browser to the owner; after they clear it run `checkpoint --clear-pause`")
+    if not rpt.enabled(a.instance):
+        print("Reporting is off (the owner said \"stop reporting\"): nothing to report."); return
+    tasks = rpt.plan(store, a.instance, max_n=a.max)
+    if not tasks:
+        print("No known bots to report right now."); return
+    os.makedirs(p["batches"], exist_ok=True)
+    json.dump({"BATCH_ID": a.batch_id, "KIND": "X_REPORT", "TASKS": tasks, "VERSIONS": versions()},
+              open(os.path.join(p["batches"], a.batch_id + ".report.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+    store.log("REPORTING", "REPORT_PLANNED", {"batch": a.batch_id, "handles": [t["HANDLE"] for t in tasks]}); store.commit()
+    print(f"# REPORT batch {a.batch_id}: {len(tasks)} known bot(s) from known.botslist (already blocked). "
+          "Hand this to the browser subagent now (no owner message needed).")
+    print(rpt.render_operator_task(tasks, a.batch_id))
+
+
+def cmd_ingest_report_results(a):
+    p, cp, store, _ = _open(a.instance)
+    batch = json.load(open(os.path.join(p["batches"], a.batch_id + ".report.json"), encoding="utf-8"))
+    rows = [json.loads(l) for l in open(a.file, encoding="utf-8") if l.strip()]
+    recs = rpt.ingest_report(store, cp, rows, [t["HANDLE"] for t in batch["TASKS"]], a.batch_id)
+    ck.sync_counts(cp, store); ck.save(cp, p["cp"]); store.commit()
+    print(f"{sum(r['STATUS'] == 'REPORTED' for r in recs)} REPORTED, {sum(r['STATUS'] == 'REPORT_FAILED' for r in recs)} REPORT_FAILED, "
+          f"stop: {next((r['STOP_REASON'] for r in recs if r['STOP_REASON']), 'none')}")
+    for r in recs:
+        if r["PROBLEMS"]:
+            print(f"  @{r['HANDLE']}: " + "; ".join(r["PROBLEMS"]))
 
 
 def cmd_checkpoint(a):
@@ -662,6 +710,8 @@ def cmd_daily_plan(a):
              f"# browser subagent: operator_prompts/discovery.md for the newest followers, collection_batch.md, then:",
              f"python3 -m fis run --instance {I} --records <dir>",
              f"python3 -m fis auto-clean --instance {I} --batch-id D<date>   # then block_batch.md, then ingest-enforcement-report",
+             (f"python3 -m fis report-plan --instance {I} --batch-id R<date> # known.botslist bots only; then report_batch.md, then ingest-report-results"
+              if st.get("REPORT_KNOWN_BOTS", True) else "# Reporting known bots is off (owner said \"stop reporting\")"),
              f"python3 -m fis unblock-plan --instance {I} --batch-id U<date> # only if the owner asked to undo something",
              f"python3 -m fis daily-summary --instance {I}                 # prints nothing when there is nothing to say"]
     print("\n".join(steps))
@@ -684,7 +734,7 @@ def cmd_doctor(a):
     if sys.version_info < (3, 10):
         problems.append(f"Python 3.10+ needed, found {sys.version.split()[0]}")
     for rel in ("fis/cli.py", "feature_registry.json", "fingerprints_db.json", "instances/_template/owner_policy.json",
-                "instances/_template/scout_settings.json", "USER_MANUAL.md", "rules/known_scam_accounts.json",
+                "instances/_template/scout_settings.json", "USER_MANUAL.md", "known.botslist", "operator_prompts/report_batch.md",
                 "rules/link_watchlist.json", "rules/impersonation_allowlist.json"):
         if not os.path.exists(os.path.join(ROOT, rel)):
             problems.append(f"missing {rel}")
@@ -716,9 +766,21 @@ def cmd_doctor(a):
         sys.exit(1)
 
 
+def _maintainer_only(a):
+    """known.botslist and the link watchlist are changed only by the maintainers (Jay and his maintainer bot), with
+    --maintainer, in the maintainer's own checkout; then committed and pushed. Owner instances only read them."""
+    if not a.maintainer:
+        sys.stderr.write(f"known-list {a.action}: refused. {kl.MAINTAINER_ONLY}\n"
+                         "(Maintainers: add --maintainer, then commit and push known.botslist. An owner who wants to keep one "
+                         "account says \"keep @handle\"; that is stored in their own instance only.)\n")
+        sys.exit(2)
+
+
 def cmd_known_list(a):
-    """Shared (all owners) known-scam account list + scam-link watchlist in rules/ (decision-v0.7.1)."""
+    """Shared (all owners) known.botslist + scam-link watchlist. show: anyone; ingest/remove: maintainers only."""
     d = a.rules_dir
+    if a.action in ("ingest", "remove"):
+        _maintainer_only(a)
     if a.action == "ingest":
         if not a.accounts or not a.source:
             sys.exit('known-list ingest needs --accounts FILE.jsonl and --source "..."')
@@ -732,7 +794,7 @@ def cmd_known_list(a):
                     rows.append(json.loads(line))
                 except ValueError:
                     sys.exit(f"{a.accounts}:{n}: not valid JSON")
-        c = kl.ingest(rows, a.source, d, reason=a.reason)
+        c = kl.ingest(rows, a.source, d, reason=a.reason, maintainer=True)
         print(f"Read {len(rows)} account line(s) from {a.accounts} (source: {a.source})")
         print(f"Accounts added: {c['ACCOUNTS_ADDED']}")
         print(f"Already on the list: {c['ALREADY_PRESENT']}")
@@ -742,10 +804,10 @@ def cmd_known_list(a):
         print(f"Links added: {c['LINKS_ADDED']} (already listed {c['LINKS_ALREADY_PRESENT']}, skipped {c['LINKS_SKIPPED']} "
               "official/cut-off/bare-platform/prose-word links)")
         print("JSON " + json.dumps(c))
-        print("These lists apply to every owner after the change is committed and pushed (bootstrap.sh fast-forwards each install).")
+        print(f"Wrote {kl.botslist_path(d)}. It applies to every owner after it is committed and pushed (bootstrap.sh fast-forwards each install).")
     elif a.action == "show":
         acc, wl, allow = kl.load_accounts(d), kl.load_links(d), kl.load_allowlist(d)
-        print(f"Known scam accounts: {len(acc.get('ACCOUNTS', []))} (removed: {len(acc.get('REMOVED', []))})")
+        print(f"Known bots (known.botslist): {len(acc.get('ACCOUNTS', []))} (removed: {len(acc.get('REMOVED', []))}) [{acc.get('PATH')}]")
         for e in acc.get("ACCOUNTS", [])[: a.limit]:
             print(f"  @{e['handle']} — {e.get('display_name') or ''} [{e.get('source')}, {e.get('added')}]")
         mts = [e.get("match_type", "exact") for e in wl.get("LINKS", [])]
@@ -756,10 +818,10 @@ def cmd_known_list(a):
     elif a.action == "remove":
         if not a.handle or not a.reason:
             sys.exit("known-list remove needs --handle and --reason")
-        gone = kl.remove(a.handle, a.reason, d)
+        gone = kl.remove(a.handle, a.reason, d, maintainer=True)
         if not gone:
-            sys.exit(f"@{kl.handle_key(a.handle)} is not on the known-scam account list")
-        print(f"Removed @{gone['handle']} from the known-scam account list (reason: {a.reason}). It won't be re-added by a later ingest.")
+            sys.exit(f"@{kl.handle_key(a.handle)} is not on known.botslist")
+        print(f"Removed @{gone['handle']} from known.botslist (reason: {a.reason}). It won't be re-added by a later ingest. Commit and push to apply it for everyone.")
 
 
 def cmd_manual(a):
@@ -835,10 +897,16 @@ def main(argv=None):
     s.add_argument("--remove-identity"); s.add_argument("--owner-words", help="the owner's own words asking for the change")
     s = add("daily-summary", cmd_daily_summary, "inst"); s.add_argument("--since"); s.add_argument("--dry-run", action="store_true")
     add("daily-plan", cmd_daily_plan, "inst")
-    s = sub.add_parser("known-list", help="shared known-scam accounts + scam-link watchlist (rules/)"); s.set_defaults(fn=cmd_known_list)
+    s = sub.add_parser("known-list", help="shared known.botslist + scam-link watchlist (show: anyone; ingest/remove: maintainers only, --maintainer)")
+    s.set_defaults(fn=cmd_known_list)
+    s.add_argument("--maintainer", action="store_true", help="required for ingest/remove: only the Ho Be Gone maintainers change known.botslist")
     s.add_argument("action", choices=["ingest", "show", "remove"]); s.add_argument("--accounts", help="JSONL: {handle, display_name, bio, verified, links[]}")
     s.add_argument("--source", help='e.g. "x-search:Kindly Send Me A Follow Request (2026-10-03)"'); s.add_argument("--reason")
     s.add_argument("--handle"); s.add_argument("--limit", type=int, default=50); s.add_argument("--rules-dir", help=argparse.SUPPRESS)
+    s = add("reporting", cmd_reporting, "inst"); s.add_argument("action", nargs="?", choices=["on", "off", "status"], default="status")
+    s.add_argument("--owner-words", help='e.g. "stop reporting"')
+    s = add("report-plan", cmd_report_plan, "inst"); s.add_argument("--batch-id", required=True); s.add_argument("--max", type=int, default=20)
+    s = add("ingest-report-results", cmd_ingest_report_results, "inst"); s.add_argument("--batch-id", required=True); s.add_argument("--file", required=True)
     s = sub.add_parser("manual"); s.set_defaults(fn=cmd_manual); s.add_argument("--short", action="store_true")
     s = add("pause", cmd_pause, "inst"); s.set_defaults(action="pause")
     s = add("resume", cmd_pause, "inst"); s.set_defaults(action="resume")

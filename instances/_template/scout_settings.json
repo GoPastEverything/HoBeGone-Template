@@ -12,5 +12,6 @@
   "REVIEW_FLAGGED_ACCOUNTS": false,
   "FULL_AUDIT_STALE_DAYS": 30,
   "LIGHT_CHECK_STALE_DAYS": 7,
-  "SCHEDULE": "daily"
+  "SCHEDULE": "daily",
+  "REPORT_KNOWN_BOTS": true
 }

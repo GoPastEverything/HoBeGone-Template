@@ -219,6 +219,15 @@ def daily_summary(store, since=None, cp=None):
         out.append("Not yet blocked (X didn't confirm; I'll retry): " + ", ".join("@" + b["HANDLE"] for b in fails))
     if stop:
         out.append(f"Paused: X showed a security check ({cp['SECURITY_PAUSE']['REASON']}). Please take the browser and clear it.")
+    try:
+        from . import reporting
+        reporting.init(store)
+        nrep = store.db.execute("SELECT COUNT(DISTINCT handle) FROM x_reports WHERE status='REPORTED'" + (" AND ts > ?" if since else ""),
+                                (since,) if since else ()).fetchone()[0]
+    except Exception:  # noqa: BLE001 - the summary must never fail because of the report log
+        nrep = 0
+    if nrep:
+        out.append(f"Also reported {nrep} known bot(s) from the shared known.botslist to X.")
     if rows:
         out.append('Reply "unblock @handle" to undo any of these.')
     return "\n".join(out)

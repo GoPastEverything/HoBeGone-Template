@@ -96,7 +96,7 @@
   "FIRST_CONVERSATION": "zero questions: start line, x.com/home signed-in handle check, bootstrap.sh --x-account @handle (runs `python3 -m fis start --x-account @handle`), clean immediately, create quiet daily routine",
   "AUTO_BLOCK_TIERS": [
     "A BLOCK_CONFIRMED (v0.6 engine verdict)",
-    "L KNOWN_SCAM_LIST (shared rules/known_scam_accounts.json, or an exact Telegram/WhatsApp link from rules/link_watchlist.json; v0.7.1)",
+    "L KNOWN_SCAM_LIST (shared known.botslist, maintainer-only, or an exact Telegram/WhatsApp link from rules/link_watchlist.json; v0.7.1)",
     "B AUTO_BLOCK_PATTERN (strong scam/impersonation feature or persona+funnel+lure compound; evidence >= PARTIAL; no substantial human continuity; v0.7.1 adds the shared Elon/Tesla/SpaceX name rule, the 'kindly send me a follow request' + lure rule and watchlisted link + lure)",
     "C OWNER_TRAINED (owner-only model, zero-FP CV threshold, needs a scam/spam/impersonation basis)"
   ],
@@ -127,12 +127,19 @@
     "answers to the owner"
   ],
   "UNDO": "owner says \"unblock @handle\" -> unblock-request (records KEEP + disagreement) -> unblock-plan -> operator_prompts/unblock_batch.md -> ingest-unblock-report",
-  "TEMPLATE_VERSION": "HoBeGone-Template v0.2.3",
+  "TEMPLATE_VERSION": "HoBeGone-Template v0.2.4",
   "SHARED_LISTS": {
-    "KNOWN_SCAM_ACCOUNTS": "../../rules/known_scam_accounts.json",
+    "KNOWN_BOTSLIST": "../../known.botslist",
     "LINK_WATCHLIST": "../../rules/link_watchlist.json",
     "IMPERSONATION_ALLOWLIST": "../../rules/impersonation_allowlist.json",
-    "COMMANDS": "python3 -m fis known-list ingest|show|remove",
-    "OWNER_OVERRIDE": "the owner's keep / unblock always wins"
+    "COMMANDS": "python3 -m fis known-list show (anyone) | known-list ingest|remove --maintainer (maintainers only)",
+    "OWNER_OVERRIDE": "the owner's keep / unblock always wins",
+    "MAINTAINERS_ONLY": "Only the maintainers update known.botslist (.github/CODEOWNERS: @GoPastEverything); owners' bots read it and never edit it; suggestions go through GitHub issues"
+  },
+  "REPORTING": {
+    "WHAT": "after a reload-verified block, accounts on known.botslist are reported to X (spam, or impersonation for fake Elon/Tesla/SpaceX names)",
+    "DEFAULT": "ON, known.botslist accounts only (never the owner's other blocks)",
+    "TOGGLE": "owner says \"stop reporting\" / \"start reporting\" -> python3 -m fis reporting off|on",
+    "FLOW": "report-plan -> operator_prompts/report_batch.md -> ingest-report-results (REPORTED / REPORT_FAILED, stored in the instance)"
   }
 }

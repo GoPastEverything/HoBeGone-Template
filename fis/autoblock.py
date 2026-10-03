@@ -3,7 +3,7 @@
 An account is auto-blocked (mode AUTO_CLEAN) when the owner has not chosen ✅ KEEP and ANY tier holds:
   A  BLOCK_CONFIRMED      the v0.6 engine's own verdict (all six gates, incl. the full second pass).
   L  KNOWN_SCAM_LIST      (v0.7.1, shared lists in rules/, fis/known_lists.py) the handle is on
-                          rules/known_scam_accounts.json (layer known_scam_list), or the profile/posts carry the exact
+                          known.botslist (layer known_scam_list), or the profile/posts carry the exact
                           Telegram/WhatsApp link of rules/link_watchlist.json (layer link_watchlist).
      ELON_TESLA_NAME_IMPERSONATION (tier B pattern, v0.7.1 base rule): the @handle or display name impersonates Elon Musk
                           / Tesla / SpaceX leadership (look-alike normalized); rules/impersonation_allowlist.json is never

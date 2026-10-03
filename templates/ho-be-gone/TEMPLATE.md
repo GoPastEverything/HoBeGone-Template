@@ -42,7 +42,7 @@ Non-default modes require `--owner-words`; the bot never offers a mode menu.
 ## 3. What gets auto-blocked (decision-v0.7.1; details in `fis/autoblock.py`)
 Owner ✅ KEEP is never blocked; owner ❌ is always honoured. Otherwise any tier:
 - **A BLOCK_CONFIRMED** — the unchanged v0.6 engine verdict (all gates, full second pass).
-- **L KNOWN_SCAM_LIST** (v0.7.1) — the handle is on the shared `rules/known_scam_accounts.json`, or the account shows
+- **L KNOWN_SCAM_LIST** (v0.7.1) — the handle is on the shared `known.botslist` (maintainer-only), or the account shows
   an exact Telegram/WhatsApp contact from `rules/link_watchlist.json`. Shared by every owner; `known-list show`.
 - **B AUTO_BLOCK_PATTERN** — a strong scam/impersonation feature (real-person impersonation, repeated scam/DM-funnel
   script, known malicious link) or the celebrity-persona + DM/Telegram funnel + giveaway/crypto lure compound, with

@@ -1,5 +1,5 @@
 # 242 known scam accounts from the X people search "Kindly Send Me A Follow Request" (collected 2026-10-03), one handle per line.
-# All are on rules/known_scam_accounts.json (checked by tests/test_known_lists.py).
+# All are on known.botslist (checked by tests/test_known_lists.py and tests/test_botslist.py).
 _elonmuskqs
 _frasemusica
 aimeeuc

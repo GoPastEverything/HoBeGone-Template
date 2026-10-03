@@ -33,6 +33,7 @@ DEFAULT_SETTINGS = {
     "FULL_AUDIT_STALE_DAYS": 30,
     "LIGHT_CHECK_STALE_DAYS": 7,
     "SCHEDULE": "daily",
+    "REPORT_KNOWN_BOTS": True,                # v0.2.4: report known.botslist accounts to X after a verified block ("stop reporting" turns it off)
 }
 # routing-only marker for "suspicious solicitation begins" in an interaction's visible text (never a score input)
 SOLICIT_RE = re.compile(r"(telegram|whats\s?app|signal|t\.me/|wa\.me/|dm me|text me|send me|inbox me|wallet|invest|crypto|"
@@ -82,7 +83,7 @@ def load_settings(instance):
 
 
 def save_settings(instance, s):
-    bad = [k for k in s if k not in DEFAULT_SETTINGS]
+    bad = [k for k in s if k not in DEFAULT_SETTINGS and k != "OWNER_CHANGED"]   # OWNER_CHANGED: set by `scout settings --set`
     if bad:
         raise ValueError(f"unknown settings: {bad}")
     for k in ("INVESTIGATE_NEW_FOLLOWS", "INVESTIGATE_REPLIES", "INVESTIGATE_QUOTES", "INVESTIGATE_MENTIONS", "LIKES_REPOSTS_MODE"):
