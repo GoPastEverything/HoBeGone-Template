@@ -20,6 +20,8 @@ An account is auto-blocked (mode AUTO_CLEAN) when the owner has not chosen ✅ K
                           human-continuity evidence. Full second pass not required.
                           Base patterns apply to everyone; a pattern resting on an owner-policy rule (e.g. "claims to
                           own/run <org>") only counts inside the instance whose policy produced it.
+  K  KNOWN_BOTS_JOB       (template v0.2.5, fis/known_bots.py) not a verdict: the owner opted in to blocking every
+                          account on known.botslist; verified blocks are recorded here so blocked-list/unblock see them.
   C  OWNER_TRAINED        the owner's own model (fis/owner_model.py) scores >= its zero-false-positive threshold, AND a
                           spam/scam/impersonation or owner-policy feature with positive learned weight is present.
 Owner ❌ (OWNER_ACTION_BLOCK) is always honoured. Shared guards for B and C (A has them inside the engine):
@@ -301,16 +303,24 @@ def unblock_request(store, handle, owner_words=""):
     from . import adjudication as adjm
     init(store)
     s = store.get_state(handle)
-    if not s:
-        raise SystemExit(f"@{handle} is not in this instance")
+    stateless = None
+    if not s:   # v0.2.5: a known.botslist account blocked by the "block all known bots" job was never audited here
+        row = store.db.execute("SELECT handle FROM auto_blocks WHERE handle=? AND tier='KNOWN_BOTS_JOB'", (handle,)).fetchone()
+        if not row:
+            raise SystemExit(f"@{handle} is not in this instance")
+        from . import known_bots as kb
+        stateless = kb.stub_state(row[0]); s = stateless
     ab = store.db.execute("SELECT tier, reason, status, owner_model_version FROM auto_blocks WHERE handle=?", (s["HANDLE"],)).fetchone()
     prev = store.latest_adjudication(s["HANDLE"])
     before = {"TIER": ab[0], "REASON": ab[1], "STATUS": ab[2], "OWNER_MODEL_VERSION": ab[3]} if ab else \
         ({"TIER": "OWNER_BLOCK", "REASON": "owner chose ❌ earlier"} if prev and prev.get("OWNER_ACTION") == "OWNER_ACTION_BLOCK" else None)
-    rec = adjm.apply(store, s, reaction="✅", owner_reason="unblock request", owner_text=owner_words or "", source="unblock request")
+    if stateless:
+        rec = kb.record_keep(store, s["HANDLE"], owner_words, "unblock request")
+    else:
+        rec = adjm.apply(store, s, reaction="✅", owner_reason="unblock request", owner_text=owner_words or "", source="unblock request")
     patch = {"AUTO_BLOCK_DECISION_BEFORE": before, "AGREEMENT_WITH_V06_ENGINE": rec["AGREEMENT_WITH_OWNER"],
              "AGREEMENT_WITH_AUTO_BLOCK": "DISAGREE" if before else "NO_AUTO_BLOCK", "UNBLOCK_REQUESTED": True}
-    if before:
+    if before and not stateless:
         patch.update({"AGREEMENT_WITH_OWNER": "DISAGREE", "RECHECK_QUEUED": True, "RECHECK_RESULT": "PENDING"})
         if not rec["RECHECK_QUEUED"]:
             store.enqueue_recheck(s["HANDLE"], f"owner asked to unblock; auto-block tier {before['TIER']}")

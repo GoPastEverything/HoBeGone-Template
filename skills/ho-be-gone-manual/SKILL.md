@@ -3,15 +3,15 @@ name: ho-be-gone-manual
 description: >-
   Use when a Ho Be Gone owner says "manual" or "help", or asks how Ho Be Gone
   works, what it blocks, how it learns, how accurate it is, or how to undo,
-  pause, or change it, or about known.botslist (the shared list of known bots)
-  and reporting known bots to X.
+  pause, or change it, or about known.botslist (the shared list of known bots),
+  blocking every known bot ("block all known bots") and reporting known bots to X.
 ---
 Send this guide to the owner when they say "manual" or "help" (condense only if it's too long for one message). Answer specific questions from it in plain words.
 
-# Ho Be Gone — User Manual (v0.2.0, template v0.2.4)
+# Ho Be Gone — User Manual (v0.2.0, template v0.2.5)
 
 ## Quick start
-1. Make sure you're signed in to X in the bot's browser. That's all the setup there is.
+1. Make sure you're signed in to X in the bot's browser, and answer one yes/no question. That's all the setup there is.
 2. Ho Be Gone starts cleaning right away and blocks scam, impersonator and spam-bot accounts on its own.
 3. Once a day you get a short list of anything it blocked (and nothing at all on quiet days).
 4. To undo a block, reply "unblock @handle".
@@ -32,9 +32,19 @@ By default it blocks those accounts automatically. You don't have to approve eac
 - Accounts that look just like the ones you have blocked before (once you've given it enough examples; see below).
 - Anyone you tell it to block.
 
+## Blocking every known bot (the one question)
+When you start, Ho Be Gone asks if you want it to block every account on the known bots list. Say yes and it shows you the list and works through it a little at a time; say no and you can ask anytime with 'block all known bots'.
+- The list is here: https://github.com/GoPastEverything/HoBeGone-Template/blob/main/known.botslist
+- "A little at a time" means about 20 accounts, then a pause, with a daily limit, so X isn't flooded. If X shows a blank page, "Something went wrong" or a limit, it stops and carries on later. If X asks for a security check, it stops and hands you the browser, as always.
+- It skips anyone you've said to keep, accounts you've already blocked, and accounts X has already suspended.
+- Each known bot it blocks is also reported to X, unless you said "stop reporting".
+- When the maintainers add new accounts to the list, they're blocked for you too, a few at a time.
+- Your daily summary says how many it blocked and how many are left. "unblock @handle" works for these too.
+- Changed your mind? Say "stop blocking the bots list" (accounts already blocked stay blocked).
+
 ## The shared list of known bots (known.botslist)
 Ho Be Gone keeps a shared list of known bots called known.botslist. Every owner blocks and reports them automatically. Only the Ho Be Gone maintainers add to it; say "keep @handle" to keep one for yourself.
-- A known bot is blocked for you as soon as Ho Be Gone finds it among your followers or the accounts that interact with your posts, even if you never noticed it yourself.
+- A known bot is blocked for you as soon as Ho Be Gone finds it among your followers or the accounts that interact with your posts, even if you never noticed it yourself. If you said yes to blocking every known bot, the rest of the list is blocked too (see above).
 - Reporting: once X confirms the block, Ho Be Gone also reports that known bot to X (as spam, or as impersonation when it pretends to be someone famous), to help get it suspended. It only reports accounts on known.botslist, never the other accounts it blocks for you. Say "stop reporting" to turn this off (known bots are still blocked) and "start reporting" to turn it back on.
 - There's also a shared list of scam links (mostly Telegram and WhatsApp contacts and short links that scammers use). An account that shows a known scam Telegram or WhatsApp contact is blocked. Other known scam links count when the account is also pushing a prize, giveaway, investment or a fake famous name.
 - Every Ho Be Gone user gets the same lists, and they update on their own. Your bot only reads them; it never changes them.
@@ -60,9 +70,10 @@ Reply "unblock @handle" (for example, "unblock @janedoe"). Ho Be Gone unblocks i
 
 ## What the daily summary looks like
 ```
-Ho Be Gone — daily summary: blocked 2 account(s)
+Ho Be Gone — daily summary: blocked 22 account(s)
 • @FakeElonGiveaway — uses a public figure's name or look + pushes people to DM it + crypto giveaway pitch
 • @PrizeDesk_2211 — sends the same scam script to many people
+• 20 account(s) from the known bots list (you said yes to blocking all known bots); 180 still to go
 Also reported 1 known bot(s) from the shared known.botslist to X.
 Reply "unblock @handle" to undo any of these.
 ```
@@ -93,6 +104,8 @@ How do I turn off scouting (checking people who interact with my posts)? Say "tu
 What's on known.botslist? Ask "show the known bots list". If someone you know is on it by mistake, say "keep @handle" (it stays for you right away, and it won't be reported for you) and tell the Ho Be Gone maintainers so it can be taken off for everyone.
 
 Can I add an account to known.botslist? Only the Ho Be Gone maintainers add to it. To suggest one, open an issue on Ho Be Gone's GitHub page (github.com/GoPastEverything/HoBeGone-Template/issues), or say "block @handle" to block it just for you.
+
+Can it block every known bot, not just the ones that find me? Yes. Say "block all known bots" (or answer yes when it asks at the start). It shows you the list and works through it a little at a time.
 
 Does Ho Be Gone report accounts to X? Only the known bots on known.botslist, right after it has blocked them. Say "stop reporting" to turn that off and "start reporting" to turn it back on.
 

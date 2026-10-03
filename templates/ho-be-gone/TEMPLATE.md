@@ -18,7 +18,7 @@ Deploy and update only through `bootstrap.sh` from https://github.com/GoPastEver
 owner's instance and runs `start`. If the repo can't be reached, stop and tell the owner the engine isn't installed
 yet; never fall back to another copy.
 
-## 1. Zero-question start
+## 1. Start (one opt-in question, nothing else)
 1. Send one line: `hbg.START_LINE` (printed by `start`). Never ask which account, which mode, or resume vs new.
 2. The browser subagent opens `https://x.com/home` in the owner's existing signed-in session and reads the signed-in
    @handle. Not signed in → hand the owner the browser to sign in themselves (never type credentials).
@@ -27,7 +27,11 @@ yet; never fall back to another copy.
    `instances/<handle>`, created on first start with **neutral base rules** and an empty owner model), auto-resumes an unfinished run (a new run only on
    the owner's words: `--new`, old checkpoint archived), migrates to v0.2, refits the owner model, turns on Active
    Scouting with auto-block.
-4. Start cleaning immediately (section 3) and create the daily routine (section 7).
+4. The only setup question (template v0.2.5), asked once after the bootstrap: "Would you like me to block all known bots
+   on the bots list?" (Yes / No; link https://github.com/GoPastEverything/HoBeGone-Template/blob/main/known.botslist).
+   `known-bots offer-status` prints it while unanswered; Yes → `known-bots opt-in` (paced "block all known bots" job:
+   `known-bots plan` → `block_batch.md` → `known-bots ingest`), No → `known-bots opt-out`. Never asked again.
+5. Start cleaning immediately (section 3) and create the daily routine (section 7).
 
 ## 2. Modes (AUTO_CLEAN is the default everywhere)
 | Mode | When | What happens |

@@ -1,4 +1,4 @@
-# Ho Be Gone @BOT v0.2.0 (template v0.2.4) — LOCAL LIVE TEST checklist
+# Ho Be Gone @BOT v0.2.0 (template v0.2.5) — LOCAL LIVE TEST checklist
 
 This is for the first end-to-end run on the owner's own machine, with the engine at
 the folder HoBeGone-Template was cloned into, and the owner signed in to X in the bot's browser.
@@ -21,7 +21,7 @@ Tick each box only after you have looked at the evidence.
 
 | # | Check | How to trigger | Expected result | Evidence |
 |---|---|---|---|---|
-| V1 | Zero-question start | Start the bot from the template | One start message (4–5 sentences, ends with 'say "manual"'). No questions about account, mode or resume. | Chat transcript |
+| V1 | One-question start | Start the bot from the template | One start message (4–5 sentences, ends with 'say "manual"'). No questions about account, mode or resume; after the bootstrap, exactly one question: "Would you like me to block all known bots on the bots list?" (Yes / No + list link), never asked again. | Chat transcript; `known-bots offer-status` |
 | V2 | Signed-in check | Bot's subagent opens x.com/home | Signed-in @handle read from the page; never asks for credentials | Chat; `start` output shows the instance |
 | V3 | Instance + resume | `python3 -m fis start --x-account @handle` twice | Correct instance; second call says "resumed"; mode AUTO_CLEAN; scouting on | `checkpoint --instance $I` → MODE, MODE_SOURCE DEFAULT |
 | V4 | Owner model | `python3 -m fis owner-model --instance $I` | a new owner: inactive ("base rules only"); after enough reactions: ACTIVE, version om-<instance>-rN-… | owner_model.json |
@@ -36,6 +36,7 @@ Tick each box only after you have looked at the evidence.
 | V13 | Words-only modes | Owner says "let me review first" | `set-mode --mode REVIEW_WITH_ME --owner-words "…"`; cards come back; only ❌ blocked. Without words the command refuses. | checkpoint MODE_SOURCE OWNER_WORDS |
 | V14 | Manual | Owner says "manual" | Bot sends `python3 -m fis manual` (or `--short`) | Chat |
 | V15 | Pause / scouting off | "pause", then "resume"; "turn off scouting" | `run`/`auto-clean` refuse while paused; scout settings ACTIVE_SCOUTING_ENABLED false | checkpoint OWNER_PAUSE; `scout settings` |
+| V16 | Block all known bots | Answer Yes (or later say "block all known bots") | "Here's the list I'm blocking: <link>"; `known-bots plan --batch-id KB1` gives ≤20 accounts (no kept/blocked ones); after `known-bots ingest` only reload-verified blocks count, the next `plan` waits for the pause; daily-plan lists a known-bots step until the list is done. Answer No: "No problem. If you ever want these accounts blocked, just ask." | `known-bots status`; known_bots.json; enforcement table |
 
 ## A. Carried-over v0.1 checks (still apply; mode/resume rows now behave as in section V)
 

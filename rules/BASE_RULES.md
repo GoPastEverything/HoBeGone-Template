@@ -63,6 +63,10 @@ private message", a Telegram giveaway link) must auto-block for every owner unde
 - Reporting (template v0.2.4): after a reload-verified block of an account on `known.botslist`, the owner's bot also
   reports it to X (spam, or impersonation for fake Elon/Tesla/SpaceX names). Default on, known.botslist accounts only;
   the owner's other blocks are never reported. "stop reporting" / "start reporting" toggles it (`fis/reporting.py`).
+- Block all known bots (template v0.2.5, opt-in): only when the owner says yes to the one setup question (or later
+  "block all known bots"), the bot blocks every account on `known.botslist` from the owner's account in paced batches
+  (`fis/known_bots.py`; owner keeps, already-blocked and suspended accounts skipped; reload-verified; X limits never
+  bypassed). Without that yes, known bots are blocked only when they show up among the owner's followers/interactions.
 - None of these rules look at any never-evidence trait (section 3). Digits in a handle are only normalized as look-alike
   letters; they're never a reason on their own.
 

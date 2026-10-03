@@ -93,7 +93,7 @@
     "BASE_RULES": "../../rules/BASE_RULES.md",
     "STARTER_INSTANCE": "../../instances/_template/"
   },
-  "FIRST_CONVERSATION": "zero questions: start line, x.com/home signed-in handle check, bootstrap.sh --x-account @handle (runs `python3 -m fis start --x-account @handle`), clean immediately, create quiet daily routine",
+  "FIRST_CONVERSATION": "start line, x.com/home signed-in handle check, bootstrap.sh --x-account @handle (runs `python3 -m fis start --x-account @handle`), then the only setup question: \"Would you like me to block all known bots on the bots list?\" (Yes/No, known-bots offer-status/opt-in/opt-out, asked once), clean immediately, create quiet daily routine",
   "AUTO_BLOCK_TIERS": [
     "A BLOCK_CONFIRMED (v0.6 engine verdict)",
     "L KNOWN_SCAM_LIST (shared known.botslist, maintainer-only, or an exact Telegram/WhatsApp link from rules/link_watchlist.json; v0.7.1)",
@@ -122,12 +122,13 @@
     "start line",
     "progress line at most every ~50 accounts",
     "completion report",
+    "the one-time known-bots offer (Yes/No) and its answer line",
     "security stops",
     "daily summary only when something was blocked or a problem happened",
     "answers to the owner"
   ],
   "UNDO": "owner says \"unblock @handle\" -> unblock-request (records KEEP + disagreement) -> unblock-plan -> operator_prompts/unblock_batch.md -> ingest-unblock-report",
-  "TEMPLATE_VERSION": "HoBeGone-Template v0.2.4",
+  "TEMPLATE_VERSION": "HoBeGone-Template v0.2.5",
   "SHARED_LISTS": {
     "KNOWN_BOTSLIST": "../../known.botslist",
     "LINK_WATCHLIST": "../../rules/link_watchlist.json",

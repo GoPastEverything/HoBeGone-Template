@@ -14,7 +14,8 @@ from .evidence_store import now
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROMPT = os.path.join(ROOT, "operator_prompts", "block_batch.md")
-STOP_REASONS = ("LOGIN", "CAPTCHA", "2FA", "PASSKEY", "SECURITY_CHECK", "SUSPICIOUS_LOGIN", "AUTOMATION_WARNING", "RATE_LIMIT", "ACCOUNT_LOCKED")
+STOP_REASONS = ("LOGIN", "CAPTCHA", "2FA", "PASSKEY", "SECURITY_CHECK", "SUSPICIOUS_LOGIN", "AUTOMATION_WARNING", "RATE_LIMIT", "ACCOUNT_LOCKED",
+                "X_ERROR")   # X_ERROR (v0.2.5): blank page / "Something went wrong": treated like a rate limit, never a security pause
 
 
 def eligible(state, mode, adjudication=None):
@@ -78,11 +79,14 @@ def ingest_report_row(row, planned_handles=None):
             "HANDLE_REVERIFIED": row.get("handle_reverified") is True, "DECISION_CONFIRMED": row.get("decision_confirmed") is True,
             "RELOADED": row.get("reloaded") is True, "X_SHOWS_BLOCKED": row.get("x_shows_blocked") is True,
             "STOP_REASON": stop if stop in STOP_REASONS else (stop or None), "PROBLEMS": problems,
+            "ACCOUNT_GONE": row.get("account_gone") is True,
             "OPERATOR_NOTE": str(row.get("note", ""))[:300], "SOURCE": row.get("source", "operator report")}
 
 
-def ingest_report(store, cp, rows, planned_handles=None):
-    """Apply a full operator report. Stops at the first security/rate-limit stop (later rows are not trusted)."""
+def ingest_report(store, cp, rows, planned_handles=None, soft_stops=()):
+    """Apply a full operator report. Stops at the first security/rate-limit stop (later rows are not trusted).
+    soft_stops (known-bots job: RATE_LIMIT, X_ERROR): stop the batch without pausing the whole instance; the caller
+    backs off that job instead (fis/known_bots.py)."""
     from . import checkpoint as ck
     out = []
     for row in rows:
@@ -93,8 +97,10 @@ def ingest_report(store, cp, rows, planned_handles=None):
         if cp is not None:
             if rec["BLOCK_VERIFIED"] or rec["BLOCK_ATTEMPTED"] or row.get("block_failed"):
                 ck.block_result(cp, rec["HANDLE"], rec["BLOCK_VERIFIED"], "; ".join(rec["PROBLEMS"]))
-            if rec["STOP_REASON"] == "RATE_LIMIT":
-                ck.rate_limited(cp, row.get("retry_after"), "operator reported rate limit")
+            if rec["STOP_REASON"] in soft_stops:
+                pass
+            elif rec["STOP_REASON"] in ("RATE_LIMIT", "X_ERROR"):
+                ck.rate_limited(cp, row.get("retry_after"), f"operator reported {rec['STOP_REASON'].lower().replace('_', ' ')}")
             elif rec["STOP_REASON"]:
                 ck.security_pause(cp, rec["STOP_REASON"])
         out.append(rec)

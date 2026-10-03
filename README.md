@@ -3,8 +3,8 @@
 **Hive Operators, Be Gone: a template for a bot detection system.**
 
 Ho Be Gone checks the followers of an X account, and the accounts that interact with its posts. It automatically blocks
-scams, impersonators, spam bots and coordinated fake accounts. It asks the owner no setup questions. It sends a short
-daily summary only on days it blocked someone, and it learns from the owner's own reactions. It never blocks anyone for
+scams, impersonators, spam bots and coordinated fake accounts. It asks the owner just one setup question (whether to block every account on the
+shared known bots list). It sends a short daily summary only on days it blocked someone, and it learns from the owner's own reactions. It never blocks anyone for
 their politics, beliefs, background or opinions.
 
 This repo is the **template**. It contains the detection engine (`fis`, FollowerIntegritySkill v0.6.0 plus the
@@ -12,7 +12,7 @@ decision-v0.7.1 auto-block layer), the base rules, operator prompts for a browse
 manual, a test suite and a neutral starter instance. It contains **no owner data**: no follower lists, no reactions and
 no trained model. Every owner starts from zero.
 
-> Status: template v0.2.4 (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1). The license is MIT; see [LICENSE](LICENSE).
+> Status: template v0.2.5 (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1). The license is MIT; see [LICENSE](LICENSE).
 
 ---
 
@@ -67,6 +67,8 @@ no trained model. Every owner starts from zero.
    (`report-plan` → `operator_prompts/report_batch.md` → `ingest-report-results`; outcomes REPORTED / REPORT_FAILED are
    stored in the owner's instance). On by default, and only for `known.botslist` accounts: the owner's other blocks are
    never reported. The owner says "stop reporting" / "start reporting" to toggle it.
+   **Block all known bots** (template v0.2.5, opt-in): if the owner says yes to the one setup question, the agent also
+   blocks every account on `known.botslist` from the owner's account, a little at a time (see below).
 5. **Learn.** The owner's ❌ / "this one was right" and ✅ / "unblock @handle" replies are stored in their instance. The
    owner model is refit (with a new version) when the reactions change.
 
@@ -87,13 +89,13 @@ The bootstrap clones or fast-forwards this repo into `~/hobegone/HoBeGone-Templa
 per new commit, refuses an instance that belongs to another X account, then runs `python3 -m fis start --x-account
 @yourhandle`. It never imports data from anywhere.
 
-`start` asks nothing. It creates your own instance at `instances/yourhandle/`: neutral base rules, an **empty owner
+`start` itself asks nothing. It creates your own instance at `instances/yourhandle/`: neutral base rules, an **empty owner
 model** that stays inactive until your own reactions arrive (at least 20 ❌ and 3 ✅), automatic mode (AUTO_CLEAN) and
 Active Scouting on. It prints the start line and the instance path. If you run it again, it resumes your unfinished run.
 `python3 -m fis doctor` is a quick read-only self-check.
 
-For an agent: install the three skills from `skills/`. The getting-started skill handles the first conversation, and the
-runbook covers every command after that. Both run the bootstrap first, then work from the folder it reports
+For an agent: install the three skills from `skills/`. The getting-started skill handles the first conversation (the
+start message, the bootstrap, then the one opt-in question below), and the runbook covers every command after that. Both run the bootstrap first, then work from the folder it reports
 (`HOBEGONE_ENGINE`).
 
 ### known.botslist: the shared list of known bots (all owners)
@@ -128,10 +130,36 @@ lowercased, a leading `@` in `t.me/@name` dropped). Labels such as "Parody accou
 X auto-linked inside a sentence (`PROSE_AUTOLINK_IGNORE`, e.g. "fit in.Here") and official domains
 (`NEVER_WATCHLIST_DOMAINS`) are skipped.
 
-Current lists (template v0.2.4): **242 known bots** in `known.botslist` and **73 watchlisted links (33 exact, 40
+Current lists (template v0.2.5): **242 known bots** in `known.botslist` and **73 watchlisted links (33 exact, 40
 prefix)**, all from the X people search "Kindly Send Me A Follow Request" (collected 2026-10-03). `python3 -m fis
 known-list show` prints the live counts. (Template ≤ v0.2.3 kept the accounts in `rules/known_scam_accounts.json`; that
 file is gone, and the engine reads it only as a fallback if a checkout has no `known.botslist`.)
+
+### Block all known bots (the one setup question, opt-in)
+After the first message and the bootstrap, the bot asks the owner exactly once: **"Would you like me to block all known
+bots on the bots list?"** (Yes / No, as buttons if the chat supports them), with a link to the list:
+<https://github.com/GoPastEverything/HoBeGone-Template/blob/main/known.botslist>.
+- **Yes**: the bot answers "Here's the list I'm blocking: <link>", records the choice, and starts a paced job that blocks
+  every account on `known.botslist` from the owner's account: batches of about 20 (at most 25), a pause between batches
+  and a daily limit. It skips owner-kept accounts, accounts already blocked, and suspended/missing ones (recorded once,
+  never retried). Every block is reload-verified, and each verified known bot is then reported to X if reporting is on.
+  A blank page, "Something went wrong" or a rate limit stops the batch; the job carries on at a later run or the daily
+  routine (X limits are never bypassed). A security check stops everything and hands the owner the browser, as usual.
+  New list entries are picked up by the daily routine automatically.
+- **No**: "No problem. If you ever want these accounts blocked, just ask." Later, "block all known bots" / "block the
+  bots list" starts the same job; "stop blocking the bots list" stops it (blocked accounts stay blocked).
+- It's never asked again once answered. Progress lives in the instance (`known_bots.json` and the `known_bots_job`
+  table). Blocks from this job show up in "show my blocked list", "unblock @handle" works on them, and the daily summary
+  gives one line ("N account(s) from the known bots list; M still to go").
+
+```bash
+python3 -m fis known-bots offer-status --instance $I     # prints the question while it's unanswered
+python3 -m fis known-bots opt-in  --instance $I --owner-words "Yes"   # or: opt-out
+python3 -m fis known-bots plan    --instance $I --batch-id KB1 [--size 20]   # next batch -> operator_prompts/block_batch.md
+python3 -m fis known-bots ingest  --instance $I --batch-id KB1 --file report.jsonl   # = ingest-enforcement-report
+python3 -m fis known-bots status  --instance $I
+```
+`daily-plan` includes a known-bots batch only when the owner opted in and the list isn't finished.
 
 ### Optional owner-specific rules
 By default there are **no** owner-specific rules. The Elon Musk / Tesla / SpaceX **name** rule is now a shared base rule
@@ -161,6 +189,7 @@ for your own names. Policy patterns only ever count inside the instance that def
 | "review with me" / "just audit" | Switches mode (only on your words). | `set-mode --owner-words "..."` |
 | "turn off scouting" | Stops checking accounts that interact with your posts. | `scout settings --set ACTIVE_SCOUTING_ENABLED=false` |
 | "stop reporting" / "start reporting" | Stops / restarts reporting known bots (known.botslist) to X after blocking them. They're still blocked. | `reporting off` / `reporting on` |
+| "block all known bots" / "block the bots list" | Blocks every account on known.botslist from your account, a little at a time (also the "yes" to the start question). "Stop blocking the bots list" stops it. | `known-bots opt-in` / `known-bots opt-out`, `known-bots plan`, `known-bots ingest` |
 | "keep @h" for a known bot | Keeps it for you only (never blocked or reported for you); known.botslist doesn't change. | `adjudicate --reaction ✅` |
 
 Security stops: on a login page, CAPTCHA, 2FA/passkey prompt, rate limit, automation warning or account lock, the bot stops

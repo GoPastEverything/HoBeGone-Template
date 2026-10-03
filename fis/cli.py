@@ -7,7 +7,7 @@ clicking) is done by a browser operator following operator_prompts/*.md; these c
 import argparse, glob, json, os, shutil, sys
 
 from .versions import ROOT, versions, HO_BE_GONE_DISPLAY, TEMPLATE_VERSION
-from . import hbg, scout, autoblock as ab, owner_model as om, backtest as bt, known_lists as kl, reporting as rpt
+from . import hbg, scout, autoblock as ab, owner_model as om, backtest as bt, known_lists as kl, reporting as rpt, known_bots as kb
 from . import (adjudication as adjm, calibration as cal, checkpoint as ck, enforcement as enfm, evidence_store as es,
                export, metrics, owner_policy as op, pipeline, schema, second_pass as sp2)
 
@@ -277,6 +277,9 @@ def cmd_details(a):
 def cmd_adjudicate(a):
     p, cp, store, _ = _open(a.instance)
     s = store.get_state(a.handle)
+    if not s and kl.known_bot(a.handle) and adjm.parse_reaction(a.reaction) == "OWNER_ACTION_KEEP":
+        kb.record_keep(store, kl.known_bot(a.handle)["handle"], a.text or a.reason or "", "owner keep (known.botslist)"); store.commit()
+        print(f"@{a.handle}: kept for you (never blocked or reported for you; known.botslist itself doesn't change)"); return
     if not s:
         sys.exit(f"@{a.handle} not processed yet")
     rec = adjm.apply(store, s, reaction=a.reaction, owner_reason=a.reason or "", owner_text=a.text or "")
@@ -376,15 +379,26 @@ def cmd_enf_ingest(a):
     p, cp, store, _ = _open(a.instance)
     batch = json.load(open(os.path.join(p["batches"], a.batch_id + ".json"), encoding="utf-8"))
     rows = [json.loads(l) for l in open(a.file, encoding="utf-8") if l.strip()]
-    recs = enfm.ingest_report(store, cp, rows, [t["HANDLE"] for t in batch["TASKS"]])
+    known_job = batch.get("KIND") == "KNOWN_BOTS"
+    recs = enfm.ingest_report(store, cp, rows, [t["HANDLE"] for t in batch["TASKS"]], soft_stops=kb.SOFT_STOPS if known_job else ())
     ck.sync_counts(cp, store); ck.save(cp, p["cp"]); store.commit()
     ab.sync_status(store)
+    soft = kb.record_outcomes(store, a.instance, rows, recs, a.batch_id) if known_job else None
     v = sum(r["BLOCK_VERIFIED"] for r in recs)
     print(f"{v} verified, {sum(1 for r in recs if r['BLOCK_ATTEMPTED'] and not r['BLOCK_VERIFIED'])} attempted-unverified, "
           f"stop: {next((r['STOP_REASON'] for r in recs if r['STOP_REASON']), 'none')}")
     for r in recs:
         if r["PROBLEMS"]:
             print(f"  @{r['HANDLE']}: " + "; ".join(r["PROBLEMS"]))
+    if known_job:
+        s_ = kb.status(store, a.instance)
+        print(f"Block all known bots: {s_['BLOCKED']} of {s_['ON_LIST']} blocked, {s_['PENDING']} to go "
+              f"({s_['SKIPPED_KEPT']} kept by you, {s_['GONE']} suspended/not found, {s_['GAVE_UP']} given up).")
+        if soft in kb.SOFT_STOPS:
+            print(f"X showed {'a rate limit' if soft == 'RATE_LIMIT' else 'a blank page / Something went wrong'}: stop blocking and "
+                  f"reporting for this run. The job carries on at the next run or daily routine (after {kb.BACKOFF_HOURS} hours). "
+                  "No owner message needed.")
+            return
     ready = rpt.candidates(store, a.instance)
     if ready:
         print(f"{len(ready)} known bot(s) from known.botslist ready to report to X: "
@@ -440,8 +454,8 @@ def cmd_checkpoint(a):
     cp = json.load(open(p["cp"], encoding="utf-8"))
     ck.upgrade(cp); ck.sync_counts(cp)
     if a.security_stop:
-        if a.security_stop == "RATE_LIMIT":
-            ck.rate_limited(cp, a.until, a.note or "operator reported rate limit")
+        if a.security_stop in ("RATE_LIMIT", "X_ERROR"):
+            ck.rate_limited(cp, a.until, a.note or f"operator reported {a.security_stop}")
         else:
             ck.security_pause(cp, a.security_stop)
         ck.sync_counts(cp); ck.save(cp, p["cp"])
@@ -710,11 +724,81 @@ def cmd_daily_plan(a):
              f"# browser subagent: operator_prompts/discovery.md for the newest followers, collection_batch.md, then:",
              f"python3 -m fis run --instance {I} --records <dir>",
              f"python3 -m fis auto-clean --instance {I} --batch-id D<date>   # then block_batch.md, then ingest-enforcement-report",
+             *_known_bots_steps(I),
              (f"python3 -m fis report-plan --instance {I} --batch-id R<date> # known.botslist bots only; then report_batch.md, then ingest-report-results"
               if st.get("REPORT_KNOWN_BOTS", True) else "# Reporting known bots is off (owner said \"stop reporting\")"),
              f"python3 -m fis unblock-plan --instance {I} --batch-id U<date> # only if the owner asked to undo something",
              f"python3 -m fis daily-summary --instance {I}                 # prints nothing when there is nothing to say"]
     print("\n".join(steps))
+
+
+def _known_bots_steps(I):
+    """daily-plan: one known-bots step only when the owner opted in and the list still has pending accounts."""
+    if not os.path.exists(_paths(I)["db"]):
+        return []
+    st = es.Store(_paths(I)["db"])
+    try:
+        if not kb.needs_batch(st, I):
+            return []
+        n = len(kb.classify(st)["PENDING"])
+    finally:
+        st.close()
+    return [f"python3 -m fis known-bots plan --instance {I} --batch-id KB<date>  # owner said yes to blocking all known bots ({n} to go); "
+            "block_batch.md, then known-bots ingest; repeat while it gives a batch (it enforces the pause and the daily limit)"]
+
+
+def cmd_known_bots(a):
+    """The one-time offer to block every account on known.botslist, and the paced "block all known bots" job."""
+    p, cp, store, _ = _open(a.instance)
+    if a.action == "offer-status":
+        o = kb.offer_status(a.instance)
+        if o["ASK_NOW"]:
+            print("OFFER: ASK (the only setup question; ask it once, exactly like this, with Yes / No buttons if the chat has them)")
+            print(f"{kb.QUESTION}\nThe list: {kb.LIST_URL}\n[Yes] [No]")
+            print(f"# Yes -> python3 -m fis known-bots opt-in --instance {a.instance} --owner-words \"...\"   "
+                  f"No -> python3 -m fis known-bots opt-out --instance {a.instance} --owner-words \"...\"")
+        else:
+            print(f"OFFER: ANSWERED {o['ANSWER']} ({o['ANSWERED_AT']}). Don't ask again.")
+        print(json.dumps(kb.status(store, a.instance), indent=2))
+    elif a.action in ("opt-in", "opt-out"):
+        print(kb.answer(a.instance, a.action == "opt-in", store, a.owner_words))
+        if a.action == "opt-in":
+            print(f"# next: python3 -m fis known-bots plan --instance {a.instance} --batch-id KB1   (paced; later batches come with the daily routine)")
+    elif a.action == "status":
+        print(json.dumps(kb.status(store, a.instance), indent=2))
+    elif a.action == "plan":
+        if not a.batch_id:
+            sys.exit("known-bots plan needs --batch-id (e.g. KB1)")
+        _refuse_if_owner_paused(cp)
+        if cp["SECURITY_PAUSE"]["ACTIVE"] or cp["RATE_LIMIT"]["STATE"] == "PAUSED":
+            sys.exit(f"job paused ({cp['STATUS']}): hand the browser to the owner; after they clear it run `checkpoint --clear-pause`")
+        if not kb.load(a.instance)["OPTED_IN"]:
+            print("The owner hasn't asked to block all known bots (offer not answered yes): nothing to plan. "
+                  "They can say \"block all known bots\" anytime (then known-bots opt-in)."); return
+        if cp["MODE"] == "AUDIT_ONLY":
+            print("Audit-only mode (owner asked in words): nothing is blocked."); return
+        wait = kb.pacing(a.instance)
+        if wait:
+            print(f"Not now: {wait[0]}. Next batch after {wait[1]} (this run or the daily routine picks it up)."); return
+        tasks = kb.plan(store, a.instance, a.batch_id, a.size)
+        if not tasks:
+            s_ = kb.status(store, a.instance)
+            print(f"All done: every account on known.botslist is blocked or skipped ({s_['BLOCKED']} blocked, {s_['SKIPPED_KEPT']} kept by you, "
+                  f"{s_['GONE']} suspended/not found, {s_['GAVE_UP']} given up). New list entries are picked up by the daily routine."); return
+        os.makedirs(p["batches"], exist_ok=True)
+        json.dump({"BATCH_ID": a.batch_id, "KIND": "KNOWN_BOTS", "TASKS": tasks, "MODE": cp["MODE"], "ENFORCEMENT_MODE": "KNOWN_BOTS_OPT_IN",
+                   "VERSIONS": versions()}, open(os.path.join(p["batches"], a.batch_id + ".json"), "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+        left = len(kb.classify(store)["PENDING"])
+        print(f"# KNOWN BOTS batch {a.batch_id}: {len(tasks)} account(s) from known.botslist ({left} still to go, incl. this batch); the owner said "
+              f"yes to blocking all known bots. Hand this to the browser subagent now (no owner message needed), then "
+              f"`python3 -m fis known-bots ingest --instance {a.instance} --batch-id {a.batch_id} --file report.jsonl`. "
+              f"Wait {kb.PAUSE_MINUTES} minutes before the next batch.")
+        print(enfm.render_operator_task(tasks, a.batch_id))
+    elif a.action == "ingest":
+        if not (a.batch_id and a.file):
+            sys.exit("known-bots ingest needs --batch-id and --file")
+        store.close()
+        return cmd_enf_ingest(a)
 
 
 def engine_commit(root=ROOT):
@@ -734,7 +818,7 @@ def cmd_doctor(a):
     if sys.version_info < (3, 10):
         problems.append(f"Python 3.10+ needed, found {sys.version.split()[0]}")
     for rel in ("fis/cli.py", "feature_registry.json", "fingerprints_db.json", "instances/_template/owner_policy.json",
-                "instances/_template/scout_settings.json", "USER_MANUAL.md", "known.botslist", "operator_prompts/report_batch.md",
+                "instances/_template/scout_settings.json", "USER_MANUAL.md", "known.botslist", "operator_prompts/report_batch.md", "operator_prompts/block_batch.md",
                 "rules/link_watchlist.json", "rules/impersonation_allowlist.json"):
         if not os.path.exists(os.path.join(ROOT, rel)):
             problems.append(f"missing {rel}")
@@ -907,6 +991,10 @@ def main(argv=None):
     s.add_argument("--owner-words", help='e.g. "stop reporting"')
     s = add("report-plan", cmd_report_plan, "inst"); s.add_argument("--batch-id", required=True); s.add_argument("--max", type=int, default=20)
     s = add("ingest-report-results", cmd_ingest_report_results, "inst"); s.add_argument("--batch-id", required=True); s.add_argument("--file", required=True)
+    s = add("known-bots", cmd_known_bots, "inst")
+    s.add_argument("action", choices=["offer-status", "opt-in", "opt-out", "status", "plan", "ingest"])
+    s.add_argument("--owner-words", help='e.g. "yes" / "block all known bots"'); s.add_argument("--batch-id")
+    s.add_argument("--size", type=int, default=kb.DEFAULT_SIZE, help=f"accounts per batch (max {kb.MAX_SIZE})"); s.add_argument("--file")
     s = sub.add_parser("manual"); s.set_defaults(fn=cmd_manual); s.add_argument("--short", action="store_true")
     s = add("pause", cmd_pause, "inst"); s.set_defaults(action="pause")
     s = add("resume", cmd_pause, "inst"); s.set_defaults(action="resume")

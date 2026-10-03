@@ -210,9 +210,12 @@ def daily_summary(store, since=None, cp=None):
     rows = [b for b in ab.blocked_list(store) if b["STATUS"] == "VERIFIED" and (since is None or upd.get(b["HANDLE"].lower(), "") > since)]
     fails = [b for b in ab.blocked_list(store) if b["STATUS"] == "FAILED_RETRY" and (since is None or upd.get(b["HANDLE"].lower(), "") > since)]
     stop = (cp or {}).get("SECURITY_PAUSE", {}).get("ACTIVE")
-    if not rows and not fails and not stop:
+    from . import known_bots as kb   # v0.2.5: "block all known bots" blocks are one line, not one bullet each
+    nkb = len([b for b in rows if b["TIER"] == kb.TIER])
+    rows = [b for b in rows if b["TIER"] != kb.TIER]
+    if not rows and not fails and not stop and not nkb:
         return ""
-    out = [f"Ho Be Gone — daily summary: blocked {len(rows)} account(s)" + (f", {len(fails)} block(s) to retry" if fails else "")]
+    out = [f"Ho Be Gone — daily summary: blocked {len(rows) + nkb} account(s)" + (f", {len(fails)} block(s) to retry" if fails else "")]
     for b in rows:
         out.append(f"• @{b['HANDLE']} — {short(b['REASON'])}")
     if fails:
@@ -226,9 +229,16 @@ def daily_summary(store, since=None, cp=None):
                                 (since,) if since else ()).fetchone()[0]
     except Exception:  # noqa: BLE001 - the summary must never fail because of the report log
         nrep = 0
+    if nkb:
+        try:
+            left = len(kb.classify(store)["PENDING"])
+        except Exception:  # noqa: BLE001 - the summary must never fail because of the list
+            left = None
+        out.append(f"• {nkb} account(s) from the known bots list (you said yes to blocking all known bots)"
+                   + (f"; {left} still to go" if left else ("; the whole list is done" if left == 0 else "")))
     if nrep:
         out.append(f"Also reported {nrep} known bot(s) from the shared known.botslist to X.")
-    if rows:
+    if rows or nkb:
         out.append('Reply "unblock @handle" to undo any of these.')
     return "\n".join(out)
 

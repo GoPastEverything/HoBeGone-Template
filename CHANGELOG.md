@@ -1,5 +1,48 @@
 # Changelog
 
+## Template v0.2.5 (2026-10-03)
+One-time opt-in offer to block every known bot (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule,
+weight, gate or calibration changes). Until now owners only blocked the known bots they ran into (followers and
+interactions).
+- **The one setup question.** In getting-started, after the first message and the bootstrap, the bot asks once: "Would
+  you like me to block all known bots on the bots list?" (Yes / No, as buttons if the host supports them) with a link to
+  https://github.com/GoPastEverything/HoBeGone-Template/blob/main/known.botslist. Everything else stays automatic.
+  - Yes: the bot sends "Here's the list I'm blocking: <link>", records the choice and starts the job below.
+  - No: recorded; the bot says "No problem. If you ever want these accounts blocked, just ask." Later "block all known
+    bots" / "block the bots list" starts the same job; "stop blocking the bots list" stops it.
+  - Never asked again once answered.
+- **"Block all known bots" job** (new `fis/known_bots.py`). Blocks every account on `known.botslist` from the owner's
+  account. It skips owner-kept/unblock-requested accounts, allowlisted handles, accounts already reload-verified as
+  blocked, and suspended/missing ones (`account_gone`, recorded once, never retried). Failed blocks are retried up to 3
+  times. Pacing: batches of 20 by default (`--size`, at most 25), a 10-minute pause between batches and at most 5
+  batches in 24 hours. A blank page / "Something went wrong" (new stop reason `X_ERROR`) or a rate limit stops the
+  batch, and the job backs off for 6 hours, then carries on at the next run or the daily routine. This backoff applies
+  to the job only; the instance isn't paused and X limits are never bypassed. Security checks pause the instance and
+  hand the owner the browser, as before. Verified blocks are recorded in `auto_blocks` (tier `KNOWN_BOTS_JOB`), so
+  they show in `blocked-list` and work with "unblock @handle" (a stateless keep, no recheck). They're reported to X
+  afterwards when reporting is on. New list entries are picked up automatically, because "pending" is always computed
+  from the current list. Progress is kept in the instance: `known_bots.json` (the answer and pacing) and the
+  `known_bots_job` table (outcome per account).
+- **Commands**: `known-bots offer-status|opt-in|opt-out|status --instance I [--owner-words ...]`,
+  `known-bots plan --instance I --batch-id KB1 [--size 20]` (writes an enforcement batch of KIND `KNOWN_BOTS` and
+  prints the `block_batch.md` task), and `known-bots ingest --instance I --batch-id KB1 --file F` (the same as
+  `ingest-enforcement-report`, which now recognises known-bots batches). `daily-plan` includes a known-bots step only
+  when the owner opted in and the list isn't finished. In the daily summary these blocks appear as one line
+  ("• N account(s) from the known bots list …; M still to go") instead of one bullet each. `adjudicate --reaction ✅`
+  works for a list account that was never audited (it's kept for this owner only).
+- `operator_prompts/block_batch.md`: also covers known-bots batches, reports `account_gone` for suspended/missing
+  profiles, and separates stops: security items hand over the browser; `RATE_LIMIT` / `X_ERROR` just stop. In regular
+  batches `X_ERROR` is treated like a rate limit.
+- Skills: getting-started now has the one question as step 4 (still under 2,600 characters). The runbook has a new
+  "Block all known bots (opt-in)" section and was tightened to stay under 9,500 characters. The manual has a new section
+  "Blocking every known bot (the one question)". Also updated: `USER_MANUAL.md`, README, BASE_RULES, the template card,
+  GETTING_STARTED copy, LOCAL_LIVE_TEST (V1 and the new V16) and the manifest. `doctor` now checks `block_batch.md`.
+- Tests: `tests/test_known_bots.py` (12 tests). They cover: the offer is asked once; yes/no are recorded with the exact
+  lines; a later request starts the job; plan skips kept, blocked and allowlisted accounts; batch size; audit-only and
+  pause; outcomes (blocked, already blocked, gone, failed, retry) and reporting afterwards; X_ERROR backoff without
+  pausing the instance; a security check pauses the instance; the daily limit; unblocking a job block; daily-plan
+  includes the job only when opted in and unfinished and picks up new list entries; docs.
+
 ## Template v0.2.4 (2026-10-03)
 known.botslist, maintainer-only shared list, and reporting known bots to X (engine Ho Be Gone @BOT v0.2.0, auto-block
 decision-v0.7.1; no rule, weight, gate or calibration changes).
