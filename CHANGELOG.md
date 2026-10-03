@@ -1,5 +1,18 @@
 # Changelog
 
+## Template v0.2.9 (2026-10-03)
+Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
+gate or calibration changes).
+- **known.botslist: 347 accounts** (21 added via `known-list ingest --maintainer`): the 21 ordinary-looking accounts from
+  the X people search "Kindly Send Me" that v0.2.8 held back. The maintainer (owner) confirmed they are bots. Same source
+  as v0.2.8 (`x-search:Kindly Send Me (2026-10-03)`), reason `maintainer: owner confirmed bot`.
+- **Link watchlist: unchanged at 79 links (38 exact, 41 prefix)**; these search cards had no links.
+- Never-list unchanged (@elonmusk, @ElonMuskAOC, @Teslahubs).
+- Handle fixture: `fixtures/known_lists/kindly_send_me_owner_confirmed_2026-10-03.handles.txt`.
+- README, VERSION.md, the user manual, skills, operator prompt and manifest say template v0.2.9 (counts updated).
+- Tests: `tests/test_v029_lists.py` (the 21 handles, their source and reason, watchlist unchanged, never-list untouched).
+  `tests/test_botslist.py` now expects 347 handles = the six fixture files; `tests/test_v028_lists.py` expects at least 326.
+
 ## Template v0.2.8 (2026-10-03)
 Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
 gate or calibration changes).

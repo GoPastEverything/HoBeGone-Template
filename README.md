@@ -12,7 +12,7 @@ decision-v0.7.1 auto-block layer), the base rules, operator prompts for a browse
 manual, a test suite and a neutral starter instance. It contains **no owner data**: no follower lists, no reactions and
 no trained model. Every owner starts from zero.
 
-> Status: template v0.2.8 (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1). The license is MIT; see [LICENSE](LICENSE).
+> Status: template v0.2.9 (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1). The license is MIT; see [LICENSE](LICENSE).
 
 ---
 
@@ -130,11 +130,11 @@ lowercased, a leading `@` in `t.me/@name` dropped). Labels such as "Parody accou
 X auto-linked inside a sentence (`PROSE_AUTOLINK_IGNORE`, e.g. "fit in.Here") and official domains
 (`NEVER_WATCHLIST_DOMAINS`) are skipped.
 
-Current lists (template v0.2.8): **326 known bots** in `known.botslist` and **79 watchlisted links (38 exact, 41
-prefix)**, from four X people searches (all collected 2026-10-03): "Kindly Send Me A Follow Request" (242 accounts,
+Current lists (template v0.2.9): **347 known bots** in `known.botslist` and **79 watchlisted links (38 exact, 41
+prefix)**, from five X people searches (all collected 2026-10-03): "Kindly Send Me A Follow Request" (242 accounts,
 73 links), "Elon Rocket Man" (20 accounts, 1 link), "Tesla Hub" (19 accounts, 1 Zangi contact; @Teslahubs, a real
-gold-check business, is on the never-list instead) and "Kindly Send Me A Follow" (13 accounts, 4 Telegram links: 3 exact,
-1 prefix).
+gold-check business, is on the never-list instead), "Kindly Send Me A Follow" (13 accounts, 4 Telegram links: 3 exact,
+1 prefix) and "Kindly Send Me" (53 accounts, no links; 21 of them confirmed as bots by the maintainer).
 
 Zangi (template v0.2.6) is a chat contact like Telegram and WhatsApp: a Zangi link (`services.zangi.com/dl/<number>`)
 or a Zangi number written next to the word "Zangi" in a bio ("Text on Zangi 3415158270") is stored and matched as
