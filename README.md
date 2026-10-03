@@ -12,7 +12,7 @@ decision-v0.7.1 auto-block layer), the base rules, operator prompts for a browse
 manual, a test suite and a neutral starter instance. It contains **no owner data**: no follower lists, no reactions and
 no trained model. Every owner starts from zero.
 
-> Status: template v0.2.11 (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1). The license is MIT; see [LICENSE](LICENSE).
+> Status: template v0.2.12 (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1). The license is MIT; see [LICENSE](LICENSE).
 
 ---
 
@@ -130,12 +130,13 @@ lowercased, a leading `@` in `t.me/@name` dropped). Labels such as "Parody accou
 X auto-linked inside a sentence (`PROSE_AUTOLINK_IGNORE`, e.g. "fit in.Here") and official domains
 (`NEVER_WATCHLIST_DOMAINS`) are skipped.
 
-Current lists (template v0.2.11): **452 known bots** in `known.botslist` and **96 watchlisted links (55 exact, 41
+Current lists (template v0.2.12): **511 known bots** in `known.botslist` and **99 watchlisted links (58 exact, 41
 prefix)**, from X people searches (all collected 2026-10-03): "Kindly Send Me A Follow Request" (242 accounts,
 73 links), "Elon Rocket Man" (20 accounts, 1 link), "Tesla Hub" (19 accounts, 1 Zangi contact; @Teslahubs, a real
 gold-check business, is on the never-list instead), "Kindly Send Me A Follow" (13 accounts, 4 Telegram links: 3 exact,
 1 prefix), "Kindly Send Me" (53 accounts, no links; 21 of them confirmed as bots by the maintainer), "Send Me A Follow"
-(47 accounts, 13 links) and "Elon CEO" (58 accounts, 4 Telegram exact links).
+(47 accounts, 13 links), "Elon CEO" (58 accounts, 4 Telegram exact links) and "Tesla CEO" (59 accounts, 3 exact links:
+1 Telegram, 1 spam host, 1 other).
 
 Zangi (template v0.2.6) is a chat contact like Telegram and WhatsApp: a Zangi link (`services.zangi.com/dl/<number>`)
 or a Zangi number written next to the word "Zangi" in a bio ("Text on Zangi 3415158270") is stored and matched as

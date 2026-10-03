@@ -37,6 +37,17 @@
   ],
   "LINKS": [
     {
+      "domain": "88qqb.xyz",
+      "url": "88qqb.xyz/Situsgacor",
+      "match_type": "exact",
+      "pattern": "88qqb.xyz/Situsgacor",
+      "truncated": false,
+      "kind": "other",
+      "source": "x-search:Tesla CEO (2026-10-03)",
+      "first_seen_handle": "ennngeee176537",
+      "added": "2026-10-03"
+    },
+    {
       "domain": "innovation.space",
       "url": "innovation.space",
       "match_type": "exact",
@@ -643,6 +654,17 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/maryward247",
+      "match_type": "exact",
+      "pattern": "t.me/maryward247",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:Tesla CEO (2026-10-03)",
+      "first_seen_handle": "marywards4",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/messagemeprivately2",
       "match_type": "prefix",
       "pattern": "t.me/messagemeprivately2*",
@@ -1090,6 +1112,17 @@
       "kind": "telegram",
       "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
       "first_seen_handle": "ceomusk2139",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "twitter.on",
+      "url": "twitter.on",
+      "match_type": "exact",
+      "pattern": "twitter.on",
+      "truncated": false,
+      "kind": "other",
+      "source": "x-search:Tesla CEO (2026-10-03)",
+      "first_seen_handle": "teslaceo6390",
       "added": "2026-10-03"
     }
   ]

@@ -128,7 +128,7 @@
     "answers to the owner"
   ],
   "UNDO": "owner says \"unblock @handle\" -> unblock-request (records KEEP + disagreement) -> unblock-plan -> operator_prompts/unblock_batch.md -> ingest-unblock-report",
-  "TEMPLATE_VERSION": "HoBeGone-Template v0.2.11",
+  "TEMPLATE_VERSION": "HoBeGone-Template v0.2.12",
   "SHARED_LISTS": {
     "KNOWN_BOTSLIST": "../../known.botslist",
     "LINK_WATCHLIST": "../../rules/link_watchlist.json",

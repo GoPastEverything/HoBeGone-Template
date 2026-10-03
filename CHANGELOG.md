@@ -1,5 +1,23 @@
 # Changelog
 
+## Template v0.2.12 (2026-10-03)
+Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
+gate or calibration changes).
+- **known.botslist: 511 accounts** (59 added via `known-list ingest --maintainer`), all from the X people search "Tesla
+  CEO" (source `x-search:Tesla CEO (2026-10-03)`): Tesla/Elon CEO impersonators and fan-page look-alikes. Every account
+  from the search that was not already listed (and not on the never-list) was added — no ordinary-looking holdbacks.
+  None of the 59 search hits were already on the list; never-list skips were zero.
+- **Link watchlist: 99 links (58 exact, 41 prefix)**, 3 exact added:
+  - `t.me/maryward247` (@MaryWards4, Telegram), `88qqb.xyz/Situsgacor` (@Ennngeee176537, spam host), `twitter.on`
+    (@TeslaCeo6390, from bio text "TWITTER.on").
+- Never-list unchanged (@elonmusk, @ElonMuskAOC, @Teslahubs).
+- Handle fixture: `fixtures/known_lists/tesla_ceo_2026-10-03.handles.txt`.
+- README, VERSION.md, the user manual, skills, operator prompt and manifest say template v0.2.12 (counts updated).
+- Tests: `tests/test_v0212_lists.py` (the 59 handles and their source, the 3 links and counts, never-list untouched).
+  `tests/test_botslist.py` now expects 511 handles = the nine fixture files; `tests/test_v0211_lists.py` expects at least 452.
+
+
+
 ## Template v0.2.11 (2026-10-03)
 Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
 gate or calibration changes).
