@@ -22,7 +22,7 @@ def handles(name):
 class TestShippedV027(unittest.TestCase):
     def test_new_accounts_listed_with_source(self):
         by = {e["handle"]: e for e in kl.read_botslist(BOTSLIST)["ACCOUNTS"]}
-        self.assertEqual(len(by), 294)
+        self.assertGreaterEqual(len(by), 294)
         hs = handles("kindly_send_me_a_follow_2026-10-03.handles.txt")
         self.assertEqual(len(hs), 13); self.assertEqual(len({h.lower() for h in hs}), 13)
         for h in hs:

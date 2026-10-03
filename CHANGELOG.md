@@ -1,5 +1,20 @@
 # Changelog
 
+## Template v0.2.8 (2026-10-03)
+Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
+gate or calibration changes).
+- **known.botslist: 326 accounts** (32 added via `known-list ingest --maintainer`), all from the X people search "Kindly
+  Send Me" (source `x-search:Kindly Send Me (2026-10-03)`): Elon/Tesla/SpaceX CEO impersonators, Rocket Man prize
+  accounts, and Telegram "claim your prize" lures. Ordinary-looking accounts with no scam pitch from that broader search
+  were held back for the maintainer and not listed.
+- **Link watchlist: unchanged at 79 links (38 exact, 41 prefix)** — search cards for this batch had no full `t.me` /
+  WhatsApp / Zangi URLs to ingest.
+- Never-list unchanged (@elonmusk, @ElonMuskAOC, @Teslahubs).
+- Handle fixture: `fixtures/known_lists/kindly_send_me_2026-10-03.handles.txt`.
+- README, VERSION.md, the user manual, skills, operator prompt and manifest say template v0.2.8 (counts updated).
+- Tests: `tests/test_v028_lists.py` (the 32 handles and their source, watchlist unchanged, never-list untouched).
+  `tests/test_botslist.py` now expects 326 handles = the five fixture files.
+
 ## Template v0.2.7 (2026-10-03)
 Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
 gate or calibration changes).
