@@ -239,7 +239,9 @@ class TestDocs(unittest.TestCase):
         for t in (man, um):
             self.assertIn(plain, " ".join(t.split()))
         self.assertIn("known-bots", readme); self.assertIn(kb.LIST_URL, readme)
-        self.assertIn("v0.2.5", rd("CHANGELOG.md")); self.assertIn("HoBeGone-Template v0.2.5", rd("fis", "versions.py"))
+        self.assertIn("## Template v0.2.5", rd("CHANGELOG.md"))
+        from fis.versions import TEMPLATE_VERSION   # v0.2.5 or later
+        self.assertGreaterEqual(tuple(int(x) for x in TEMPLATE_VERSION.rsplit("v", 1)[1].split(".")), (0, 2, 5))
         self.assertTrue(os.path.exists(BOTSLIST))
 
 

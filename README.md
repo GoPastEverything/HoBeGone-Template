@@ -12,7 +12,7 @@ decision-v0.7.1 auto-block layer), the base rules, operator prompts for a browse
 manual, a test suite and a neutral starter instance. It contains **no owner data**: no follower lists, no reactions and
 no trained model. Every owner starts from zero.
 
-> Status: template v0.2.5 (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1). The license is MIT; see [LICENSE](LICENSE).
+> Status: template v0.2.6 (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1). The license is MIT; see [LICENSE](LICENSE).
 
 ---
 
@@ -48,7 +48,7 @@ no trained model. Every owner starts from zero.
    v0.7 auto-block layer blocks automatically when any tier holds (details in [`rules/BASE_RULES.md`](rules/BASE_RULES.md)):
    - **A. BLOCK_CONFIRMED**: the engine's own verdict after a complete second pass.
    - **L. Shared known lists** (v0.7.1): the handle is on [`known.botslist`](known.botslist), or the account shows an
-     exact Telegram/WhatsApp contact from `rules/link_watchlist.json`.
+     exact Telegram/WhatsApp/Zangi contact from `rules/link_watchlist.json`.
    - **B. Base pattern**: a STRONG scam/impersonation feature (claims to be a real public figure or company; a repeated
      scam/DM-funnel script; a verified malicious link) or the compound *celebrity persona + "message me"/Telegram funnel
      + giveaway/crypto/prize lure*. It also needs readable evidence and no substantial human-continuity evidence.
@@ -130,8 +130,19 @@ lowercased, a leading `@` in `t.me/@name` dropped). Labels such as "Parody accou
 X auto-linked inside a sentence (`PROSE_AUTOLINK_IGNORE`, e.g. "fit in.Here") and official domains
 (`NEVER_WATCHLIST_DOMAINS`) are skipped.
 
-Current lists (template v0.2.5): **242 known bots** in `known.botslist` and **73 watchlisted links (33 exact, 40
-prefix)**, all from the X people search "Kindly Send Me A Follow Request" (collected 2026-10-03). `python3 -m fis
+Current lists (template v0.2.6): **281 known bots** in `known.botslist` and **75 watchlisted links (35 exact, 40
+prefix)**, from three X people searches (all collected 2026-10-03): "Kindly Send Me A Follow Request" (242 accounts,
+73 links), "Elon Rocket Man" (20 accounts, 1 link) and "Tesla Hub" (19 accounts, 1 Zangi contact; @Teslahubs, a real
+gold-check business, is on the never-list instead).
+
+Zangi (template v0.2.6) is a chat contact like Telegram and WhatsApp: a Zangi link (`services.zangi.com/dl/<number>`)
+or a Zangi number written next to the word "Zangi" in a bio ("Text on Zangi 3415158270") is stored and matched as
+`services.zangi.com/dl/3415158270`, an exact match blocks on its own, and "Zangi" counts as a lure in the "kindly send me
+a follow request" rule. Other phone numbers are never read as links.
+
+**The never-list** (`rules/impersonation_allowlist.json`, maintainer-only): handles that `known-list ingest` never adds
+and (template v0.2.6) that no rule or tier ever auto-blocks, including the "block all known bots" job: the real
+@elonmusk, the parody @ElonMuskAOC and @Teslahubs. Only an owner's own ❌ can block one. `python3 -m fis
 known-list show` prints the live counts. (Template ≤ v0.2.3 kept the accounts in `rules/known_scam_accounts.json`; that
 file is gone, and the engine reads it only as a fallback if a checkout has no `known.botslist`.)
 

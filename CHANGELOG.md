@@ -1,5 +1,41 @@
 # Changelog
 
+## Template v0.2.6 (2026-10-03)
+Shared-list update ordered by the maintainer, plus Zangi and the never-list (engine Ho Be Gone @BOT v0.2.0, auto-block
+decision-v0.7.1; no weight, gate or calibration changes).
+- **known.botslist: 281 accounts** (39 added via `known-list ingest --maintainer`):
+  - **20** from the X people search "Elon Rocket Man" (source `x-search:Elon Rocket Man (2026-10-03)`).
+  - **19** from the X people search "Tesla Hub" (source `x-search:Tesla Hub (2026-10-03)`). Every account in that file
+    except **@Teslahubs**, which the maintainer says is a real gold-check business.
+  - Input cleaned the same way as before: `@` stripped, whitespace collapsed, U+FFFD replacement characters removed,
+    the bare `http://` link field dropped, and X's check mark recorded as `verified` (gold = true, none = false).
+  - Handle fixtures: `fixtures/known_lists/elon_rocket_man_2026-10-03.handles.txt` and `tesla_hub_2026-10-03.handles.txt`.
+- **Link watchlist: 75 links (35 exact, 40 prefix)**, 2 added:
+  - `innovation.space` (domain; @action_567's bio).
+  - `services.zangi.com/dl/3415158270` (Zangi contact; @teslahub234's bio "Text on Zangi 3415158270"). The phone
+    number in the same bio is not read as a link.
+- **Zangi is a chat contact like Telegram/WhatsApp**:
+  - New link kind `zangi` (hosts services.zangi.com / zangi.com / zangi.me, normalized to
+    `services.zangi.com/dl/<number>`). An exact match is a known scam contact on its own (tier KNOWN_SCAM_LIST, layer
+    `link_watchlist`).
+  - A number written right next to the word "Zangi" ("Text on Zangi N", "my Zangi number: N", "N my Zangi number") is
+    read as that Zangi link, both by `known-list ingest` and when an account is audited (`known_lists.zangi_links`).
+  - "Zangi" now counts as a lure in the "kindly send me a follow request" rule, and as a solicitation marker for
+    scouting.
+  - The existing watchlist entry `services.zangi.com/dl/5270574074` is now kind `zangi`.
+- **Never-list** (`rules/impersonation_allowlist.json`, list version 2):
+  - **@Teslahubs** added, so ingest skips it.
+  - Every handle on the list is now never auto-blocked by **any** tier: BLOCK_CONFIRMED, known lists, patterns, the
+    owner-trained model, the known-bots job. It already wasn't listed or matched by the name rule. Only the owner's own
+    ❌ blocks one.
+  - Applies to @elonmusk and @ElonMuskAOC too.
+- README, VERSION.md, BASE_RULES, the user manual and the manual skill updated (counts, Zangi, the never-list). Runbook and
+  manual headers say template v0.2.6.
+- Tests: `tests/test_v026_lists.py`. Covers the shipped additions and sources, @Teslahubs never listed, the new links,
+  Zangi normalization/extraction, a known Zangi contact blocking on its own, the phrase rule counting Zangi, ingest
+  skipping @Teslahubs, and no tier blocking a never-listed handle (owner ❌ still does). `tests/test_botslist.py` now
+  expects 281 handles = the three fixture files.
+
 ## Template v0.2.5 (2026-10-03)
 One-time opt-in offer to block every known bot (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule,
 weight, gate or calibration changes). Until now owners only blocked the known bots they ran into (followers and

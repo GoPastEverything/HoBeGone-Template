@@ -4,13 +4,15 @@ An account is auto-blocked (mode AUTO_CLEAN) when the owner has not chosen ✅ K
   A  BLOCK_CONFIRMED      the v0.6 engine's own verdict (all six gates, incl. the full second pass).
   L  KNOWN_SCAM_LIST      (v0.7.1, shared lists in rules/, fis/known_lists.py) the handle is on
                           known.botslist (layer known_scam_list), or the profile/posts carry the exact
-                          Telegram/WhatsApp link of rules/link_watchlist.json (layer link_watchlist).
+                          Telegram/WhatsApp/Zangi link of rules/link_watchlist.json (layer link_watchlist).
      ELON_TESLA_NAME_IMPERSONATION (tier B pattern, v0.7.1 base rule): the @handle or display name impersonates Elon Musk
                           / Tesla / SpaceX leadership (look-alike normalized); rules/impersonation_allowlist.json is never
                           matched. L and this name rule are stopped only by the allowlist and the owner's ✅ keep.
      KINDLY_FOLLOW_REQUEST_LURE (tier B pattern, v0.7.1 base rule): display name or bio says "kindly send me a follow
                           request" + a Telegram/WhatsApp/DM/"click the link"/"claim your prize" lure. Same stop rules as
                           the name rule (allowlist + owner keep; a "parody account" bio does not exempt either rule).
+     NEVER-LIST (v0.2.6): a handle on rules/impersonation_allowlist.json is never auto-blocked by ANY tier (A, L, B, C,
+                          known-bots job); only the owner's own ❌ blocks it.
      WATCHLISTED_LINK_PLUS_LURE (tier B pattern, v0.7.1): any other watchlisted link + an existing lure/impersonation
                           feature, under the shared guards below. A watchlisted link is always listed in DETAILS.
   B  AUTO_BLOCK_PATTERN   >= 1 STRONG scam/impersonation registry feature (I001, S004, S008) -- or the base compound
@@ -162,7 +164,7 @@ def _known_list_tier(state):
     if kn["EXACT_CHAT_LINK"]:
         chat = ", ".join(sorted({m["LINK"] for m in kn["LINK_MATCHES"] if m["EXACT_CHAT_HANDLE"]}))
         return {"TIER": "KNOWN_SCAM_LIST", "LAYER": "link_watchlist",
-                "REASON": f"links to a known scam Telegram/WhatsApp contact on the shared watchlist: {chat}"}, det
+                "REASON": f"links to a known scam Telegram/WhatsApp/Zangi contact on the shared watchlist: {chat}"}, det
     if kn["NAME_IMPERSONATION"]:
         n = kn["NAME_IMPERSONATION"]
         where = "@handle" if n["FIELD"] == "HANDLE" else "display name"
@@ -193,6 +195,9 @@ def evaluate(state, adjudication=None, model=None, policy_id=None, instance_name
         return dict(base, AUTO_BLOCK=False, TIER=None, REASON="you chose ✅ keep / asked to unblock", HELD=False)
     if oa == "OWNER_ACTION_BLOCK":
         return dict(base, AUTO_BLOCK=True, TIER="OWNER_BLOCK", REASON="you chose ❌ block", HELD=False)
+    if kl.allowlisted(state["HANDLE"]):   # v0.2.6: the never-list (rules/impersonation_allowlist.json) stops every tier
+        return dict(base, AUTO_BLOCK=False, TIER=None, REASON="on Ho Be Gone's never-block list (rules/impersonation_allowlist.json)",
+                    HELD=False, NEVER_LIST=True)
     short = state.get("SHORT_REASON") or ""
     kv, sv, kdet = known_list_tier(state)
     base["DETAILS"] = {"KNOWN_LISTS": kdet}

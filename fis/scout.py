@@ -36,7 +36,7 @@ DEFAULT_SETTINGS = {
     "REPORT_KNOWN_BOTS": True,                # v0.2.4: report known.botslist accounts to X after a verified block ("stop reporting" turns it off)
 }
 # routing-only marker for "suspicious solicitation begins" in an interaction's visible text (never a score input)
-SOLICIT_RE = re.compile(r"(telegram|whats\s?app|signal|t\.me/|wa\.me/|dm me|text me|send me|inbox me|wallet|invest|crypto|"
+SOLICIT_RE = re.compile(r"(telegram|whats\s?app|zangi|signal|t\.me/|wa\.me/|dm me|text me|send me|inbox me|wallet|invest|crypto|"
                         r"giveaway|prize|claim|recover(y)?|cash ?app|gift ?card)", re.I)
 # light-check escalation: rubric features that indicate impersonation / scam / solicitation / takeover
 ESCALATE_FEATURES = {"I001", "I002", "I003", "I005", "S004", "S005", "S006", "S008", "S010", "S011", "S016", "D006", "D007"}

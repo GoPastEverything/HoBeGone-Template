@@ -10,6 +10,11 @@ from fis import autoblock as ab, checkpoint as ck, evidence_store as es, hbg, kn
 
 BOTSLIST = os.path.join(ROOT, "known.botslist")
 HANDLES = os.path.join(ROOT, "fixtures", "known_lists", "kindly_send_me_a_follow_request_2026-10-03.handles.txt")
+FIXTURES = [os.path.join(ROOT, "fixtures", "known_lists", f) for f in (
+    "kindly_send_me_a_follow_request_2026-10-03.handles.txt",   # template v0.2.3: 242
+    "elon_rocket_man_2026-10-03.handles.txt",                   # template v0.2.6: 20
+    "tesla_hub_2026-10-03.handles.txt")]                        # template v0.2.6: 19 (@Teslahubs is on the never-list)
+TOTAL = 281
 FPDB = json.load(open(os.path.join(ROOT, "fingerprints_db.json"), encoding="utf-8"))
 SRC = "x-search:test (synthetic)"
 
@@ -23,11 +28,12 @@ def fis(*args, env=None):
 
 
 class TestShippedBotslist(unittest.TestCase):
-    def test_loads_242_handles_from_known_botslist(self):
-        want = [l.strip() for l in open(HANDLES, encoding="utf-8") if l.strip() and not l.startswith("#")]
+    def test_loads_every_fixture_handle_from_known_botslist(self):
+        want = [l.strip().lower() for f in FIXTURES for l in open(f, encoding="utf-8") if l.strip() and not l.startswith("#")]
+        self.assertEqual(len(want), TOTAL); self.assertEqual(len(set(want)), TOTAL)
         acc = kl.read_botslist(BOTSLIST)
         have = [e["handle"] for e in acc["ACCOUNTS"]]
-        self.assertEqual(len(have), 242); self.assertEqual(sorted(have), sorted(set(want)))
+        self.assertEqual(len(have), TOTAL); self.assertEqual(sorted(have), sorted(set(want)))
         self.assertEqual(have, sorted(have))                                   # sorted, one per line: diff-friendly
         for e in acc["ACCOUNTS"]:
             for k in ("display_name", "bio", "links", "source", "added"):
@@ -42,14 +48,14 @@ class TestShippedBotslist(unittest.TestCase):
         self.assertIn("Only the maintainers update this list. Owners' bots read it and never edit it; to suggest an account, open an issue", txt)
         self.assertFalse(os.path.exists(os.path.join(ROOT, "rules", "known_scam_accounts.json")))   # old file removed cleanly
         lines = [l for l in txt.splitlines() if l and not l.startswith("#")]
-        self.assertEqual(len(lines), 242)
+        self.assertEqual(len(lines), TOTAL)
         self.assertTrue(all(json.loads(l)["handle"] for l in lines))
 
     def test_engine_defaults_to_repo_root_botslist(self):
         env = {k: v for k, v in os.environ.items() if k not in ("HOBEGONE_RULES_DIR", "HOBEGONE_BOTSLIST")}
         r = fis("known-list", "show", "--limit", "1", env=env)
         self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertIn("Known bots (known.botslist): 242", r.stdout); self.assertIn(BOTSLIST, r.stdout)
+        self.assertIn(f"Known bots (known.botslist): {TOTAL}", r.stdout); self.assertIn(BOTSLIST, r.stdout)
         code = "from fis import known_lists as kl; print(kl.botslist_path()); print(kl.check('_elonmuskqs', {})['KNOWN_SCAM_ACCOUNT']['source'])"
         r = subprocess.run([sys.executable, "-c", code], cwd=ROOT, capture_output=True, text=True, env=env)
         self.assertEqual(r.stdout.splitlines()[0], BOTSLIST, r.stderr)

@@ -32,12 +32,15 @@ private message", a Telegram giveaway link) must auto-block for every owner unde
 | Rule | File | Blocks when | Layer / pattern |
 |---|---|---|---|
 | Known bots list | [`known.botslist`](../known.botslist) (repo root, maintainer-only) | the handle is listed | tier KNOWN_SCAM_LIST, layer `known_scam_list` |
-| Scam-link watchlist, exact Telegram/WhatsApp | `link_watchlist.json` | the profile, website or posts show the same `t.me/…` / `wa.me/…` contact | tier KNOWN_SCAM_LIST, layer `link_watchlist` |
+| Scam-link watchlist, exact Telegram/WhatsApp/Zangi | `link_watchlist.json` | the profile, website or posts show the same `t.me/…` / `wa.me/…` / `services.zangi.com/dl/…` contact (a "Zangi 3415158270" number in the text counts as that Zangi link) | tier KNOWN_SCAM_LIST, layer `link_watchlist` |
 | Scam-link watchlist, any other match | `link_watchlist.json` | a watchlisted link (exact, prefix of a cut-off link, or a whole listed domain) **plus** an existing lure or impersonation feature (I001–I005, S004, S006, S012, S016), under the section-1 guards | pattern `WATCHLISTED_LINK_PLUS_LURE` |
 | Elon Musk / Tesla / SpaceX name rule | `impersonation_allowlist.json` (allowlist) | the @handle or display name impersonates Elon Musk or Tesla/SpaceX leadership: "elon" + anything (`Elon____`, `ElonMusk_7`, `Elon_Musk`, `iam_elon`, "real elon"), `mrmusk`, "musk" with elon/tesla/spacex/ceo, `teslaceo`, `tesla_ceo`, `spacexceo`, "ceo of tesla", "Elon's assistant/manager/team"… | pattern `ELON_TESLA_NAME_IMPERSONATION` |
-| "Kindly send me a follow request" | — | that phrase (any case/spacing) in the display name or bio **plus** a Telegram/WhatsApp/DM/"click the link"/"claim your prize" lure | pattern `KINDLY_FOLLOW_REQUEST_LURE` |
+| "Kindly send me a follow request" | — | that phrase (any case/spacing) in the display name or bio **plus** a Telegram/WhatsApp/Zangi/DM/"click the link"/"claim your prize" lure | pattern `KINDLY_FOLLOW_REQUEST_LURE` |
 
 - **The owner's ✅ keep / "unblock @handle" always wins** over every row. The owner's choice never edits the shared lists.
+- **The never-list** (`impersonation_allowlist.json` HANDLES; template v0.2.6): those handles are never added to
+  known.botslist and never auto-blocked by any row, tier or the "block all known bots" job (@elonmusk, @ElonMuskAOC,
+  @Teslahubs, a real gold-check business). Only the owner's own ❌ blocks one.
 - The name rule is case-insensitive and normalizes look-alikes first: 0→o, 1→l and 1→i, 3→e, 4→a, 5→s, 7→t,
   Cyrillic/Greek homoglyphs, fancy Unicode letters, accents; `_` `.` `-` `'` are stripped (spaces stay word breaks, so
   "Gabriel Ontiveros" never reads as "elon"). Never matched: the allowlist (`@elonmusk`, the real account; `@ElonMuskAOC`,
@@ -50,7 +53,7 @@ private message", a Telegram giveaway link) must auto-block for every owner unde
   parameters (`utm_*`, `fbclid`, `gclid`, `ref`, `s`, `t`…) dropped, Telegram paths lowercased, `telegram.me` → `t.me`,
   `api.whatsapp.com/send?phone=N` → `wa.me/N`. X splits links over lines and cuts them off with "…": the pieces are
   joined, and a cut-off link is stored as a **prefix** entry (`match_type: "prefix"`, shown as `t.me/elon_reeve_mus*`).
-  Only an **exact** Telegram/WhatsApp match blocks on its own; a prefix match needs a lure/impersonation feature.
+  Only an **exact** Telegram/WhatsApp/Zangi match blocks on its own; a prefix match needs a lure/impersonation feature.
   Official domains (x.com, tesla.com, spacex.com, terafab.ai…) are never watchlisted. `t.me/@name` is stored as
   `t.me/name`; labels like "Parody account" are not links; words X auto-linked inside a sentence ("fit in.Here",
   "X Corp and X.Al.") are listed in `PROSE_AUTOLINK_IGNORE` and skipped.

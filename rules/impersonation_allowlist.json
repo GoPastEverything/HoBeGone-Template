@@ -1,8 +1,8 @@
 {
   "LIST": "impersonation_allowlist",
-  "LIST_VERSION": "1",
+  "LIST_VERSION": "2",
   "UPDATED": "2026-10-03",
-  "DESCRIPTION": "Handles the Elon Musk / Tesla / SpaceX name rule never matches and that `known-list ingest` never adds. NAME_EXCLUSION_WORDS are ordinary words that contain 'elon' and are removed before the name rule looks for it. Edit freely; the owner's own ✅ keep also always wins.",
+  "DESCRIPTION": "The never-list. Handles here are never added by `known-list ingest`, never matched by the Elon Musk / Tesla / SpaceX name rule or the phrase rule, and (template v0.2.6) never auto-blocked by any rule or tier, including the 'block all known bots' job; only the owner's own ❌ blocks one. NAME_EXCLUSION_WORDS are ordinary words that contain 'elon' and are removed before the name rule looks for it. Maintainer-only (CODEOWNERS); the owner's own ✅ keep also always wins.",
   "HANDLES": [
     {
       "handle": "elonmusk",
@@ -11,6 +11,11 @@
     {
       "handle": "elonmuskaoc",
       "why": "well-known, labelled parody account (ElonMuskAOC)"
+    },
+    {
+      "handle": "teslahubs",
+      "why": "real gold-check business (Teslahubs, 'World-Class Tesla Accessory Manufacturing'); maintainer decision 2026-10-03: never listed or auto-blocked",
+      "added": "2026-10-03"
     }
   ],
   "NAME_EXCLUSION_WORDS": [

@@ -2,13 +2,18 @@
 watchlist and the Elon Musk / Tesla / SpaceX leadership name-impersonation rule.
 
 Files (committed, shipped to every owner by bootstrap.sh; MAINTAINER-ONLY, owners' bots only read them):
-  known.botslist                     (repo root, template v0.2.4) the single canonical list of known bot/scam accounts.
+  known.botslist                     (repo root, since template v0.2.4) the single canonical list of known bot/scam accounts.
                                      Every owner auto-blocks them (layer "known_scam_list") and, unless the owner said
                                      "stop reporting", reports them to X after the block is verified (fis/reporting.py).
                                      Format: '#' comment header + one JSON object per account per line, sorted by handle.
-  rules/link_watchlist.json          normalized scam links (t.me/..., wa.me/..., bit.ly/..., scam domains)
-  rules/impersonation_allowlist.json handles the name rule never matches (the real @elonmusk, the labelled parody
-                                     @ElonMuskAOC) + words that are never read as "elon" (elongated, melon, felon...)
+  rules/link_watchlist.json          normalized scam links (t.me/..., wa.me/..., services.zangi.com/dl/..., bit.ly/...,
+                                     scam domains). Telegram, WhatsApp and (v0.2.6) Zangi are chat contacts: an exact match
+                                     is enough on its own. A "Zangi 3415158270" number in a bio is read as the Zangi link
+                                     services.zangi.com/dl/3415158270.
+  rules/impersonation_allowlist.json the never-list: handles that are never listed, never matched by the name rule and
+                                     (v0.2.6) never auto-blocked by any tier (the real @elonmusk, the labelled parody
+                                     @ElonMuskAOC, real businesses such as @Teslahubs) + words that are never read as
+                                     "elon" (elongated, melon, felon...). Only the owner's own ❌ can block one.
   rules/known_scam_accounts.json     (template <= v0.2.3) read only as a fallback when no known.botslist exists
 
 Only the maintainers update known.botslist and the link watchlist: ingest() and remove() refuse unless called with
@@ -224,7 +229,13 @@ def allowlisted(handle, d=None, allow=None):
 # ---------------------------------------------------------------- links
 TRACKING = re.compile(r"^(utm_.*|fbclid|gclid|dclid|msclkid|mc_eid|mc_cid|igshid|si|ref|ref_src|ref_url|s|t|_ga|yclid|twclid)$", re.I)
 CHAT_HOSTS = {"t.me": "telegram", "telegram.me": "telegram", "telegram.dog": "telegram", "wa.me": "whatsapp",
-              "api.whatsapp.com": "whatsapp", "chat.whatsapp.com": "whatsapp", "whatsapp.com": "whatsapp"}
+              "api.whatsapp.com": "whatsapp", "chat.whatsapp.com": "whatsapp", "whatsapp.com": "whatsapp",
+              "services.zangi.com": "zangi", "zangi.com": "zangi", "zangi.me": "zangi"}
+CHAT_KINDS = ("telegram", "whatsapp", "zangi")   # chat-app contacts: an exact watchlist match is a known scam contact on its own
+ZANGI_DL = "services.zangi.com/dl/"
+# "Text on Zangi 3415158270", "my Zangi number: 3301776336", "Zangi ID 3415158270" / "3301776336 my Zangi number"
+ZANGI_NUM_RE = re.compile(r"zangi\W{0,3}(?:(?:id|number|no|num|account|acct|contact)\W{0,3})?(?:is\W{0,3})?\+?(?<!\d)(\d{7,15})(?!\d)"
+                          r"|(?<!\d)(\d{7,15})(?!\d)\W{0,3}(?:(?:is|my|on)\W{1,3}){0,2}zangi", re.I)
 SHORTENERS = {"bit.ly", "tinyurl.com", "t.co", "goo.gl", "ow.ly", "is.gd", "buff.ly", "cutt.ly", "rebrand.ly", "shorturl.at",
               "rb.gy", "tiny.cc", "linktr.ee", "lnkd.in"}
 URL_RE = re.compile(r"(?:(?:https?://)?(?:www\.)?)(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,24}(?::\d+)?(?:/[^\s\"'<>()\[\]{}|\\^`]*)?", re.I)
@@ -262,6 +273,11 @@ def normalize_url(u):
         if path.startswith("s/"):
             path = path[2:]
         path = path.lstrip("@")                                 # 't.me/@RocketMan' is the same chat as 't.me/rocketman'
+        q = []
+    elif kind == "zangi":                                       # services.zangi.com/dl/<number>: the number is the contact
+        host = "services.zangi.com"
+        m = re.fullmatch(r"(?:dl/)?(\d{5,15})", path.lower())
+        path = ("dl/" + m.group(1)) if m else path.lower()
         q = []
     elif kind == "whatsapp":
         phone = dict(q).get("phone")
@@ -320,6 +336,17 @@ def links_from_text(text):
     return out
 
 
+def zangi_links(text):
+    """Zangi numbers written out in text ("Text on Zangi 3415158270") as Zangi links ('services.zangi.com/dl/3415158270').
+    Only a number right next to the word Zangi counts; other phone numbers are never read as links."""
+    out = []
+    for m in ZANGI_NUM_RE.finditer(_fold(text or "")):
+        u = ZANGI_DL + (m.group(1) or m.group(2))
+        if u not in out:
+            out.append(u)
+    return out
+
+
 def extract_links(rec):
     """Every link-like string in a collected record's profile fields, posts and link facts (normalized, de-duplicated)."""
     texts = [str(rec.get("display_name") or ""), str(rec.get("bio") or ""), str(rec.get("website") or ""),
@@ -335,7 +362,7 @@ def extract_links(rec):
     raws = []
     for t in texts:
         if t not in ("UNKNOWN", ""):
-            raws += links_from_text(t)
+            raws += links_from_text(t) + zangi_links(t)
     return _dedupe([n for n in (normalize_url(r) for r in raws) if n])[:60]
 
 
@@ -382,7 +409,7 @@ def link_matches(links, d=None, wl=None):
                 how = "prefix" if b.startswith(a) and len(_path(a)) >= MIN_SHARED_PREFIX_PATH else None
             if how:
                 hits.append({"LINK": n["url"] + ("…" if n.get("truncated") else ""), "WATCHLIST_URL": e["url"] + ("*" if mt == "prefix" else ""),
-                             "MATCH": how, "KIND": n["kind"], "EXACT_CHAT_HANDLE": how == "exact" and n["kind"] in ("telegram", "whatsapp"),
+                             "MATCH": how, "KIND": n["kind"], "EXACT_CHAT_HANDLE": how == "exact" and n["kind"] in CHAT_KINDS,
                              "SOURCE": e.get("source"), "FIRST_SEEN_HANDLE": e.get("first_seen_handle"), "ADDED": e.get("added")})
                 break
     return hits
@@ -391,21 +418,21 @@ def link_matches(links, d=None, wl=None):
 # ---------------------------------------------------------------- "Kindly send me a follow request" phrase rule
 PHRASE_RULE_ID = "KINDLY_FOLLOW_REQUEST_LURE"
 KINDLY = "kindlysendmeafollowrequest"
-LURE_RE = re.compile(r"telegram|whats\s*app|\bt\.me/|\bwa\.me/|\bdms?\b|direct\s*message|private\s*message|message\s*me|"
+LURE_RE = re.compile(r"telegram|whats\s*app|zangi|\bt\.me/|\bwa\.me/|\bdms?\b|direct\s*message|private\s*message|message\s*me|"
                      r"send\s*me\s*a\s*message|(?:click|tap)\s*(?:on\s*)?(?:the|my|this)?\s*link|link\s*below|"
                      r"claim\s*your\s*(?:prize|price|reward|gift)", re.I)
 
 
 def phrase_rule(display_name, bio, links=()):
     """Display name or bio says "kindly send me a follow request" (any case/spacing/look-alikes) AND there is a
-    Telegram/WhatsApp/DM/"click the link"/"claim your prize" lure. Returns the match or None."""
+    Telegram/WhatsApp/Zangi/DM/"click the link"/"claim your prize" lure. Returns the match or None."""
     dn, b = str(display_name or ""), str(bio or "")
     where = [f for f, v in (("DISPLAY_NAME", dn), ("BIO", b)) if KINDLY in re.sub(r"[^a-z]", "", _fold(v))]
     if not where:
         return None
     text = " ".join(_fold(dn + "\n" + b).split())
     lure = LURE_RE.search(text)
-    chat = next((n["url"] for n in links or [] if n.get("kind") in ("telegram", "whatsapp")), None)
+    chat = next((n["url"] for n in links or [] if n.get("kind") in CHAT_KINDS), None)
     if not lure and not chat:
         return None
     return {"RULE": PHRASE_RULE_ID, "FIELD": where[0], "LURE": lure.group(0) if lure else chat}
@@ -560,7 +587,8 @@ def ingest(rows, source, d=None, reason=None, today=None, maintainer=False):
             acc["ACCOUNTS"].append(new_entry)
             have.add(h); c["ACCOUNTS_ADDED"] += 1
         cands = [normalize_url(link_field(x)) for x in r.get("links") or []] + \
-                [normalize_url(x) for x in links_from_text(r.get("bio") or "")]
+                [normalize_url(x) for x in links_from_text(r.get("bio") or "")] + \
+                [normalize_url(x) for x in zangi_links(f"{r.get('display_name') or ''}\n{r.get('bio') or ''}")]
         for n in _dedupe([n for n in cands if n]):
             if n["domain"] in never or any(n["domain"].endswith("." + x) for x in never) or n["url"] in prose \
                     or ("/" not in n["url"] and "?" not in n["url"] and (n["truncated"] or n["domain"] in no_domain_only)) \

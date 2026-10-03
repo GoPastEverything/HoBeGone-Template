@@ -2,7 +2,7 @@
   "LIST": "link_watchlist",
   "LIST_VERSION": "1",
   "UPDATED": "2026-10-03",
-  "DESCRIPTION": "Shared base rule (every owner). Normalized scam links (lowercase host, no www, no http/https, no trailing slash, tracking query parameters removed; t.me/telegram.me paths lowercased and a leading @ removed; api.whatsapp.com/send?phone=N -> wa.me/N). An exact Telegram/WhatsApp link match is enough to auto-block; any other watchlisted link auto-blocks together with an existing lure or impersonation feature. An entry without a path matches the whole domain. Entries: domain, url, kind, source, first_seen_handle, added.",
+  "DESCRIPTION": "Shared base rule (every owner). Normalized scam links (lowercase host, no www, no http/https, no trailing slash, tracking query parameters removed; t.me/telegram.me paths lowercased and a leading @ removed; api.whatsapp.com/send?phone=N -> wa.me/N). An exact Telegram/WhatsApp/Zangi link match is enough to auto-block (a 'Zangi 3415158270' number in a bio is stored as services.zangi.com/dl/3415158270); any other watchlisted link auto-blocks together with an existing lure or impersonation feature. An entry without a path matches the whole domain. Entries: domain, url, kind, source, first_seen_handle, added.",
   "NEVER_WATCHLIST_DOMAINS": [
     "x.com",
     "twitter.com",
@@ -37,12 +37,34 @@
   ],
   "LINKS": [
     {
+      "domain": "innovation.space",
+      "url": "innovation.space",
+      "match_type": "exact",
+      "pattern": "innovation.space",
+      "truncated": false,
+      "kind": "other",
+      "source": "x-search:Elon Rocket Man (2026-10-03)",
+      "first_seen_handle": "action_567",
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "services.zangi.com",
+      "url": "services.zangi.com/dl/3415158270",
+      "match_type": "exact",
+      "pattern": "services.zangi.com/dl/3415158270",
+      "truncated": false,
+      "kind": "zangi",
+      "source": "x-search:Tesla Hub (2026-10-03)",
+      "first_seen_handle": "teslahub234",
+      "added": "2026-10-03"
+    },
+    {
       "domain": "services.zangi.com",
       "url": "services.zangi.com/dl/5270574074",
       "match_type": "exact",
       "pattern": "services.zangi.com/dl/5270574074",
       "truncated": false,
-      "kind": "other",
+      "kind": "zangi",
       "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
       "first_seen_handle": "jaredleto7x",
       "added": "2026-10-03"

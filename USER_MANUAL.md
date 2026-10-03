@@ -1,4 +1,4 @@
-# Ho Be Gone — User Manual (v0.2.0, template v0.2.5)
+# Ho Be Gone — User Manual (v0.2.0, template v0.2.6)
 
 ## QUICK START
 1. Make sure you're signed in to X in the bot's browser, and answer one yes/no question. That's all the setup there is.
@@ -17,7 +17,7 @@ about are put on a quiet "held for later" list and left alone.
 
 ## What it blocks
 - Accounts pretending to be a real famous person or company (for example, a fake "Elon Musk" asking you to message it).
-- Accounts that push you to a private chat, Telegram or WhatsApp to "claim a prize", "invest" or "join a giveaway".
+- Accounts that push you to a private chat, Telegram, WhatsApp or Zangi to "claim a prize", "invest" or "join a giveaway".
 - Accounts that send the same scam message to lots of people, or link to known scam sites.
 - Accounts whose name or @handle pretends to be Elon Musk or the boss of Tesla or SpaceX (like "ElonMusk_7",
   "El0nMusk", "MrMuskOfficial" or "TeslaCEO"). The real @elonmusk and the well-known parody @ElonMuskAOC are never
@@ -51,8 +51,8 @@ Only the Ho Be Gone maintainers add to it; say "keep @handle" to keep one for yo
   when it pretends to be someone famous), to help get it suspended. It only reports accounts on known.botslist, never
   the other accounts it blocks for you. Say **"stop reporting"** to turn this off (known bots are still blocked) and
   **"start reporting"** to turn it back on.
-- There's also a shared list of scam links (mostly Telegram and WhatsApp contacts and short links that scammers use).
-  An account that shows a known scam Telegram or WhatsApp contact is blocked. Other known scam links count when the
+- There's also a shared list of scam links (mostly Telegram, WhatsApp and Zangi contacts and short links that scammers use).
+  An account that shows a known scam Telegram, WhatsApp or Zangi contact is blocked. Other known scam links count when the
   account is also pushing a prize, giveaway, investment or a fake famous name.
 - Every Ho Be Gone user gets the same lists, and they update on their own. Your bot only reads them; it never
   changes them.
