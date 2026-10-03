@@ -1,5 +1,25 @@
 # Changelog
 
+## Template v0.2.10 (2026-10-03)
+Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
+gate or calibration changes).
+- **known.botslist: 394 accounts** (47 added via `known-list ingest --maintainer`), all from the X people search "Send Me
+  A Follow" (source `x-search:Send Me A Follow (2026-10-03)`): Give-me-a-follow / DM lure accounts, Elon/Tesla/SpaceX CEO
+  impersonators, and Telegram / Zangi / Signal "claim your prize" contacts. Every account from the search that was not
+  already listed (and not on the never-list) was added — no ordinary-looking holdbacks.
+- **Link watchlist: 92 links (51 exact, 41 prefix)**, 13 added:
+  - exact Telegram: `t.me/spacecxx`, `t.me/elondm7`, `t.me/privateaccount`, `t.me/rocketman7181`, `t.me/privatechat0215`,
+    `t.me/mrrealelon225`, `t.me/spacexrewards`, `t.me/tesla_musk431`, `t.me/jenniferan0`, `t.me/myprivatechat7`,
+    `t.me/elmusk767`.
+  - exact Zangi: `services.zangi.com/dl/1005913650` (@privatechat7x; a truncated `…/dl/conversatio` card scrap was dropped).
+  - exact other: `signal.me` (@elonmuskx25421). A bare `gmail.com` scrape from an email address was not kept.
+- Never-list unchanged (@elonmusk, @ElonMuskAOC, @Teslahubs).
+- Handle fixture: `fixtures/known_lists/send_me_a_follow_2026-10-03.handles.txt`.
+- README, VERSION.md, the user manual, skills, operator prompt and manifest say template v0.2.10 (counts updated).
+- Tests: `tests/test_v0210_lists.py` (the 47 handles and their source, the 13 links and counts, never-list untouched).
+  `tests/test_botslist.py` now expects 394 handles = the seven fixture files; `tests/test_v029_lists.py` expects at least 347.
+
+
 ## Template v0.2.9 (2026-10-03)
 Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
 gate or calibration changes).
