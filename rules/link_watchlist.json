@@ -1,0 +1,33 @@
+{
+  "LIST": "link_watchlist",
+  "LIST_VERSION": "1",
+  "UPDATED": "2026-10-03",
+  "DESCRIPTION": "Shared base rule (every owner). Normalized scam links (lowercase host, no www, no http/https, no trailing slash, tracking query parameters removed; t.me/telegram.me paths lowercased; api.whatsapp.com/send?phone=N -> wa.me/N). An exact Telegram/WhatsApp link match is enough to auto-block; any other watchlisted link auto-blocks together with an existing lure or impersonation feature. An entry without a path matches the whole domain. Entries: domain, url, kind, source, first_seen_handle, added.",
+  "NEVER_WATCHLIST_DOMAINS": [
+    "x.com",
+    "twitter.com",
+    "tesla.com",
+    "spacex.com",
+    "x.ai",
+    "neuralink.com",
+    "boringcompany.com",
+    "starlink.com"
+  ],
+  "DOMAIN_ONLY_NEVER": [
+    "youtube.com",
+    "youtu.be",
+    "instagram.com",
+    "facebook.com",
+    "tiktok.com",
+    "linkedin.com",
+    "google.com",
+    "apple.com",
+    "github.com",
+    "medium.com",
+    "substack.com",
+    "linktr.ee",
+    "discord.gg",
+    "discord.com"
+  ],
+  "LINKS": []
+}

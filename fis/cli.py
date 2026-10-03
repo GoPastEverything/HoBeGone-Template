@@ -1,4 +1,4 @@
-"""Ho Be Gone @BOT v0.2.0 / FollowerIntegritySkill v0.6 (+ decision-v0.7.0 auto-block layer) command line. Entry point: `python3 -m fis <command> ...`.
+"""Ho Be Gone @BOT v0.2.0 / FollowerIntegritySkill v0.6 (+ decision-v0.7.1 auto-block layer) command line. Entry point: `python3 -m fis <command> ...`.
 
 An *instance* is one owner's job directory: owner_policy.json, checkpoint.json, fis_audit.sqlite (evidence store +
 audit log), second_pass_v06/, enforcement_batches/. Browser work (discovery, collection, second-pass reading, block
@@ -6,8 +6,8 @@ clicking) is done by a browser operator following operator_prompts/*.md; these c
 """
 import argparse, glob, json, os, shutil, sys
 
-from .versions import ROOT, versions, HO_BE_GONE_DISPLAY
-from . import hbg, scout, autoblock as ab, owner_model as om, backtest as bt
+from .versions import ROOT, versions, HO_BE_GONE_DISPLAY, TEMPLATE_VERSION
+from . import hbg, scout, autoblock as ab, owner_model as om, backtest as bt, known_lists as kl
 from . import (adjudication as adjm, calibration as cal, checkpoint as ck, enforcement as enfm, evidence_store as es,
                export, metrics, owner_policy as op, pipeline, schema, second_pass as sp2)
 
@@ -39,7 +39,7 @@ def _adj_map(store):
 
 def cmd_versions(a):
     v = versions()
-    print(json.dumps(dict(v, PRODUCT=HO_BE_GONE_DISPLAY), indent=2))
+    print(json.dumps(dict(v, PRODUCT=HO_BE_GONE_DISPLAY, TEMPLATE_VERSION=TEMPLATE_VERSION), indent=2))
 
 
 def _mode_request(a, cp=None):
@@ -328,7 +328,7 @@ def cmd_ingest_sp(a):
 
 
 def cmd_auto_clean(a):
-    """AUTO_CLEAN block batch: decision-v0.7.0 verdicts (BLOCK_CONFIRMED | AUTO_BLOCK_PATTERN | OWNER_TRAINED | owner ❌),
+    """AUTO_CLEAN block batch: decision-v0.7.1 verdicts (BLOCK_CONFIRMED | AUTO_BLOCK_PATTERN | OWNER_TRAINED | owner ❌),
     minus reload-verified blocks and unblock requests; failed ones are retried. No per-account confirmation."""
     p, cp, store, pol = _open(a.instance)
     _refuse_if_owner_paused(cp)
@@ -684,7 +684,8 @@ def cmd_doctor(a):
     if sys.version_info < (3, 10):
         problems.append(f"Python 3.10+ needed, found {sys.version.split()[0]}")
     for rel in ("fis/cli.py", "feature_registry.json", "fingerprints_db.json", "instances/_template/owner_policy.json",
-                "instances/_template/scout_settings.json", "USER_MANUAL.md"):
+                "instances/_template/scout_settings.json", "USER_MANUAL.md", "rules/known_scam_accounts.json",
+                "rules/link_watchlist.json", "rules/impersonation_allowlist.json"):
         if not os.path.exists(os.path.join(ROOT, rel)):
             problems.append(f"missing {rel}")
     try:
@@ -713,6 +714,51 @@ def cmd_doctor(a):
     print(json.dumps(out, indent=2))
     if problems:
         sys.exit(1)
+
+
+def cmd_known_list(a):
+    """Shared (all owners) known-scam account list + scam-link watchlist in rules/ (decision-v0.7.1)."""
+    d = a.rules_dir
+    if a.action == "ingest":
+        if not a.accounts or not a.source:
+            sys.exit('known-list ingest needs --accounts FILE.jsonl and --source "..."')
+        rows = []
+        with open(a.accounts, encoding="utf-8") as fh:
+            for n, line in enumerate(fh, 1):
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    rows.append(json.loads(line))
+                except ValueError:
+                    sys.exit(f"{a.accounts}:{n}: not valid JSON")
+        c = kl.ingest(rows, a.source, d, reason=a.reason)
+        print(f"Read {len(rows)} account line(s) from {a.accounts} (source: {a.source})")
+        print(f"Accounts added: {c['ACCOUNTS_ADDED']}")
+        print(f"Already on the list: {c['ALREADY_PRESENT']}")
+        print(f"Skipped (allowlist): {c['SKIPPED_ALLOWLIST']}")
+        if c["SKIPPED_REMOVED_EARLIER"] or c["SKIPPED_INVALID"]:
+            print(f"Skipped (removed earlier): {c['SKIPPED_REMOVED_EARLIER']} · skipped (not a valid handle): {c['SKIPPED_INVALID']}")
+        print(f"Links added: {c['LINKS_ADDED']} (already listed {c['LINKS_ALREADY_PRESENT']}, skipped {c['LINKS_SKIPPED']} "
+              "official/cut-off/bare-platform links)")
+        print("JSON " + json.dumps(c))
+        print("These lists apply to every owner after the change is committed and pushed (bootstrap.sh fast-forwards each install).")
+    elif a.action == "show":
+        acc, wl, allow = kl.load_accounts(d), kl.load_links(d), kl.load_allowlist(d)
+        print(f"Known scam accounts: {len(acc.get('ACCOUNTS', []))} (removed: {len(acc.get('REMOVED', []))})")
+        for e in acc.get("ACCOUNTS", [])[: a.limit]:
+            print(f"  @{e['handle']} — {e.get('display_name') or ''} [{e.get('source')}, {e.get('added')}]")
+        print(f"Scam-link watchlist: {len(wl.get('LINKS', []))}")
+        for e in wl.get("LINKS", [])[: a.limit]:
+            print(f"  {e['url']} ({e.get('kind')}; first seen @{e.get('first_seen_handle')}, {e.get('added')})")
+        print("Never matched / never listed: " + ", ".join("@" + (x["handle"] if isinstance(x, dict) else x) for x in allow.get("HANDLES", [])))
+    elif a.action == "remove":
+        if not a.handle or not a.reason:
+            sys.exit("known-list remove needs --handle and --reason")
+        gone = kl.remove(a.handle, a.reason, d)
+        if not gone:
+            sys.exit(f"@{kl.handle_key(a.handle)} is not on the known-scam account list")
+        print(f"Removed @{gone['handle']} from the known-scam account list (reason: {a.reason}). It won't be re-added by a later ingest.")
 
 
 def cmd_manual(a):
@@ -788,6 +834,10 @@ def main(argv=None):
     s.add_argument("--remove-identity"); s.add_argument("--owner-words", help="the owner's own words asking for the change")
     s = add("daily-summary", cmd_daily_summary, "inst"); s.add_argument("--since"); s.add_argument("--dry-run", action="store_true")
     add("daily-plan", cmd_daily_plan, "inst")
+    s = sub.add_parser("known-list", help="shared known-scam accounts + scam-link watchlist (rules/)"); s.set_defaults(fn=cmd_known_list)
+    s.add_argument("action", choices=["ingest", "show", "remove"]); s.add_argument("--accounts", help="JSONL: {handle, display_name, bio, verified, links[]}")
+    s.add_argument("--source", help='e.g. "x-search:Kindly Send Me A Follow Request (2026-10-03)"'); s.add_argument("--reason")
+    s.add_argument("--handle"); s.add_argument("--limit", type=int, default=50); s.add_argument("--rules-dir", help=argparse.SUPPRESS)
     s = sub.add_parser("manual"); s.set_defaults(fn=cmd_manual); s.add_argument("--short", action="store_true")
     s = add("pause", cmd_pause, "inst"); s.set_defaults(action="pause")
     s = add("resume", cmd_pause, "inst"); s.set_defaults(action="resume")

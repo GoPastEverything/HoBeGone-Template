@@ -1,7 +1,18 @@
-"""decision-v0.7.0: Ho Be Gone automatic-block layer on top of the UNCHANGED v0.6 decision engine.
+"""decision-v0.7.1: Ho Be Gone automatic-block layer on top of the UNCHANGED v0.6 decision engine.
 
 An account is auto-blocked (mode AUTO_CLEAN) when the owner has not chosen ✅ KEEP and ANY tier holds:
   A  BLOCK_CONFIRMED      the v0.6 engine's own verdict (all six gates, incl. the full second pass).
+  L  KNOWN_SCAM_LIST      (v0.7.1, shared lists in rules/, fis/known_lists.py) the handle is on
+                          rules/known_scam_accounts.json (layer known_scam_list), or the profile/posts carry the exact
+                          Telegram/WhatsApp link of rules/link_watchlist.json (layer link_watchlist).
+     ELON_TESLA_NAME_IMPERSONATION (tier B pattern, v0.7.1 base rule): the @handle or display name impersonates Elon Musk
+                          / Tesla / SpaceX leadership (look-alike normalized); rules/impersonation_allowlist.json is never
+                          matched. L and this name rule are stopped only by the allowlist and the owner's ✅ keep.
+     KINDLY_FOLLOW_REQUEST_LURE (tier B pattern, v0.7.1 base rule): display name or bio says "kindly send me a follow
+                          request" + a Telegram/WhatsApp/DM/"click the link"/"claim your prize" lure. Same stop rules as
+                          the name rule (allowlist + owner keep; a "parody account" bio does not exempt either rule).
+     WATCHLISTED_LINK_PLUS_LURE (tier B pattern, v0.7.1): any other watchlisted link + an existing lure/impersonation
+                          feature, under the shared guards below. A watchlisted link is always listed in DETAILS.
   B  AUTO_BLOCK_PATTERN   >= 1 STRONG scam/impersonation registry feature (I001, S004, S008) -- or the base compound
                           CELEBRITY_PERSONA_FUNNEL_SCAM (public-figure/brand persona I002/I003/I005 + DM/off-platform
                           funnel S005/S010 + giveaway/crypto/prize/investment lure S006/S012/S016, i.e. a strong scam built
@@ -22,11 +33,13 @@ import json
 from .evidence_store import now
 from .versions import versions, AUTO_BLOCK_VERSION
 from . import owner_model as om
+from . import known_lists as kl
 
 STRONG_BASIS = {"I001": "impersonation", "S004": "repeated scam/DM-funnel script", "S008": "verified malicious link"}
 PERSONA = {"I002", "I003", "I005"}
 FUNNEL = {"S005", "S010"}
 LURE = {"S006", "S012", "S016"}
+LINK_COMPANIONS = PERSONA | LURE | {"I001", "I004", "S004"}   # lure or impersonation features (never traits/automation)
 SOLICIT = {"S005": "DM funnel", "S010": "Telegram/WhatsApp funnel", "S012": "prize lure", "S006": "crypto giveaway",
            "S016": "investment/recovery pitch", "S004": "scam script"}
 FEATURE_WORDS = {"I001": "claims to be a real public figure", "I002": "claims a role with a public figure or company",
@@ -126,6 +139,49 @@ def owner_tier(state, model, instance_name=None):
     return True, round(sc, 4), _words(sorted(basis, key=lambda f: -model["WEIGHTS"].get(f, 0)), 2)
 
 
+def known_list_tier(state):
+    """Tier L + the v0.7.1 shared name/phrase/link patterns. Returns (tier-L fields or None, shared-pattern fields or None,
+    known-lists details). evaluate() applies L before the classic tier-B patterns and the shared patterns after them."""
+    lv, det = _known_list_tier(state)
+    if lv and lv["TIER"] == "KNOWN_SCAM_LIST":
+        return lv, None, det
+    return None, lv, det
+
+
+def _known_list_tier(state):
+    kn = kl.check_state(state)
+    det = {"KNOWN_SCAM_ACCOUNT": kn["KNOWN_SCAM_ACCOUNT"], "LINK_MATCHES": kn["LINK_MATCHES"],
+           "NAME_IMPERSONATION": kn["NAME_IMPERSONATION"], "PHRASE_RULE": kn["PHRASE_RULE"], "ALLOWLISTED": kn["ALLOWLISTED"]}
+    links = ", ".join(sorted({m["LINK"] for m in kn["LINK_MATCHES"]}))
+    if kn["KNOWN_SCAM_ACCOUNT"]:
+        e = kn["KNOWN_SCAM_ACCOUNT"]
+        return {"TIER": "KNOWN_SCAM_LIST", "LAYER": "known_scam_list",
+                "REASON": f"on the shared known-scam account list ({e.get('reason') or 'listed'}; source {e.get('source')}, added {e.get('added')})"}, det
+    if kn["EXACT_CHAT_LINK"]:
+        chat = ", ".join(sorted({m["LINK"] for m in kn["LINK_MATCHES"] if m["EXACT_CHAT_HANDLE"]}))
+        return {"TIER": "KNOWN_SCAM_LIST", "LAYER": "link_watchlist",
+                "REASON": f"links to a known scam Telegram/WhatsApp contact on the shared watchlist: {chat}"}, det
+    if kn["NAME_IMPERSONATION"]:
+        n = kn["NAME_IMPERSONATION"]
+        where = "@handle" if n["FIELD"] == "HANDLE" else "display name"
+        return {"TIER": "AUTO_BLOCK_PATTERN", "PATTERN": kl.NAME_RULE_ID, "LAYER": "elon_tesla_name_rule",
+                "REASON": f"{where} \"{n['VALUE']}\" impersonates Elon Musk / Tesla / SpaceX leadership ({n['MATCH']})"}, det
+    if kn["PHRASE_RULE"]:
+        p = kn["PHRASE_RULE"]
+        extra = f"; known scam link {links}" if links else ""
+        return {"TIER": "AUTO_BLOCK_PATTERN", "PATTERN": kl.PHRASE_RULE_ID, "LAYER": "kindly_phrase_rule",
+                "REASON": f"\"kindly send me a follow request\" in its {'display name' if p['FIELD'] == 'DISPLAY_NAME' else 'bio'} "
+                          f"+ a lure (\"{p['LURE']}\"){extra}"}, det
+    if kn["LINK_MATCHES"]:
+        ps = state["STAGES"].get("PRIMARY_SCORING") or {}
+        feats = (set(ps.get("FEATURES_PRESENT") or []) | set(ps.get("STRONG_FEATURES") or [])) & LINK_COMPANIONS
+        fails, ev = _guards(state)
+        if feats and not fails:
+            return {"TIER": "AUTO_BLOCK_PATTERN", "PATTERN": "WATCHLISTED_LINK_PLUS_LURE", "LAYER": "link_watchlist",
+                    "REASON": f"known scam link on the shared watchlist ({links}) + {_words(sorted(feats), 2)}"}, det
+    return None, det
+
+
 def evaluate(state, adjudication=None, model=None, policy_id=None, instance_name=None):
     """Full v0.7 verdict for one account. AUTO_BLOCK True means it goes on the automatic block list."""
     oa = (adjudication or {}).get("OWNER_ACTION")
@@ -136,16 +192,24 @@ def evaluate(state, adjudication=None, model=None, policy_id=None, instance_name
     if oa == "OWNER_ACTION_BLOCK":
         return dict(base, AUTO_BLOCK=True, TIER="OWNER_BLOCK", REASON="you chose ❌ block", HELD=False)
     short = state.get("SHORT_REASON") or ""
+    kv, sv, kdet = known_list_tier(state)
+    base["DETAILS"] = {"KNOWN_LISTS": kdet}
+    if kdet["LINK_MATCHES"]:
+        base["DETAILS"]["WATCHLISTED_LINKS"] = sorted({m["LINK"] for m in kdet["LINK_MATCHES"]})
     if state["DECISION"]["ENFORCEMENT"] == "BLOCK_CONFIRMED":
         return dict(base, AUTO_BLOCK=True, TIER="BLOCK_CONFIRMED", REASON=f"confirmed after a full second check: {short}", HELD=False)
+    if kv:
+        return dict(base, AUTO_BLOCK=True, HELD=False, **kv)
     okb, name, whyb = pattern_tier(state, policy_id)
     if okb:
         return dict(base, AUTO_BLOCK=True, TIER="AUTO_BLOCK_PATTERN", PATTERN=name, REASON=f"{whyb} ({short})" if short else whyb, HELD=False)
+    if sv:
+        return dict(base, AUTO_BLOCK=True, HELD=False, **sv)
     okc, sc, whyc = owner_tier(state, model, instance_name)
     if okc:
         return dict(base, AUTO_BLOCK=True, TIER="OWNER_TRAINED", OWNER_SCORE=sc,
                     REASON=f"matches what you've blocked before: {whyc}", HELD=False)
-    held = state["DECISION"]["ENFORCEMENT"] != "KEEP" or bool(sc is not None and model and sc >= model.get("THRESHOLD", 1) * 0.75)
+    held = state["DECISION"]["ENFORCEMENT"] != "KEEP" or bool(kdet["LINK_MATCHES"]) or bool(sc is not None and model and sc >= model.get("THRESHOLD", 1) * 0.75)
     return dict(base, AUTO_BLOCK=False, TIER=None, OWNER_SCORE=sc, REASON=f"below the auto-block bar ({whyb}; {whyc})", HELD=held)
 
 
@@ -182,7 +246,7 @@ def plan(store, instance, policy, model, max_n=20, batch_id=None, cp=None, inclu
         tasks.append({"HANDLE": s["HANDLE"], "PROFILE_URL": s["PROFILE_URL"], "EXPECTED_DECISION": s["DECISION"]["ENFORCEMENT"],
                       "BASIS": f"{v['TIER']}: {v['REASON'][:140]}", "TIER": v["TIER"], "PLANNED_AT": now()})
         record(store, s["HANDLE"], v, "PLANNED", batch_id)
-    order = {"OWNER_BLOCK": 0, "BLOCK_CONFIRMED": 1, "AUTO_BLOCK_PATTERN": 2, "OWNER_TRAINED": 3}
+    order = {"OWNER_BLOCK": 0, "BLOCK_CONFIRMED": 1, "KNOWN_SCAM_LIST": 2, "AUTO_BLOCK_PATTERN": 3, "OWNER_TRAINED": 4}
     tasks.sort(key=lambda t: order.get(t["TIER"], 9))
     store.commit()
     return tasks[:max_n]

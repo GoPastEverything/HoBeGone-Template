@@ -6,14 +6,14 @@
 Ho Be Gone is the conversation with the owner: a start line, rare progress lines, a completion report, a daily
 summary and security stops. **All detection lives in the engine** at the repo root
 (`python3 -m fis …`): FollowerIntegritySkill v0.6.0 (features, the nine scores, evidence sufficiency, second pass,
-network analysis, decision-v0.6.0 gates, calibration, audit log) plus the **decision-v0.7.0 automatic-block layer**
+network analysis, decision-v0.6.0 gates, calibration, audit log) plus the **decision-v0.7.1 automatic-block layer**
 (`fis/autoblock.py`, `fis/owner_model.py`). This file contains **no weights, thresholds or gates**; never add any.
 
 Backend (printed by `python3 -m fis versions`, stamped on every run, audit event, auto-block row and export):
 HO_BE_GONE_VERSION v0.2.0 · FollowerIntegritySkill v0.6.0 · feature registry v0.5 · scoring-v0.6.0 ·
-decision-v0.6.0 · AUTO_BLOCK_VERSION decision-v0.7.0 · calibration NONE until the owner freezes a set · OWNER_MODEL_VERSION per refit.
+decision-v0.6.0 · AUTO_BLOCK_VERSION decision-v0.7.1 · calibration NONE until the owner freezes a set · OWNER_MODEL_VERSION per refit.
 
-Deploy and update only through `bootstrap.sh` from https://github.com/TheRetardedElon/HoBeGone-Template (see
+Deploy and update only through `bootstrap.sh` from https://github.com/GoPastEverything/HoBeGone-Template (see
 `BOOTSTRAP.md`): it clones or fast-forwards the repo into `~/hobegone/HoBeGone-Template`, tests it, refuses another
 owner's instance and runs `start`. If the repo can't be reached, stop and tell the owner the engine isn't installed
 yet; never fall back to another copy.
@@ -39,13 +39,17 @@ yet; never fall back to another copy.
 Switch: `python3 -m fis set-mode --instance I --mode REVIEW_WITH_ME|AUDIT_ONLY|AUTO_CLEAN --owner-words "their words"`.
 Non-default modes require `--owner-words`; the bot never offers a mode menu.
 
-## 3. What gets auto-blocked (decision-v0.7.0; details in `fis/autoblock.py`)
+## 3. What gets auto-blocked (decision-v0.7.1; details in `fis/autoblock.py`)
 Owner ✅ KEEP is never blocked; owner ❌ is always honoured. Otherwise any tier:
 - **A BLOCK_CONFIRMED** — the unchanged v0.6 engine verdict (all gates, full second pass).
+- **L KNOWN_SCAM_LIST** (v0.7.1) — the handle is on the shared `rules/known_scam_accounts.json`, or the account shows
+  an exact Telegram/WhatsApp contact from `rules/link_watchlist.json`. Shared by every owner; `known-list show`.
 - **B AUTO_BLOCK_PATTERN** — a strong scam/impersonation feature (real-person impersonation, repeated scam/DM-funnel
   script, known malicious link) or the celebrity-persona + DM/Telegram funnel + giveaway/crypto lure compound, with
   evidence at least partial and no substantial human continuity. Base patterns apply to every owner; patterns built
-  on an owner's own rule apply only inside that owner's instance.
+  on an owner's own rule apply only inside that owner's instance. v0.7.1 shared patterns: the Elon Musk / Tesla /
+  SpaceX name rule (allowlist in `rules/impersonation_allowlist.json`; a "parody" bio doesn't exempt), "kindly send me
+  a follow request" + a link/DM lure, and any other watchlisted link + a lure/impersonation feature.
 - **C OWNER_TRAINED** — the owner's own transparent model (fit only on their ✅/❌, excluded traits removed, refit and
   re-versioned whenever reactions change) clears its zero-false-positive threshold **and** a spam/scam/impersonation
   feature is present. Inactive until the owner has ≥20 ❌ and ≥3 ✅.

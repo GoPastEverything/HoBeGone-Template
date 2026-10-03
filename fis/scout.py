@@ -28,7 +28,7 @@ DEFAULT_SETTINGS = {
     "INVESTIGATE_QUOTES": "LIGHT_CHECK",
     "INVESTIGATE_MENTIONS": "LIGHT_CHECK",
     "INVESTIGATE_LIKES": True, "INVESTIGATE_REPOSTS": True, "LIKES_REPOSTS_MODE": "LIGHT_CHECK",
-    "AUTO_BLOCK_CONFIRMED_THREATS": True,     # v0.2: scouting auto-blocks with the same decision-v0.7.0 bar
+    "AUTO_BLOCK_CONFIRMED_THREATS": True,     # v0.2: scouting auto-blocks with the same decision-v0.7.1 bar
     "REVIEW_FLAGGED_ACCOUNTS": False,         # v0.2: below-the-bar accounts are held quietly, no per-account alerts
     "FULL_AUDIT_STALE_DAYS": 30,
     "LIGHT_CHECK_STALE_DAYS": 7,
@@ -359,6 +359,16 @@ def light_check(store, rec, policy, fpdb, settings):
         reasons.append("owner policy match")
     if rep.get("COMPOUND_STRONG") or rep.get("IS_REPURPOSED"):
         reasons.append("repurposed-account signals")
+    from . import known_lists as kl
+    kn = kl.check_record(rec)
+    if kn["KNOWN_SCAM_ACCOUNT"]:
+        reasons.append("on the shared known-scam account list")
+    if kn["LINK_MATCHES"]:
+        reasons.append("shared scam-link watchlist match " + ",".join(m["LINK"] for m in kn["LINK_MATCHES"]))
+    if kn["PHRASE_RULE"]:
+        reasons.append("'kindly send me a follow request' + lure")
+    if kn["NAME_IMPERSONATION"]:
+        reasons.append("Elon/Tesla/SpaceX name impersonation (" + kn["NAME_IMPERSONATION"]["FIELD"].lower() + ")")
     c = get_cache(store, h) or new_cache(h)
     if c.get("OWNER_ACTION") == "OWNER_ACTION_BLOCK":
         reasons.append("owner previously chose BLOCK")

@@ -1,0 +1,28 @@
+{
+  "LIST": "impersonation_allowlist",
+  "LIST_VERSION": "1",
+  "UPDATED": "2026-10-03",
+  "DESCRIPTION": "Handles the Elon Musk / Tesla / SpaceX name rule never matches and that `known-list ingest` never adds. NAME_EXCLUSION_WORDS are ordinary words that contain 'elon' and are removed before the name rule looks for it. Edit freely; the owner's own ✅ keep also always wins.",
+  "HANDLES": [
+    {
+      "handle": "elonmusk",
+      "why": "the real Elon Musk account"
+    },
+    {
+      "handle": "elonmuskaoc",
+      "why": "well-known, labelled parody account (ElonMuskAOC)"
+    }
+  ],
+  "NAME_EXCLUSION_WORDS": [
+    "elongate",
+    "elongated",
+    "elongating",
+    "elongation",
+    "elongat",
+    "melon",
+    "melons",
+    "felon",
+    "felony",
+    "ashkelon"
+  ]
+}

@@ -8,14 +8,14 @@ is ever used.
 
 ```bash
 D="${HOBEGONE_HOME:-$HOME/hobegone}/HoBeGone-Template"
-[ -d "$D/.git" ] || git clone -q https://github.com/TheRetardedElon/HoBeGone-Template "$D"
+[ -d "$D/.git" ] || git clone -q https://github.com/GoPastEverything/HoBeGone-Template "$D"
 bash "$D/bootstrap.sh" --x-account @signed_in_handle
 ```
 
 or without a prior clone:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/TheRetardedElon/HoBeGone-Template/main/bootstrap.sh | bash -s -- --x-account @signed_in_handle
+curl -fsSL https://raw.githubusercontent.com/GoPastEverything/HoBeGone-Template/main/bootstrap.sh | bash -s -- --x-account @signed_in_handle
 ```
 
 `@signed_in_handle` is the X account the owner is signed in to in the bot's own browser (read from https://x.com/home).

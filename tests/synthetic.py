@@ -3,9 +3,30 @@
 Every handle, name, quote and link here is invented for the tests (example.* domains, made-up people and companies).
 Nothing comes from a real owner's followers, reactions or audit. Records follow schemas/account_record.schema.json.
 """
-import copy, json, os
+import atexit, copy, json, os, shutil, tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def empty_rules_dir():
+    """A temp copy of rules/ with EMPTY shared known lists (the real allowlist kept), so the tests never depend on which
+    real accounts/links have been ingested into rules/known_scam_accounts.json and rules/link_watchlist.json."""
+    d = tempfile.mkdtemp(prefix="hbg_rules_")
+    atexit.register(shutil.rmtree, d, True)
+    shutil.copy(os.path.join(ROOT, "rules", "impersonation_allowlist.json"), d)
+    for name, key in (("known_scam_accounts.json", "ACCOUNTS"), ("link_watchlist.json", "LINKS")):
+        with open(os.path.join(ROOT, "rules", name), encoding="utf-8") as fh:
+            data = json.load(fh)
+        data[key] = []
+        if "REMOVED" in data:
+            data["REMOVED"] = []
+        with open(os.path.join(d, name), "w", encoding="utf-8") as fh:
+            json.dump(data, fh, indent=2, ensure_ascii=False)
+    return d
+
+
+# every test module that imports this file (and every `python3 -m fis` it spawns) sees empty shared lists
+os.environ["HOBEGONE_RULES_DIR"] = empty_rules_dir()
 LISTS = ("automation_features", "spam_features", "scam_features", "impersonation_features", "deception_features",
          "human_continuity_features")
 

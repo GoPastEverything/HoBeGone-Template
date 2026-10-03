@@ -11,7 +11,7 @@
     "SCORING_VERSION": "scoring-v0.6.0",
     "DECISION_ENGINE_VERSION": "decision-v0.6.0",
     "CALIBRATION_VERSION": "NONE until the owner freezes their own set (python3 -m fis calibration freeze)",
-    "AUTO_BLOCK_VERSION": "decision-v0.7.0 (BLOCK_CONFIRMED | AUTO_BLOCK_PATTERN | OWNER_TRAINED over decision-v0.6.0)",
+    "AUTO_BLOCK_VERSION": "decision-v0.7.1 (BLOCK_CONFIRMED | KNOWN_SCAM_LIST | AUTO_BLOCK_PATTERN | OWNER_TRAINED over decision-v0.6.0)",
     "OWNER_MODEL_VERSION": "per instance, per refit (om-<instance>-r<N>-<sha8>)"
   },
   "ENGINE": {
@@ -19,7 +19,7 @@
     "ENTRYPOINT": "python3 -m fis",
     "CLI": "fis/cli.py",
     "VERSIONS_COMMAND": "python3 -m fis versions",
-    "SOURCE": "https://github.com/TheRetardedElon/HoBeGone-Template",
+    "SOURCE": "https://github.com/GoPastEverything/HoBeGone-Template",
     "BOOTSTRAP": "bootstrap.sh --x-account @handle (clone/fast-forward into ~/hobegone/HoBeGone-Template, Python check, tests, start; see BOOTSTRAP.md)",
     "DOCTOR_COMMAND": "python3 -m fis doctor --x-account @handle"
   },
@@ -51,7 +51,7 @@
     "ACCOUNT_DEDUPLICATION",
     "PRIORITY_ASSESSMENT",
     "FollowerIntegritySkill (EVIDENCE_COLLECTION -> SCORING -> SECOND_PASS if required)",
-    "AUTO_BLOCK (decision-v0.7.0)",
+    "AUTO_BLOCK (decision-v0.7.1)",
     "AUDIT_LOG"
   ],
   "OPERATOR_PROMPTS": [
@@ -96,7 +96,8 @@
   "FIRST_CONVERSATION": "zero questions: start line, x.com/home signed-in handle check, bootstrap.sh --x-account @handle (runs `python3 -m fis start --x-account @handle`), clean immediately, create quiet daily routine",
   "AUTO_BLOCK_TIERS": [
     "A BLOCK_CONFIRMED (v0.6 engine verdict)",
-    "B AUTO_BLOCK_PATTERN (strong scam/impersonation feature or persona+funnel+lure compound; evidence >= PARTIAL; no substantial human continuity)",
+    "L KNOWN_SCAM_LIST (shared rules/known_scam_accounts.json, or an exact Telegram/WhatsApp link from rules/link_watchlist.json; v0.7.1)",
+    "B AUTO_BLOCK_PATTERN (strong scam/impersonation feature or persona+funnel+lure compound; evidence >= PARTIAL; no substantial human continuity; v0.7.1 adds the shared Elon/Tesla/SpaceX name rule, the 'kindly send me a follow request' + lure rule and watchlisted link + lure)",
     "C OWNER_TRAINED (owner-only model, zero-FP CV threshold, needs a scam/spam/impersonation basis)"
   ],
   "NEVER_A_BASIS": [
@@ -125,5 +126,13 @@
     "daily summary only when something was blocked or a problem happened",
     "answers to the owner"
   ],
-  "UNDO": "owner says \"unblock @handle\" -> unblock-request (records KEEP + disagreement) -> unblock-plan -> operator_prompts/unblock_batch.md -> ingest-unblock-report"
+  "UNDO": "owner says \"unblock @handle\" -> unblock-request (records KEEP + disagreement) -> unblock-plan -> operator_prompts/unblock_batch.md -> ingest-unblock-report",
+  "TEMPLATE_VERSION": "HoBeGone-Template v0.2.2",
+  "SHARED_LISTS": {
+    "KNOWN_SCAM_ACCOUNTS": "../../rules/known_scam_accounts.json",
+    "LINK_WATCHLIST": "../../rules/link_watchlist.json",
+    "IMPERSONATION_ALLOWLIST": "../../rules/impersonation_allowlist.json",
+    "COMMANDS": "python3 -m fis known-list ingest|show|remove",
+    "OWNER_OVERRIDE": "the owner's keep / unblock always wins"
+  }
 }

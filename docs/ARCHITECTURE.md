@@ -25,7 +25,7 @@ Template UI (templates/ho-be-gone, skills/) -> FollowerIntegritySkill (python3 -
 | AUDIT_LOG | code | fis/evidence_store.py (every event carries 5 version stamps) |
 
 Owner policy (`fis/owner_policy.py`) is a layer over the generic rubric. Schemas: `fis/schemas/`. Versions: `fis/versions.py`.
-Instances (one per owner) live in `instances/<handle>/`; `instances/_template/` holds the neutral starter files. Product layer: `fis/hbg.py` (instances, modes, start line), `fis/autoblock.py` (decision-v0.7.0 tiers),
+Instances (one per owner) live in `instances/<handle>/`; `instances/_template/` holds the neutral starter files. Product layer: `fis/hbg.py` (instances, modes, start line), `fis/autoblock.py` (decision-v0.7.1 tiers), `fis/known_lists.py` (shared known-scam accounts, scam-link watchlist, Elon/Tesla name rule and "kindly send me a follow request" rule over `rules/*.json`),
 `fis/owner_model.py` (per-instance owner-trained model), `fis/scout.py` (Active Scouting), `fis/backtest.py`.
 
 ## Files

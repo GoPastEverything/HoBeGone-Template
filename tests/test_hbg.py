@@ -255,9 +255,9 @@ class TestInstancesAndResume(unittest.TestCase):
         m = json.load(open(os.path.join(d, "manifest.json"), encoding="utf-8"))
         self.assertEqual(m["DISPLAY_NAME"], "Ho Be Gone"); self.assertEqual(m["VERSION"], "Ho Be Gone @BOT v0.2.0")
         self.assertTrue(m["SHORT_DESCRIPTION"].startswith("Audit your X followers for bots, spam, scams, impersonators"))
-        self.assertEqual(m["DEFAULT_MODE"], "AUTO_CLEAN"); self.assertIn("decision-v0.7.0", m["BACKEND_VERSIONS"]["AUTO_BLOCK_VERSION"])
+        self.assertEqual(m["DEFAULT_MODE"], "AUTO_CLEAN"); self.assertIn("decision-v0.7.1", m["BACKEND_VERSIONS"]["AUTO_BLOCK_VERSION"])
         t = open(os.path.join(d, "TEMPLATE.md"), encoding="utf-8").read()
-        for s in ("AUTO_CLEAN", "REVIEW WITH ME", "AUDIT ONLY", "ACTIVE SCOUTING", "unblock @handle", "USER_MANUAL.md", "decision-v0.7.0",
+        for s in ("AUTO_CLEAN", "REVIEW WITH ME", "AUDIT ONLY", "ACTIVE SCOUTING", "unblock @handle", "USER_MANUAL.md", "decision-v0.7.1",
                   "instances/<handle>", "neutral base rules", "Never ask which account",
                   "DISCOVERY", "HUMAN_CONTINUITY_ANALYSIS", "EVIDENCE_SUFFICIENCY", "OWNER_ADJUDICATION", "AUDIT_LOG", "CAPTCHA"):
             self.assertIn(s, t)
@@ -277,7 +277,7 @@ class TestInstancesAndResume(unittest.TestCase):
         self.assertIn("python3 -m fis manual", rb); self.assertIn("python3 -m fis auto-clean", rb); self.assertIn("unblock-request", rb)
         self.assertNotIn("RESUME PREVIOUS AUDIT or", gs)
         self.assertIn("isn't installed", " ".join(rb.split())); self.assertNotIn("/workspace/", rb + gs)
-        repo = "https://github.com/TheRetardedElon/HoBeGone-Template"  # the engine's public source (bootstrap); not an owner
+        repo = "https://github.com/GoPastEverything/HoBeGone-Template"  # the engine's public source (bootstrap); not an owner
         self.assertIn(repo, rb); self.assertIn(repo, gs); self.assertIn("bootstrap.sh", rb + gs)
         for txt in (rb, gs, man, t):
             self.assertIsNone(re.search(r"\bjay\b|theretarded|instances/jay", txt.replace(repo, ""), re.I))

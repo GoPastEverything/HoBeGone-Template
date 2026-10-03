@@ -1,4 +1,4 @@
-# Ho Be Gone @BOT v0.2.0 — LOCAL LIVE TEST checklist
+# Ho Be Gone @BOT v0.2.0 (template v0.2.2) — LOCAL LIVE TEST checklist
 
 This is for the first end-to-end run on the owner's own machine, with the engine at
 the folder HoBeGone-Template was cloned into, and the owner signed in to X in the bot's browser.
@@ -6,7 +6,7 @@ the folder HoBeGone-Template was cloned into, and the owner signed in to X in th
 Run all commands from the repo root.
 
 Before starting:
-- `python3 -m fis versions` shows HO_BE_GONE_VERSION v0.2.0, AUTO_BLOCK_VERSION decision-v0.7.0,
+- `python3 -m fis versions` shows HO_BE_GONE_VERSION v0.2.0, AUTO_BLOCK_VERSION decision-v0.7.1,
   FollowerIntegritySkill v0.6.0, scoring-v0.6.0 and decision-v0.6.0 (CALIBRATION_VERSION is NONE until you freeze your own set).
 - `python3 -m unittest discover -s tests` shows OK.
 - After you have reacted to enough accounts: `python3 -m fis calibration freeze ...` then

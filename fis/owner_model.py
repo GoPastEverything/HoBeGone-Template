@@ -1,4 +1,4 @@
-"""OWNER_TRAINED auto-block model (Ho Be Gone v0.2.0, part of decision-v0.7.0).
+"""OWNER_TRAINED auto-block model (Ho Be Gone v0.2.0, part of decision-v0.7.1).
 
 A small, transparent, class-weighted L2 logistic regression fit ONLY on one owner's own ✅/❌ reactions, over
 existing rubric features (binary presence) and owner-policy matches from that owner's instance. It never changes

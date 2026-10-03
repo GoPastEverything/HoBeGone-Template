@@ -1,4 +1,4 @@
-# Ho Be Gone — User Manual (v0.2.0)
+# Ho Be Gone — User Manual (v0.2.0, template v0.2.2)
 
 ## QUICK START
 1. Make sure you're signed in to X in the bot's browser. That's all the setup there is.
@@ -19,8 +19,23 @@ about are put on a quiet "held for later" list and left alone.
 - Accounts pretending to be a real famous person or company (for example, a fake "Elon Musk" asking you to message it).
 - Accounts that push you to a private chat, Telegram or WhatsApp to "claim a prize", "invest" or "join a giveaway".
 - Accounts that send the same scam message to lots of people, or link to known scam sites.
+- Accounts whose name or @handle pretends to be Elon Musk or the boss of Tesla or SpaceX (like "ElonMusk_7",
+  "El0nMusk", "MrMuskOfficial" or "TeslaCEO"). The real @elonmusk and the well-known parody @ElonMuskAOC are never
+  touched by this rule. Calling itself a "parody account" doesn't get an impersonator off the hook.
+- Accounts whose name or bio says "Kindly send me a follow request" and then pushes you to Telegram, WhatsApp, a DM,
+  "click the link" or "claim your prize".
+- Accounts on Ho Be Gone's shared list of known scam accounts, and accounts that use a known scam link (see below).
 - Accounts that look just like the ones **you** have blocked before (once you've given it enough examples; see below).
 - Anyone you tell it to block.
+
+## The shared scam lists
+Ho Be Gone also keeps a shared list of known scam accounts and scam links (mostly Telegram and WhatsApp contacts and
+short links that scammers use). Every Ho Be Gone user gets the same lists, and they update on their own.
+- An account on the known-scam list is blocked for you too, even if you never saw it before.
+- An account that shows a known scam Telegram or WhatsApp contact is blocked. Other known scam links count when the
+  account is also pushing a prize, giveaway, investment or a fake famous name.
+- **You always win:** if you say "keep @handle" or "unblock @handle", that account stays, whatever the lists say.
+  Only your own choice changes your account; it never changes the lists for anyone else.
 
 ## What it never blocks on
 It never blocks someone just because of their politics, religion, nationality, race, gender, the language they
@@ -86,6 +101,9 @@ blocked?" for more detail.
 
 **How do I turn off scouting (checking people who interact with my posts)?** Say "turn off scouting". Say "turn
 on scouting" to bring it back.
+
+**What's on the shared scam lists?** Ask "show the known scam list". If someone you know is on it by mistake, say
+"keep @handle" (it stays for you right away) and tell the Ho Be Gone maintainers so it can be taken off for everyone.
 
 **Can I see everything it blocked?** Yes — say "show my blocked list". To see the borderline ones, say "show held
 for later".

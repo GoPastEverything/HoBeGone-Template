@@ -8,11 +8,11 @@ daily summary only on days it blocked someone, and it learns from the owner's ow
 their politics, beliefs, background or opinions.
 
 This repo is the **template**. It contains the detection engine (`fis`, FollowerIntegritySkill v0.6.0 plus the
-decision-v0.7.0 auto-block layer), the base rules, operator prompts for a browser agent, three agent skills, the user
+decision-v0.7.1 auto-block layer), the base rules, operator prompts for a browser agent, three agent skills, the user
 manual, a test suite and a neutral starter instance. It contains **no owner data**: no follower lists, no reactions and
 no trained model. Every owner starts from zero.
 
-> Status: template v0.2.1 (engine Ho Be Gone @BOT v0.2.0). The license is MIT; see [LICENSE](LICENSE).
+> Status: template v0.2.2 (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1). The license is MIT; see [LICENSE](LICENSE).
 
 ---
 
@@ -22,7 +22,7 @@ no trained model. Every owner starts from zero.
 |---|---|
 | `fis/` | The engine (`python3 -m fis <command>`): evidence store, feature scoring, human-continuity and network analysis, second-pass verifier, the v0.6 decision engine, the v0.7 auto-block tiers (`autoblock.py`), the per-owner model (`owner_model.py`), backtest, Active Scouting (`scout.py`), and the product layer (`hbg.py`, `cli.py`). |
 | `engine.py`, `validator.py`, `feature_registry.json`, `schemas/` | The frozen v0.5 scorer, the second-pass validator, the feature registry (weights and gates) and the JSON schemas. |
-| `rules/` | **Base rules**: [`BASE_RULES.md`](rules/BASE_RULES.md) (scam/impersonation patterns, decision layers, never-evidence list), [`SCORING_RUBRIC.md`](rules/SCORING_RUBRIC.md) and [`FEATURES.md`](rules/FEATURES.md) (generated from the registry). |
+| `rules/` | **Base rules**: [`BASE_RULES.md`](rules/BASE_RULES.md) (scam/impersonation patterns, decision layers, never-evidence list), [`SCORING_RUBRIC.md`](rules/SCORING_RUBRIC.md) and [`FEATURES.md`](rules/FEATURES.md) (generated from the registry), and the **shared lists** every owner uses: `known_scam_accounts.json`, `link_watchlist.json` and `impersonation_allowlist.json`. |
 | `operator_prompts/` | Task prompts for the browser agent that reads X and clicks Block/Unblock: discovery, collection, second pass, block, unblock, notifications scan, light check. |
 | `skills/` | Three agent skills: `ho-be-gone-getting-started` (first conversation), `ho-be-gone-runbook` (every command), `ho-be-gone-manual` (the owner's guide). |
 | `bootstrap.sh`, `BOOTSTRAP.md` | The one-command deploy/update script for every bot (clone or fast-forward, Python check, tests, clean instance, start) and its documentation. |
@@ -45,9 +45,15 @@ no trained model. Every owner starts from zero.
 3. **Decide.** The v0.6 decision engine gives KEEP / REVIEW / BLOCK_CANDIDATE / BLOCK_CONFIRMED. On top of it, the
    v0.7 auto-block layer blocks automatically when any tier holds (details in [`rules/BASE_RULES.md`](rules/BASE_RULES.md)):
    - **A. BLOCK_CONFIRMED**: the engine's own verdict after a complete second pass.
+   - **L. Shared known lists** (v0.7.1): the handle is on `rules/known_scam_accounts.json`, or the account shows an exact
+     Telegram/WhatsApp contact from `rules/link_watchlist.json`.
    - **B. Base pattern**: a STRONG scam/impersonation feature (claims to be a real public figure or company; a repeated
      scam/DM-funnel script; a verified malicious link) or the compound *celebrity persona + "message me"/Telegram funnel
      + giveaway/crypto/prize lure*. It also needs readable evidence and no substantial human-continuity evidence.
+     v0.7.1 adds three shared patterns: the **Elon Musk / Tesla / SpaceX name rule** (an @handle or display name like
+     `ElonMusk_7`, `El0nMusk`, `MrMuskOfficial`, `TeslaCEO`, look-alike letters normalized; the real @elonmusk and the
+     parody @ElonMuskAOC are allowlisted), the **"Kindly send me a follow request" + Telegram/DM/"click the link" lure**
+     rule, and **any other watchlisted link + a lure/impersonation feature**.
    - **C. Owner-trained**: this owner's own small model, once they have given enough reactions. It's tuned for zero
      cross-validated false positives on their keeps, and it always needs a scam/spam/impersonation feature as the basis.
    Anything below the bar is **held for later** quietly. Nothing is blocked for automation, repurposing or network
@@ -66,7 +72,7 @@ One command, for the first run and every later run (details in [BOOTSTRAP.md](BO
 
 ```bash
 D="${HOBEGONE_HOME:-$HOME/hobegone}/HoBeGone-Template"
-[ -d "$D/.git" ] || git clone -q https://github.com/TheRetardedElon/HoBeGone-Template "$D"
+[ -d "$D/.git" ] || git clone -q https://github.com/GoPastEverything/HoBeGone-Template "$D"
 bash "$D/bootstrap.sh" --x-account @yourhandle
 ```
 
@@ -83,10 +89,27 @@ For an agent: install the three skills from `skills/`. The getting-started skill
 runbook covers every command after that. Both run the bootstrap first, then work from the folder it reports
 (`HOBEGONE_ENGINE`).
 
+### Shared known lists (all owners)
+Ho Be Gone keeps a shared list of known scam accounts and scam links in `rules/`. They ship with the repo, so every
+owner gets them on the next bootstrap. The owner's ✅ keep / "unblock @handle" always wins over every list.
+
+```bash
+python3 -m fis known-list ingest --accounts accounts.jsonl --source "x-search:<query> (<date>)"   # lines: {handle, display_name, bio, verified, links[]}
+python3 -m fis known-list show
+python3 -m fis known-list remove --handle someone --reason "real person, listed by mistake"
+```
+
+`ingest` dedupes, keeps the first 200 characters of each bio as evidence, skips allowlisted handles, and adds every link
+from `links[]` and the bio. X splits links over lines and cuts them off with "…": those pieces are joined, and a cut-off
+link is stored as a prefix entry (`match_type: "prefix"`, e.g. `t.me/elon_reeve_mus*`). Links are normalized (lowercase
+host, no `www.`, no http/https, no trailing slash, tracking parameters removed, Telegram paths lowercased). Commit and
+push the changed `rules/*.json` so every install picks them up.
+
 ### Optional owner-specific rules
-By default there are **no** owner-specific rules. If you want extra protection for a particular public figure or
-company (for example "block accounts pretending to be Elon Musk or to run Tesla/SpaceX"), turn on the example for
-your instance only:
+By default there are **no** owner-specific rules. The Elon Musk / Tesla / SpaceX **name** rule is now a shared base rule
+(above). The optional example additionally treats *claims* to own or run a company, or to give away its prizes, as
+impersonation, and it's the starting point for protecting any other public figure or company. Turn it on for your
+instance only:
 
 ```bash
 python3 -m fis owner-policy --instance instances/yourhandle --add-example celebrity-impersonation --owner-words "protect Elon too"

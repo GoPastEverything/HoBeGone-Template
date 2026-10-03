@@ -2,7 +2,7 @@
 only DECISION_ENGINE writes DECISION. OWNER_ADJUDICATION and ENFORCEMENT attach stored records; they never re-decide."""
 import os, sys
 from . import (text_fingerprint as tf, repurposed as rp, coverage as cov, continuity as hc, network as nw,
-               scoring, second_pass as sp2, decision_engine as de, owner_policy as op, owner_model as om)
+               scoring, second_pass as sp2, decision_engine as de, owner_policy as op, owner_model as om, known_lists as kl)
 from .versions import versions
 from .evidence_store import now
 
@@ -104,6 +104,12 @@ def process_account(rec, ctx):
     # feature presence for the Ho Be Gone v0.2 auto-block layer (read-only; never feeds the v0.6 decision)
     st["STAGES"]["PRIMARY_SCORING"]["FEATURES_PRESENT"] = om.features_from_scoring(so, st["STAGES"]["OWNER_POLICY"])
     log("PRIMARY_SCORING", "SCORED", so["SCORES"])
+    # shared known lists (v0.7.1): facts for re-checking later + the match against the lists as they are now
+    st["STAGES"]["KNOWN_LISTS"] = kl.check_record(rec)
+    kls = st["STAGES"]["KNOWN_LISTS"]
+    if kls["KNOWN_SCAM_ACCOUNT"] or kls["LINK_MATCHES"] or kls["NAME_IMPERSONATION"]:
+        log("PRIMARY_SCORING", "KNOWN_LIST_MATCH", {"known_scam_account": bool(kls["KNOWN_SCAM_ACCOUNT"]),
+                                                    "links": [m["LINK"] for m in kls["LINK_MATCHES"]], "name_rule": kls["NAME_IMPERSONATION"]})
     # EVIDENCE_SUFFICIENCY
     st["STAGES"]["EVIDENCE_SUFFICIENCY"] = covg
     log("EVIDENCE_SUFFICIENCY", covg["EVIDENCE_STATE"], {"score": covg["EVIDENCE_COVERAGE_SCORE"]})

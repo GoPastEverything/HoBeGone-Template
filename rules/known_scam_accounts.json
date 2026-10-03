@@ -1,0 +1,8 @@
+{
+  "LIST": "known_scam_accounts",
+  "LIST_VERSION": "1",
+  "UPDATED": "2026-10-03",
+  "DESCRIPTION": "Shared base rule (every owner). Any account whose handle is listed here is auto-blocked (layer known_scam_list), unless that owner chose ✅ keep / asked to unblock it. Add with `python3 -m fis known-list ingest`, remove with `python3 -m fis known-list remove --handle h --reason \"...\"`. Entries: handle (lowercase), display_name, reason, source, added, evidence (first 200 characters of the bio when listed).",
+  "ACCOUNTS": [],
+  "REMOVED": []
+}

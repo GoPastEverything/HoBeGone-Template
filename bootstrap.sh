@@ -2,7 +2,7 @@
 # Ho Be Gone bootstrap: one deterministic command for first run and every later run.
 #
 #   bash bootstrap.sh --x-account @handle
-#   curl -fsSL https://raw.githubusercontent.com/TheRetardedElon/HoBeGone-Template/main/bootstrap.sh | bash -s -- --x-account @handle
+#   curl -fsSL https://raw.githubusercontent.com/GoPastEverything/HoBeGone-Template/main/bootstrap.sh | bash -s -- --x-account @handle
 #
 # 1. Clones this repo into $HOBEGONE_HOME/HoBeGone-Template (default ~/hobegone/HoBeGone-Template), or fast-forwards it.
 # 2. Checks Python 3.10+.
@@ -20,7 +20,7 @@
 #             5 refused (another owner's instance, or the target folder isn't this repo) · 6 usage
 set -euo pipefail
 
-REPO_URL="${HOBEGONE_REPO_URL:-https://github.com/TheRetardedElon/HoBeGone-Template}"
+REPO_URL="${HOBEGONE_REPO_URL:-https://github.com/GoPastEverything/HoBeGone-Template}"
 BRANCH="${HOBEGONE_BRANCH:-main}"
 BASE="${HOBEGONE_HOME:-$HOME/hobegone}"
 DEST="$BASE/HoBeGone-Template"
@@ -66,6 +66,10 @@ export GIT_TERMINAL_PROMPT=0
 UPDATE="NONE"
 if [ -d "$DEST/.git" ]; then
   have="$(git -C "$DEST" remote get-url origin 2>/dev/null || true)"
+  # The repo moved (2026-10-03); a clone made from its old address is the same repo: re-point it, don't refuse it.
+  if [ "$(norm_url "$have")" = "github.com/theretardedelon/hobegone-template" ] && [ -z "${HOBEGONE_REPO_URL:-}" ]; then
+    git -C "$DEST" remote set-url origin "$REPO_URL" && say "repo moved: origin re-pointed to $REPO_URL"; have="$REPO_URL"
+  fi
   [ "$(norm_url "$have")" = "$(norm_url "$REPO_URL")" ] \
     || fail 5 "$DEST is a clone of '$have', not $REPO_URL; refusing to use it"
   before="$(git -C "$DEST" rev-parse HEAD)"

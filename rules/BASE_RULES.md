@@ -1,8 +1,8 @@
 # Base rules (apply to every owner, from the first run)
 
 These are the rules every Ho Be Gone instance starts with. They're implemented in code (`fis/autoblock.py`, the v0.6
-decision engine, `feature_registry.json`); this file explains them. **No owner-specific rules are included.** An owner
-can add their own with `python3 -m fis owner-policy` (see `examples/`).
+decision engine, `feature_registry.json`, `fis/known_lists.py` and the shared lists in this folder); this file explains
+them. **No owner-specific rules are included.** An owner can add their own with `python3 -m fis owner-policy` (see `examples/`).
 
 ## 1. Scam and impersonation patterns (tier B: auto-block for everyone)
 
@@ -27,6 +27,38 @@ with/for X" (those score as I002/I003/I004 instead).
 The public fixtures `fixtures/hbg/ChirilaMihaiDan.json` and `TeslaGiveawayX1.json` (a celebrity photo, "send me a
 private message", a Telegram giveaway link) must auto-block for every owner under this rule; the tests check this.
 
+## 1b. Shared known lists and name/phrase rules (decision-v0.7.1, every owner)
+
+| Rule | File | Blocks when | Layer / pattern |
+|---|---|---|---|
+| Known-scam account list | `known_scam_accounts.json` | the handle is listed | tier KNOWN_SCAM_LIST, layer `known_scam_list` |
+| Scam-link watchlist, exact Telegram/WhatsApp | `link_watchlist.json` | the profile, website or posts show the same `t.me/…` / `wa.me/…` contact | tier KNOWN_SCAM_LIST, layer `link_watchlist` |
+| Scam-link watchlist, any other match | `link_watchlist.json` | a watchlisted link (exact, prefix of a cut-off link, or a whole listed domain) **plus** an existing lure or impersonation feature (I001–I005, S004, S006, S012, S016), under the section-1 guards | pattern `WATCHLISTED_LINK_PLUS_LURE` |
+| Elon Musk / Tesla / SpaceX name rule | `impersonation_allowlist.json` (allowlist) | the @handle or display name impersonates Elon Musk or Tesla/SpaceX leadership: "elon" + anything (`Elon____`, `ElonMusk_7`, `Elon_Musk`, `iam_elon`, "real elon"), `mrmusk`, "musk" with elon/tesla/spacex/ceo, `teslaceo`, `tesla_ceo`, `spacexceo`, "ceo of tesla", "Elon's assistant/manager/team"… | pattern `ELON_TESLA_NAME_IMPERSONATION` |
+| "Kindly send me a follow request" | — | that phrase (any case/spacing) in the display name or bio **plus** a Telegram/WhatsApp/DM/"click the link"/"claim your prize" lure | pattern `KINDLY_FOLLOW_REQUEST_LURE` |
+
+- **The owner's ✅ keep / "unblock @handle" always wins** over every row. The owner's choice never edits the shared lists.
+- The name rule is case-insensitive and normalizes look-alikes first: 0→o, 1→l and 1→i, 3→e, 4→a, 5→s, 7→t,
+  Cyrillic/Greek homoglyphs, fancy Unicode letters, accents; `_` `.` `-` `'` are stripped (spaces stay word breaks, so
+  "Gabriel Ontiveros" never reads as "elon"). Never matched: the allowlist (`@elonmusk`, the real account; `@ElonMuskAOC`,
+  the well-known parody) and `NAME_EXCLUSION_WORDS` such as "elongated", "melon", "felon". Not matched either: "musk ox",
+  "Tesla coil fan" (no CEO/Elon). A "parody account" bio does **not** exempt an account from the name rule or the phrase
+  rule; only the allowlist and the owner's keep do. This name rule was an owner-only example until 2026-10-03; it's now
+  a base rule on the maintainer's instruction. The broader *claims* rule ("I own/run <company>", "<person> prize") stays
+  optional in `examples/`.
+- Links are normalized: lowercase host, `www.` and http/https removed, trailing slash removed, tracking query
+  parameters (`utm_*`, `fbclid`, `gclid`, `ref`, `s`, `t`…) dropped, Telegram paths lowercased, `telegram.me` → `t.me`,
+  `api.whatsapp.com/send?phone=N` → `wa.me/N`. X splits links over lines and cuts them off with "…": the pieces are
+  joined, and a cut-off link is stored as a **prefix** entry (`match_type: "prefix"`, shown as `t.me/elon_reeve_mus*`).
+  Only an **exact** Telegram/WhatsApp match blocks on its own; a prefix match needs a lure/impersonation feature.
+  Official domains (x.com, tesla.com, spacex.com…) are never watchlisted.
+- Every watchlisted link found on an account is listed in the verdict's `DETAILS`, blocked or not.
+- The lists are re-checked at decision time, so an update applies to accounts that were already audited.
+- Maintain them with `python3 -m fis known-list ingest --accounts FILE.jsonl --source "..."`, `known-list show` and
+  `known-list remove --handle h --reason "..."`; commit and push so every install gets the change.
+- None of these rules look at any never-evidence trait (section 3). Digits in a handle are only normalized as look-alike
+  letters; they're never a reason on their own.
+
 ## 2. Decision layers
 
 | Layer | What it does |
@@ -35,7 +67,7 @@ private message", a Telegram giveaway link) must auto-block for every owner unde
 | Evidence sufficiency | SUFFICIENT / PARTIAL / INSUFFICIENT / UNAVAILABLE. An unreadable timeline is an evidence gap, never "clean". |
 | Second pass | For block candidates: a separate read that tries to **disprove** the case (more items, unrelated threads, older posts, verbatim quotes with source and date, an explicit search for human evidence). See `docs/SECOND_PASS.md`. |
 | Decision engine (decision-v0.6.0) | KEEP / REVIEW / BLOCK_CANDIDATE_PENDING_2ND_PASS / BLOCK_CONFIRMED (six gates). |
-| Auto-block (decision-v0.7.0) | Blocks when the owner hasn't kept the account and any tier holds: **A** BLOCK_CONFIRMED, **B** a base pattern (section 1), **C** the owner-trained model. The owner's ❌ is always honoured; the owner's ✅ / "unblock" always wins. Everything else is HELD_FOR_LATER, quietly. |
+| Auto-block (decision-v0.7.1) | Blocks when the owner hasn't kept the account and any tier holds: **A** BLOCK_CONFIRMED, **L** a shared known list (section 1b), **B** a base pattern (sections 1 and 1b), **C** the owner-trained model. The owner's ❌ is always honoured; the owner's ✅ / "unblock" always wins. Everything else is HELD_FOR_LATER, quietly. |
 | Owner-trained model (tier C) | Per instance only. Inactive until the owner has at least 20 ❌ and 3 ✅. It's a transparent logistic regression over registry features, the threshold is set for zero leave-one-out false positives on keeps and human-labelled accounts, human-continuity features may only lower a score, and it always needs a spam/scam/impersonation (or the owner's own policy) feature as the basis. |
 | Enforcement | A block counts only after a reload shows "@handle is blocked". Unblocks happen only when the owner asks. |
 

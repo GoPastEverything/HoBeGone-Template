@@ -1,4 +1,4 @@
-"""Backtest of the decision-v0.7.0 auto-block layer against one owner's frozen calibration set
+"""Backtest of the decision-v0.7.1 auto-block layer against one owner's frozen calibration set
 (`python3 -m fis calibration freeze --instance I --set-id S`, built only from that owner's own reactions).
 
 Owner truth = OWNER_ACTION in the frozen corpus (❌ BLOCK / ✅ KEEP / never rated); explicit human labels =

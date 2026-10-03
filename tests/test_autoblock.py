@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ho Be Gone @BOT v0.2.0 tests: AUTO_CLEAN default, decision-v0.7.0 auto-block tiers, owner-trained model, undo,
+"""Ho Be Gone @BOT v0.2.0 tests: AUTO_CLEAN default, decision-v0.7.1 auto-block tiers, owner-trained model, undo,
 quiet reporting, backtest, and the must-auto-block public scam fixtures. Synthetic owner data only (tests/synthetic.py);
 every instance is built in a temp folder. Run: python3 -m unittest discover -s tests"""
 import copy, json, os, shutil, subprocess, sys, tempfile, unittest
@@ -77,12 +77,14 @@ def neutral_state(rec, owner="Fresh"):
     return s, pol
 
 
-def with_features(state, present, strong=()):
+def with_features(state, present, strong=(), keep_profile=False):
     s = copy.deepcopy(state)
     s["STAGES"]["PRIMARY_SCORING"]["FEATURES_PRESENT"] = list(present)
     s["STAGES"]["PRIMARY_SCORING"]["STRONG_FEATURES"] = list(strong)
     s["STAGES"]["OWNER_POLICY"] = {}
     s["DECISION"] = dict(s["DECISION"], ENFORCEMENT="REVIEW")
+    if not keep_profile:  # feature-only view: no name/bio/link facts for the v0.7.1 shared name/phrase/link rules
+        s["STAGES"]["KNOWN_LISTS"] = {"FACTS": {"DISPLAY_NAME": "Sam Example", "BIO": None, "LINKS": []}}
     return s
 
 
@@ -113,7 +115,7 @@ class TestDefaultsAndVersions(unittest.TestCase):
     def test_versions(self):
         v = versions()
         self.assertEqual(HO_BE_GONE_VERSION, "v0.2.0")
-        self.assertTrue(v["AUTO_BLOCK_VERSION"].startswith("decision-v0.7.0"))
+        self.assertTrue(v["AUTO_BLOCK_VERSION"].startswith("decision-v0.7.1"))
         self.assertTrue(v["DECISION_ENGINE_VERSION"].startswith("decision-v0.6.0")); self.assertTrue(v["SCORING_VERSION"].startswith("scoring-v0.6.0"))
 
     def test_fresh_instance_has_no_active_owner_model(self):
@@ -166,7 +168,10 @@ class TestFixtureChirilaMihaiDan(unittest.TestCase):
         pres = set(s["STAGES"]["PRIMARY_SCORING"]["FEATURES_PRESENT"])
         self.assertTrue(pres & ab.PERSONA and pres & ab.FUNNEL and pres & ab.LURE)
         # strip the persona/funnel/lure facts: 0 posts / 0 followers / 2011 join date alone must not block
-        bare = with_features(s, sorted(pres - ab.PERSONA - ab.FUNNEL - ab.LURE))
+        bare = with_features(s, sorted(pres - ab.PERSONA - ab.FUNNEL - ab.LURE), keep_profile=True)
+        # (v0.7.1) its bio also carries the shared "kindly send me a follow request" + link phrase rule: that alone blocks it
+        self.assertEqual(ab.evaluate(bare, None, None, pol.get("POLICY_ID"), "fresh").get("PATTERN"), "KINDLY_FOLLOW_REQUEST_LURE")
+        bare["STAGES"]["KNOWN_LISTS"]["FACTS"].update(BIO=None, DISPLAY_NAME="Sam Example", LINKS=[])
         self.assertFalse(ab.evaluate(bare, None, None, pol.get("POLICY_ID"), "fresh")["AUTO_BLOCK"])
         # the Tesla/SpaceX wording in the variant is not a basis either: no owner-specific rule leaks into a fresh instance
         s2, pol2 = neutral_state(fixture("TeslaGiveawayX1"))

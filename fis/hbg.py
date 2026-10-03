@@ -30,7 +30,7 @@ def action(state):
 
 
 def enforcement_mode(mode, scout_settings=None):
-    """AUTO_CLEAN (v0.2 default) blocks with the decision-v0.7.0 layer (fis/autoblock.py). ACTIVE_SCOUTING follows
+    """AUTO_CLEAN (v0.2 default) blocks with the decision-v0.7.1 layer (fis/autoblock.py). ACTIVE_SCOUTING follows
     AUTO_BLOCK_CONFIRMED_THREATS (default on -> AUTO_CLEAN). The three v0.6 modes are unchanged."""
     if mode == "AUTO_CLEAN":
         return "AUTO_CLEAN"

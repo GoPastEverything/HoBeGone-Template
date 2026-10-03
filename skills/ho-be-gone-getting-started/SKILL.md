@@ -13,7 +13,7 @@ Follow the ho-be-gone-runbook skill for every command. Ask the owner nothing; ju
 2. Signed in? Have the browser subagent open https://x.com/home and read the signed-in @handle. If X shows a login screen, hand the owner the browser to sign in themselves. Never ask for a password, code, cookie or token.
 3. Install and start: run the bootstrap with that handle (runbook "Engine"):
 ```
-D="${HOBEGONE_HOME:-$HOME/hobegone}/HoBeGone-Template"; [ -d "$D/.git" ] || GIT_TERMINAL_PROMPT=0 git clone -q https://github.com/TheRetardedElon/HoBeGone-Template "$D"; bash "$D/bootstrap.sh" --x-account @handle
+D="${HOBEGONE_HOME:-$HOME/hobegone}/HoBeGone-Template"; [ -d "$D/.git" ] || GIT_TERMINAL_PROMPT=0 git clone -q https://github.com/GoPastEverything/HoBeGone-Template "$D"; bash "$D/bootstrap.sh" --x-account @handle
 ```
 It gets the engine from its repo, checks it, and runs `python3 -m fis start --x-account @handle`: this owner's own fresh instance on neutral base rules, nothing learned yet (or theirs, resumed). Use `HOBEGONE_ENGINE` and `HOBEGONE_INSTANCE` from its output. If it fails, tell the owner plainly as the runbook says and stop; never use any other copy. Don't mention instances, modes or resume choices.
 4. Clean now: begin the follower pass and the first auto-clean batch (runbook "Clean").
