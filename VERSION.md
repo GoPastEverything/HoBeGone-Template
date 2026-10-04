@@ -7,8 +7,8 @@ FEATURE_REGISTRY_VERSION: v0.5 (template build; weights identical to v0.5, notes
 SCORING_VERSION: scoring-v0.6.0 (v0.5 feature weights unchanged; adds REPURPOSED_ACCOUNT and EVIDENCE_COVERAGE scores)
 DECISION_ENGINE_VERSION: decision-v0.6.0 (gated block policy, adaptive second pass, three enforcement modes)
 CALIBRATION_VERSION: NONE until you freeze your own set (`python3 -m fis calibration freeze --instance I --set-id S --activate`)
-TEMPLATE_VERSION: HoBeGone-Template v0.2.12 (2026-10-03; bootstrap.sh deploys from https://github.com/GoPastEverything/HoBeGone-Template)
-SHARED_LISTS: known.botslist (511 known bots; maintainer-only, CODEOWNERS @GoPastEverything), rules/link_watchlist.json (99 links: 58 exact, 41 prefix; Telegram/WhatsApp/Zangi contacts block on an exact match), rules/impersonation_allowlist.json (the never-list: @elonmusk, @ElonMuskAOC, @Teslahubs; never auto-blocked by any tier) (counts: `python3 -m fis known-list show`)
+TEMPLATE_VERSION: HoBeGone-Template v0.2.13 (2026-10-03; bootstrap.sh deploys from https://github.com/GoPastEverything/HoBeGone-Template)
+SHARED_LISTS: known.botslist (529 known bots; maintainer-only, CODEOWNERS @GoPastEverything), rules/link_watchlist.json (101 links: 60 exact, 41 prefix; Telegram/WhatsApp/Zangi contacts block on an exact match), rules/impersonation_allowlist.json (the never-list: @elonmusk, @ElonMuskAOC, @Teslahubs; never auto-blocked by any tier) (counts: `python3 -m fis known-list show`)
 REPORTING: report known bots (known.botslist accounts only, after a verified block) to X; default ON per instance (REPORT_KNOWN_BOTS), "stop reporting" / "start reporting"
 KNOWN_BOTS_OFFER: one-time opt-in "Would you like me to block all known bots on the bots list?" (the only setup question; `known-bots offer-status|opt-in|opt-out`); yes -> paced "block all known bots" job (`known-bots plan|ingest|status`; ~20 per batch, pause between batches, daily limit; progress in the instance)
 LAST_UPDATED: 2026-10-03

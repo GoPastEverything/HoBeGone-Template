@@ -258,6 +258,28 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/eionmuskfanpage",
+      "match_type": "exact",
+      "pattern": "t.me/eionmuskfanpage",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:Congratulations Lets Talk (2026-10-03)",
+      "first_seen_handle": null,
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/eionmusksupport",
+      "match_type": "exact",
+      "pattern": "t.me/eionmusksupport",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:Congratulations Lets Talk (2026-10-03)",
+      "first_seen_handle": null,
+      "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/el0n_musk_0fficial_page",
       "match_type": "prefix",
       "pattern": "t.me/el0n_musk_0fficial_page*",

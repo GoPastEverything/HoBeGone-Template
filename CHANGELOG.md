@@ -1,5 +1,29 @@
 # Changelog
 
+## Template v0.2.13 (2026-10-03)
+Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
+gate or calibration changes).
+- **known.botslist: 529 accounts** (18 added via `known-list ingest --maintainer`):
+  - 16 from the X people search "Congratulations Lets Talk" (source `x-search:Congratulations Lets Talk (2026-10-03)`):
+    Tesla/Elon giveaway scam bots ("You're Selected on X among our lucky winners, text via the link" -> Telegram). Every
+    account from the search was added — no holdbacks.
+  - 2 from the X people search "Congratulations" (source `x-search:Congratulations (2026-10-03)`): @spaceship_X24 and
+    @Spaceship_X84 ("Congratulations you won a Tesla! message me now").
+  None of the 18 were already on the list; never-list skips were zero.
+- **Link watchlist: 101 links (60 exact, 41 prefix)**, 2 Telegram exact added (source "Congratulations Lets Talk"):
+  - `t.me/eionmusksupport` and `t.me/eionmuskfanpage` (seen as `t.me/EIonmusksupport` / `t.me/eIonmuskfanpage`: capital-I
+    for lowercase-L look-alikes of "Elon"). They were seen on profiles from the batch but not recorded against a specific
+    account, so `first_seen_handle` is `null` and no account entry lists them; `tests/test_botslist.py` accepts such
+    batch-level links only when their source matches listed accounts.
+- Never-list unchanged (@elonmusk, @ElonMuskAOC, @Teslahubs).
+- Handle fixtures: `fixtures/known_lists/congratulations_lets_talk_2026-10-03.handles.txt` (16) and
+  `fixtures/known_lists/congratulations_2026-10-03.handles.txt` (2).
+- README, VERSION.md, the user manual, skills, operator prompt and manifest say template v0.2.13 (counts updated).
+- Tests: `tests/test_v0213_lists.py` (the 18 handles and their sources, the 2 links and counts, never-list untouched).
+  `tests/test_botslist.py` now expects 529 handles = the eleven fixture files; `tests/test_v0212_lists.py` expects at least 511.
+
+
+
 ## Template v0.2.12 (2026-10-03)
 Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
 gate or calibration changes).

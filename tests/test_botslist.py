@@ -19,8 +19,10 @@ FIXTURES = [os.path.join(ROOT, "fixtures", "known_lists", f) for f in (
     "kindly_send_me_owner_confirmed_2026-10-03.handles.txt",    # template v0.2.9: 21 (maintainer: owner confirmed bot)
     "send_me_a_follow_2026-10-03.handles.txt",                   # template v0.2.10: 47
     "elon_ceo_2026-10-03.handles.txt",                           # template v0.2.11: 58
-    "tesla_ceo_2026-10-03.handles.txt")]                        # template v0.2.12: 59
-TOTAL = 511
+    "tesla_ceo_2026-10-03.handles.txt",                          # template v0.2.12: 59
+    "congratulations_lets_talk_2026-10-03.handles.txt",          # template v0.2.13: 16
+    "congratulations_2026-10-03.handles.txt")]                  # template v0.2.13: 2
+TOTAL = 529
 FPDB = json.load(open(os.path.join(ROOT, "fingerprints_db.json"), encoding="utf-8"))
 SRC = "x-search:test (synthetic)"
 
@@ -47,9 +49,16 @@ class TestShippedBotslist(unittest.TestCase):
             self.assertIsInstance(e["links"], list)
             self.assertEqual(e["evidence"], e["bio"])                         # engine name for the bio excerpt
         self.assertEqual(acc["REMOVED"], [])
-        # every watchlisted link is attached to at least one listed account
+        # every watchlisted link is attached to at least one listed account, except batch-level links (template v0.2.13:
+        # first_seen_handle null = seen on profiles from that search, not recorded per account), whose source must
+        # still be the source of listed accounts
         used = {l for e in acc["ACCOUNTS"] for l in e["links"]}
-        self.assertEqual(used, {w["pattern"] for w in kl.load_links(os.path.join(ROOT, "rules"))["LINKS"]})
+        wl = kl.load_links(os.path.join(ROOT, "rules"))["LINKS"]
+        self.assertEqual(used, {w["pattern"] for w in wl if w["first_seen_handle"] is not None})
+        sources = {e["source"] for e in acc["ACCOUNTS"]}
+        for w in wl:
+            if w["first_seen_handle"] is None:
+                self.assertNotIn(w["pattern"], used); self.assertIn(w["source"], sources, w["url"])
         txt = open(BOTSLIST, encoding="utf-8").read()
         self.assertIn("Only the maintainers update this list. Owners' bots read it and never edit it; to suggest an account, open an issue", txt)
         self.assertFalse(os.path.exists(os.path.join(ROOT, "rules", "known_scam_accounts.json")))   # old file removed cleanly
