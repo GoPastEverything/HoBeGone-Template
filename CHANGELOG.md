@@ -1,5 +1,22 @@
 # Changelog
 
+## Template v0.2.14 (2026-10-03)
+Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
+gate or calibration changes).
+- **known.botslist: 620 accounts** (91 added via `known-list ingest --maintainer`): the rest of the X people search
+  "Congratulations" (source `x-search:Congratulations (2026-10-03)`; 2 of its accounts were added in v0.2.13). The
+  maintainer ordered every account the search returned added, including ordinary-looking ones — no holdbacks. None of
+  the 91 were already on the list; never-list skips were zero.
+- **Link watchlist unchanged: 101 links (60 exact, 41 prefix).** No Telegram/WhatsApp/Zangi contacts in the 91 profiles'
+  names or bios (one contact e-mail domain in a bio was not watchlisted).
+- Never-list unchanged (@elonmusk, @ElonMuskAOC, @Teslahubs).
+- Handle fixture: `fixtures/known_lists/congratulations_full_2026-10-03.handles.txt` (91).
+- README, VERSION.md, the user manual, skills, operator prompt and manifest say template v0.2.14 (counts updated).
+- Tests: `tests/test_v0214_lists.py` (the 91 handles and their source, links unchanged, never-list untouched).
+  `tests/test_botslist.py` now expects 620 handles = the twelve fixture files; `tests/test_v0213_lists.py` expects at least 529.
+
+
+
 ## Template v0.2.13 (2026-10-03)
 Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
 gate or calibration changes).
