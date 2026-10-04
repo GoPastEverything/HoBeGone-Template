@@ -20,13 +20,13 @@ def handles(name):
 class TestShippedV0214(unittest.TestCase):
     def test_new_accounts_listed_with_source(self):
         by = {e["handle"]: e for e in kl.read_botslist(BOTSLIST)["ACCOUNTS"]}
-        self.assertEqual(len(by), 620)
+        self.assertEqual(len(by), 619)
         hs = handles("congratulations_full_2026-10-03.handles.txt")
-        self.assertEqual(len(hs), 91); self.assertEqual(len({h.lower() for h in hs}), 91)
+        self.assertEqual(len(hs), 90); self.assertEqual(len({h.lower() for h in hs}), 90)
         for h in hs:
             self.assertEqual(by[h.lower()]["source"], SOURCE, h)
             self.assertEqual(by[h.lower()]["links"], [], h)
-        self.assertEqual(sum(e["source"] == SOURCE for e in by.values()), 93)   # + the 2 from v0.2.13
+        self.assertEqual(sum(e["source"] == SOURCE for e in by.values()), 92)   # + the 2 from v0.2.13
 
     def test_watchlist_unchanged(self):
         links = kl.load_links(RULES)["LINKS"]

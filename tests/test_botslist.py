@@ -23,7 +23,7 @@ FIXTURES = [os.path.join(ROOT, "fixtures", "known_lists", f) for f in (
     "congratulations_lets_talk_2026-10-03.handles.txt",          # template v0.2.13: 16
     "congratulations_2026-10-03.handles.txt",                    # template v0.2.13: 2
     "congratulations_full_2026-10-03.handles.txt")]             # template v0.2.14: 91
-TOTAL = 620
+TOTAL = 619
 FPDB = json.load(open(os.path.join(ROOT, "fingerprints_db.json"), encoding="utf-8"))
 SRC = "x-search:test (synthetic)"
 
@@ -49,7 +49,7 @@ class TestShippedBotslist(unittest.TestCase):
                 self.assertIn(k, e, e["handle"])
             self.assertIsInstance(e["links"], list)
             self.assertEqual(e["evidence"], e["bio"])                         # engine name for the bio excerpt
-        self.assertEqual(acc["REMOVED"], [])
+        self.assertEqual([r["handle"] for r in acc["REMOVED"]], ["grok"])   # v0.2.15: official @grok removed by maintainer
         # every watchlisted link is attached to at least one listed account, except batch-level links (template v0.2.13:
         # first_seen_handle null = seen on profiles from that search, not recorded per account), whose source must
         # still be the source of listed accounts
@@ -64,7 +64,7 @@ class TestShippedBotslist(unittest.TestCase):
         self.assertIn("Only the maintainers update this list. Owners' bots read it and never edit it; to suggest an account, open an issue", txt)
         self.assertFalse(os.path.exists(os.path.join(ROOT, "rules", "known_scam_accounts.json")))   # old file removed cleanly
         lines = [l for l in txt.splitlines() if l and not l.startswith("#")]
-        self.assertEqual(len(lines), TOTAL)
+        self.assertEqual(len(lines), TOTAL + len(acc["REMOVED"]))   # removal records are kept as lines too
         self.assertTrue(all(json.loads(l)["handle"] for l in lines))
 
     def test_engine_defaults_to_repo_root_botslist(self):

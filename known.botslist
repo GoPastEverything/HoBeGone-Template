@@ -17,7 +17,7 @@
 # A bare handle on its own line (e.g. "@someone") is also read as an entry.
 # Scam links are matched from rules/link_watchlist.json (maintainer-only too).
 # Maintainers: python3 -m fis known-list ingest|remove --maintainer ...  (CONTRIBUTING.md). CODEOWNERS: @GoPastEverything
-# accounts: 620 · removed: 0 · updated: 2026-10-03
+# accounts: 619 · removed: 1 · updated: 2026-10-03
 #
 {"handle": "0nleen", "display_name": "CONGRATULATIONS", "bio": "Commentary account A resourceful Pharmacist | NSPPDIAN l Entertainment gist | reality tv show commentary | 30BG| Olandria doll | love island updates |", "links": [], "source": "x-search:Congratulations (2026-10-03)", "added": "2026-10-03", "verified": false, "reason": "X people search Congratulations; maintainer bulk add per owner rule (every account in the search, including ordinary-looking ones, no holdbacks)"}
 {"handle": "13busenbark", "display_name": "ĊEÒ ĚĽÒÑ ŤĚŠĽA ÕŴÑĚŘŚ", "bio": "", "links": [], "source": "x-search:Elon CEO (2026-10-03)", "added": "2026-10-03", "verified": false}
@@ -285,7 +285,6 @@
 {"handle": "gmfeyat7msidgbo", "display_name": "Elon Rocketman", "bio": "نفسى اكون ام", "links": [], "source": "x-search:Elon Rocket Man (2026-10-03)", "added": "2026-10-03", "verified": false}
 {"handle": "graceharmon04", "display_name": "Send me a follow", "bio": "live laugh love", "links": [], "source": "x-search:Send Me A Follow (2026-10-03)", "added": "2026-10-03", "verified": false}
 {"handle": "grannymayaaa", "display_name": "KINDLY SEND A FOLLOW MESSAGE ME PRIVATE", "bio": "I WANT YOU TO CLICK ON THE LINK BELOW TO MESSAGE ME ON TELEGRAM NOW https:// t.me/spaceman6121", "links": ["t.me/spaceman6121"], "source": "x-search:Kindly Send Me A Follow (2026-10-03)", "added": "2026-10-03", "verified": false}
-{"handle": "grok", "display_name": "", "bio": "", "links": [], "source": "x-search:Congratulations (2026-10-03)", "added": "2026-10-03", "verified": false, "reason": "X people search Congratulations; maintainer bulk add per owner rule (every account in the search, including ordinary-looking ones, no holdbacks)"}
 {"handle": "growthtesla5", "display_name": "Tesla Hub Investors", "bio": "Tesla • EVs • AI • Innovation • Growth Stocks", "links": [], "source": "x-search:Tesla Hub (2026-10-03)", "added": "2026-10-03", "verified": false}
 {"handle": "hamzaahmed20336", "display_name": "KINDLY SEND ME A FOLLOW REQUEST NOW", "bio": "CLICK ON THE LINK BELOW https:// t.me/elon0093", "links": ["t.me/elon0093"], "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)", "added": "2026-10-03"}
 {"handle": "hangyulssina", "display_name": "", "bio": "", "links": [], "source": "x-search:Congratulations (2026-10-03)", "added": "2026-10-03", "verified": false, "reason": "X people search Congratulations; maintainer bulk add per owner rule (every account in the search, including ordinary-looking ones, no holdbacks)"}
@@ -639,3 +638,6 @@
 {"handle": "xyberwebhadwin", "display_name": "", "bio": "", "links": [], "source": "x-search:Congratulations (2026-10-03)", "added": "2026-10-03", "verified": false, "reason": "X people search Congratulations; maintainer bulk add per owner rule (every account in the search, including ordinary-looking ones, no holdbacks)"}
 {"handle": "xzibber", "display_name": "Xzibber", "bio": "", "links": [], "source": "x-search:Kindly Send Me (2026-10-03)", "added": "2026-10-03", "verified": false, "reason": "maintainer: owner confirmed bot"}
 {"handle": "zainahal_34", "display_name": "zainahal_34", "bio": "", "links": [], "source": "x-search:Kindly Send Me (2026-10-03)", "added": "2026-10-03", "verified": false, "reason": "maintainer: owner confirmed bot"}
+#
+# Removed (tombstones: not blocked, never re-added by a later ingest)
+{"handle": "grok", "removed": "2026-10-03", "removed_reason": "official @grok account (xAI), not a bot; maintainer order 2026-10-03", "display_name": "", "bio": "", "links": [], "source": "x-search:Congratulations (2026-10-03)", "added": "2026-10-03"}

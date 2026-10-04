@@ -20,7 +20,7 @@ john_nwizi
 triggaaaaaaaa
 philthatremains
 UASMagazine
-grok
+# grok  (removed v0.2.15: official @grok account, maintainer order)
 salom69g
 reevemusk214324
 Mrelonmuskxx33

@@ -1,5 +1,10 @@
 # Changelog
 
+## Template v0.2.15 (2026-10-03)
+Shared-list correction ordered by the maintainer (no rule, weight, gate or calibration changes).
+- **known.botslist: 619 accounts.** Removed @grok (the official Grok account) with `known-list remove --maintainer`; it had come in with the "Congratulations" search in v0.2.14. The removal is recorded so a later ingest won't re-add it.
+- Links unchanged at 101 (60 exact, 41 prefix); never-list unchanged.
+
 ## Template v0.2.14 (2026-10-03)
 Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
 gate or calibration changes).
