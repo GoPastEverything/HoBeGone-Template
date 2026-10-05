@@ -1,5 +1,31 @@
 # Changelog
 
+## Template v0.2.16 (2026-10-04)
+Shared-list update ordered by the maintainer (engine Ho Be Gone @BOT v0.2.0, auto-block decision-v0.7.1; no rule, weight,
+gate or calibration changes).
+- **known.botslist: 790 accounts** (171 added via `known-list ingest --maintainer`), all from the X people search "know
+  your opinion" (source `x-search:know your opinion (2026-10-04)`): mostly "I WOULD LOVE TO KNOW YOUR OPINION" Elon/Grok/
+  Tesla impersonators pointing to Telegram, WhatsApp or Zangi. The maintainer ordered every account the search returned
+  added — no holdbacks. None were already on the list; never-list skips were zero; the removed @grok stays removed.
+- **Link watchlist: 161 links (98 exact, 63 prefix)**, 60 added (first seen on 99 of the 171 accounts):
+  - 58 Telegram: 37 exact, 21 prefix (links X cut off with "…", e.g. `t.me/officialempowermentceo*`, `t.me/ceo_musk_spacexx*`).
+  - 1 WhatsApp exact: `wa.me/17153198222` (@_Tcn1).
+  - 1 Zangi prefix: `services.zangi.com/dl/conversation/6258043219*` (@_Elonmusk__7).
+  - Each profile card also showed a shorter, cut-off copy of its link without "…" (e.g. `t.me/Officialempowe` next to
+    `t.me/Officialempowermentceo…`); only the longer form was kept, so no cut-off fragment is stored as an exact link.
+  - Not added: the bare `services.zangi.com/dl/conversation` (@Griffin_GMT; it has no contact ID and would match any
+    Zangi conversation link); the prose word "draftees.Scandinavian" (@jmcguirk17) is now in `PROSE_AUTOLINK_IGNORE`.
+- Never-list unchanged (@elonmusk, @ElonMuskAOC, @Teslahubs).
+- Handle fixture: `fixtures/known_lists/know_your_opinion_2026-10-04.handles.txt` (171).
+- README, VERSION.md, the user manual, skills, operator prompt and manifest say template v0.2.16 (counts updated).
+- Tests: `tests/test_v0216_lists.py` (the 171 handles and their source, the 60 links, prefix/exact kinds, the skipped
+  generic Zangi link, never-list untouched). `tests/test_botslist.py` now expects 790 handles = the thirteen fixture
+  files; `tests/test_v0214_lists.py` expects at least 619 accounts and 101 links; `tests/test_v027_lists.py` and
+  `tests/test_v028_lists.py` expect at least 41 prefix links (first prefix additions since v0.2.3).
+  `tests/test_hbg.py::test_harmless_interactions_produce_no_alert` times its last like from the real clock: it mixed a
+  fixed 2026-09-27 timestamp with `light_check`'s real-clock `LAST_LIGHT_RECHECK` and started failing on 2026-10-04 once
+  7 days (`LIGHT_CHECK_STALE_DAYS`) had passed (test-only fix; engine unchanged).
+
 ## Template v0.2.15 (2026-10-03)
 Shared-list correction ordered by the maintainer (no rule, weight, gate or calibration changes).
 - **known.botslist: 619 accounts.** Removed @grok (the official Grok account) with `known-list remove --maintainer`; it had come in with the "Congratulations" search in v0.2.14. The removal is recorded so a later ingest won't re-add it.

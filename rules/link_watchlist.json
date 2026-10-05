@@ -1,7 +1,7 @@
 {
   "LIST": "link_watchlist",
   "LIST_VERSION": "1",
-  "UPDATED": "2026-10-03",
+  "UPDATED": "2026-10-04",
   "DESCRIPTION": "Shared base rule (every owner). Normalized scam links (lowercase host, no www, no http/https, no trailing slash, tracking query parameters removed; t.me/telegram.me paths lowercased and a leading @ removed; api.whatsapp.com/send?phone=N -> wa.me/N). An exact Telegram/WhatsApp/Zangi link match is enough to auto-block (a 'Zangi 3415158270' number in a bio is stored as services.zangi.com/dl/3415158270); any other watchlisted link auto-blocks together with an existing lure or impersonation feature. An entry without a path matches the whole domain. Entries: domain, url, kind, source, first_seen_handle, added.",
   "NEVER_WATCHLIST_DOMAINS": [
     "x.com",
@@ -33,7 +33,8 @@
   "PROSE_AUTOLINK_IGNORE_WHY": "Words in a bio that X turned into a link but that are not a destination the account points to (e.g. 'Not here to fit in.Here to build', 'X Corp and X.Al. Neuralink'). Skipped by known-list ingest.",
   "PROSE_AUTOLINK_IGNORE": [
     "in.here",
-    "x.al"
+    "x.al",
+    "draftees.scandinavian"
   ],
   "LINKS": [
     {
@@ -92,6 +93,17 @@
       "added": "2026-10-03"
     },
     {
+      "domain": "services.zangi.com",
+      "url": "services.zangi.com/dl/conversation/6258043219",
+      "match_type": "prefix",
+      "pattern": "services.zangi.com/dl/conversation/6258043219*",
+      "truncated": true,
+      "kind": "zangi",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "_elonmusk__7",
+      "added": "2026-10-04"
+    },
+    {
       "domain": "signal.me",
       "url": "signal.me",
       "match_type": "exact",
@@ -123,6 +135,72 @@
       "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
       "first_seen_handle": "parody_musky5",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/ceo_elonmusk0421",
+      "match_type": "prefix",
+      "pattern": "t.me/ceo_elonmusk0421*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "coeelonmusk0421",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/ceo_elonmusk_of_tesla",
+      "match_type": "prefix",
+      "pattern": "t.me/ceo_elonmusk_of_tesla*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "elonmuskdlordx",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/ceo_musk287",
+      "match_type": "exact",
+      "pattern": "t.me/ceo_musk287",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "ceo_texla_x",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/ceo_musk_spacex1",
+      "match_type": "prefix",
+      "pattern": "t.me/ceo_musk_spacex1*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "_elon_musk__9",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/ceo_musk_spacexx",
+      "match_type": "prefix",
+      "pattern": "t.me/ceo_musk_spacexx*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "_elon_musk__0",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/ceo_muskreeve217",
+      "match_type": "prefix",
+      "pattern": "t.me/ceo_muskreeve217*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "senbio217",
+      "added": "2026-10-04"
     },
     {
       "domain": "t.me",
@@ -170,6 +248,17 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/ceoelonr_musk_x",
+      "match_type": "exact",
+      "pattern": "t.me/ceoelonr_musk_x",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "_xmusk265",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/ceofspace",
       "match_type": "prefix",
       "pattern": "t.me/ceofspace*",
@@ -189,6 +278,17 @@
       "source": "x-search:Kindly Send Me A Follow (2026-10-03)",
       "first_seen_handle": "ceofspacex54",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/ceomuskoftesla",
+      "match_type": "exact",
+      "pattern": "t.me/ceomuskoftesla",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "el_on_xmuskceox",
+      "added": "2026-10-04"
     },
     {
       "domain": "t.me",
@@ -214,6 +314,28 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/ceox_elon_xmusk",
+      "match_type": "exact",
+      "pattern": "t.me/ceox_elon_xmusk",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "seonmi285926",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/ceox_elon_xmusk0",
+      "match_type": "prefix",
+      "pattern": "t.me/ceox_elon_xmusk0*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "iglad94640",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/cheifelonreeve",
       "match_type": "exact",
       "pattern": "t.me/cheifelonreeve",
@@ -222,6 +344,28 @@
       "source": "x-search:Elon CEO (2026-10-03)",
       "first_seen_handle": "elonceomrmusk1",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/cheifelonreevemusk",
+      "match_type": "prefix",
+      "pattern": "t.me/cheifelonreevemusk*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "elonstock_0",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/chonchosworld",
+      "match_type": "exact",
+      "pattern": "t.me/chonchosworld",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "chonchosworlde",
+      "added": "2026-10-04"
     },
     {
       "domain": "t.me",
@@ -244,6 +388,17 @@
       "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
       "first_seen_handle": "_elonmuskqs",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/eion_musk_approve_chat",
+      "match_type": "prefix",
+      "pattern": "t.me/eion_musk_approve_chat*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "elon_kingx",
+      "added": "2026-10-04"
     },
     {
       "domain": "t.me",
@@ -390,6 +545,17 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/elon1432644",
+      "match_type": "exact",
+      "pattern": "t.me/elon1432644",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "elon_tesla83243",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/elon3277",
       "match_type": "exact",
       "pattern": "t.me/elon3277",
@@ -442,6 +608,17 @@
       "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
       "first_seen_handle": "aimeeuc",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/elon_musk_ceo036",
+      "match_type": "prefix",
+      "pattern": "t.me/elon_musk_ceo036*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "nodimal",
+      "added": "2026-10-04"
     },
     {
       "domain": "t.me",
@@ -533,6 +710,28 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/elongatedmusk",
+      "match_type": "exact",
+      "pattern": "t.me/elongatedmusk",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "kingelonxlord",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/elonk126",
+      "match_type": "exact",
+      "pattern": "t.me/elonk126",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "elonw78",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/elonmusk_officialceox",
       "match_type": "prefix",
       "pattern": "t.me/elonmusk_officialceox*",
@@ -563,6 +762,17 @@
       "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
       "first_seen_handle": "kindlysendznj",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/elonmuskspace221",
+      "match_type": "prefix",
+      "pattern": "t.me/elonmuskspace221*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "gjenk8acg",
+      "added": "2026-10-04"
     },
     {
       "domain": "t.me",
@@ -599,6 +809,17 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/elonmwm",
+      "match_type": "exact",
+      "pattern": "t.me/elonmwm",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "elonmwm",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/elonreevemusk22881",
       "match_type": "prefix",
       "pattern": "t.me/elonreevemusk22881*",
@@ -607,6 +828,17 @@
       "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
       "first_seen_handle": "kindlysendtsd1",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/elontechonly",
+      "match_type": "exact",
+      "pattern": "t.me/elontechonly",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "ieunjeong748666",
+      "added": "2026-10-04"
     },
     {
       "domain": "t.me",
@@ -621,6 +853,83 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/elonxreevemusk18",
+      "match_type": "prefix",
+      "pattern": "t.me/elonxreevemusk18*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "hkane98",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/em1185",
+      "match_type": "exact",
+      "pattern": "t.me/em1185",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "ceo_elon_34",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/erm25_26",
+      "match_type": "exact",
+      "pattern": "t.me/erm25_26",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "galacticreeve",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/grokeinmusk",
+      "match_type": "exact",
+      "pattern": "t.me/grokeinmusk",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "ywisdom4602",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/grokeinmusk011",
+      "match_type": "exact",
+      "pattern": "t.me/grokeinmusk011",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "bwisdom21088",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/grokeinmusk1",
+      "match_type": "exact",
+      "pattern": "t.me/grokeinmusk1",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "enejeshedr57819",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/grokelnmusk",
+      "match_type": "exact",
+      "pattern": "t.me/grokelnmusk",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "elonmagalordx",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/grokelon0x",
       "match_type": "exact",
       "pattern": "t.me/grokelon0x",
@@ -629,6 +938,61 @@
       "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
       "first_seen_handle": "spacexxqq",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/grokelon_musk",
+      "match_type": "exact",
+      "pattern": "t.me/grokelon_musk",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "_grookion_lordx",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/grokelonmusk2",
+      "match_type": "exact",
+      "pattern": "t.me/grokelonmusk2",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "grookion_lord",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/grokem001",
+      "match_type": "exact",
+      "pattern": "t.me/grokem001",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "em7988723818417",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/groklonmusk_pm",
+      "match_type": "exact",
+      "pattern": "t.me/groklonmusk_pm",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "pm_elonmusk",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/innovatewithmusk",
+      "match_type": "prefix",
+      "pattern": "t.me/innovatewithmusk*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "muskinvestiment",
+      "added": "2026-10-04"
     },
     {
       "domain": "t.me",
@@ -654,6 +1018,17 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/kairazydays01",
+      "match_type": "exact",
+      "pattern": "t.me/kairazydays01",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "kairazytimes01",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/kekemius",
       "match_type": "exact",
       "pattern": "t.me/kekemius",
@@ -665,6 +1040,28 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/kthopkins_official",
+      "match_type": "prefix",
+      "pattern": "t.me/kthopkins_official*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "pmkatie_hopkins",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/larissa_liv41138",
+      "match_type": "prefix",
+      "pattern": "t.me/larissa_liv41138*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "larissaliv41131",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/let_chat_privetly",
       "match_type": "prefix",
       "pattern": "t.me/let_chat_privetly*",
@@ -673,6 +1070,28 @@
       "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
       "first_seen_handle": "pazaropoulos",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/livechatofficialelon",
+      "match_type": "prefix",
+      "pattern": "t.me/livechatofficialelon*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "realelnmusk700",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/mari_arantes1111",
+      "match_type": "prefix",
+      "pattern": "t.me/mari_arantes1111*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "arantes_ma65668",
+      "added": "2026-10-04"
     },
     {
       "domain": "t.me",
@@ -695,6 +1114,17 @@
       "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
       "first_seen_handle": "ceotesla67805",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/mr_elonmusk_k",
+      "match_type": "exact",
+      "pattern": "t.me/mr_elonmusk_k",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "wannalink1240",
+      "added": "2026-10-04"
     },
     {
       "domain": "t.me",
@@ -764,6 +1194,17 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/musk_teslay",
+      "match_type": "exact",
+      "pattern": "t.me/musk_teslay",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "elon87656",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/muskreevecto",
       "match_type": "exact",
       "pattern": "t.me/muskreevecto",
@@ -775,6 +1216,17 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/musky_grok",
+      "match_type": "exact",
+      "pattern": "t.me/musky_grok",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "xgrokmusk26",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/musky_space_x_stock10",
       "match_type": "prefix",
       "pattern": "t.me/musky_space_x_stock10*",
@@ -783,6 +1235,28 @@
       "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
       "first_seen_handle": "kindlysendsagn",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/muskygrok1",
+      "match_type": "exact",
+      "pattern": "t.me/muskygrok1",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "xgrokelon666",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/muskygrok31",
+      "match_type": "exact",
+      "pattern": "t.me/muskygrok31",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "xgrokmusky00",
+      "added": "2026-10-04"
     },
     {
       "domain": "t.me",
@@ -816,6 +1290,39 @@
       "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
       "first_seen_handle": "rakhil975838",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/officialelonchatlive",
+      "match_type": "prefix",
+      "pattern": "t.me/officialelonchatlive*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "elonxspacelord1",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/officialelonlivechat",
+      "match_type": "prefix",
+      "pattern": "t.me/officialelonlivechat*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "grokelon_musk_2",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/officialempowermentceo",
+      "match_type": "prefix",
+      "pattern": "t.me/officialempowermentceo*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "musktotheworld1",
+      "added": "2026-10-04"
     },
     {
       "domain": "t.me",
@@ -885,6 +1392,17 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/realelonmusk655",
+      "match_type": "exact",
+      "pattern": "t.me/realelonmusk655",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "daily635112",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/realelonmuskpge",
       "match_type": "exact",
       "pattern": "t.me/realelonmuskpge",
@@ -951,6 +1469,17 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/sally_larsen",
+      "match_type": "exact",
+      "pattern": "t.me/sally_larsen",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "_primepeaches",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/spacecxx",
       "match_type": "exact",
       "pattern": "t.me/spacecxx",
@@ -970,6 +1499,28 @@
       "source": "x-search:Kindly Send Me A Follow (2026-10-03)",
       "first_seen_handle": "grannymayaaa",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/spacemusk",
+      "match_type": "exact",
+      "pattern": "t.me/spacemusk",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "spacemanerm",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/spacemusk_erm",
+      "match_type": "exact",
+      "pattern": "t.me/spacemusk_erm",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "spacemusk_erm",
+      "added": "2026-10-04"
     },
     {
       "domain": "t.me",
@@ -1003,6 +1554,17 @@
       "source": "x-search:Send Me A Follow (2026-10-03)",
       "first_seen_handle": "lnboxme",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/spacexstar_linkreward",
+      "match_type": "prefix",
+      "pattern": "t.me/spacexstar_linkreward*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "spacexlinkrewad",
+      "added": "2026-10-04"
     },
     {
       "domain": "t.me",
@@ -1047,6 +1609,17 @@
       "source": "x-search:Kindly Send Me A Follow Request (2026-10-03)",
       "first_seen_handle": "kehinde2005",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/tesla_space_x_management1",
+      "match_type": "prefix",
+      "pattern": "t.me/tesla_space_x_management1*",
+      "truncated": true,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "atqyogafans",
+      "added": "2026-10-04"
     },
     {
       "domain": "t.me",
@@ -1116,6 +1689,72 @@
     },
     {
       "domain": "t.me",
+      "url": "t.me/x_dogeelonmusk",
+      "match_type": "exact",
+      "pattern": "t.me/x_dogeelonmusk",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "elonwizlordx",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/x_elo_musk",
+      "match_type": "exact",
+      "pattern": "t.me/x_elo_musk",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "x_x_elo_musk",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/x_elon_teslaa",
+      "match_type": "exact",
+      "pattern": "t.me/x_elon_teslaa",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "ceo__tesla_musm",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/xelonmmgt",
+      "match_type": "exact",
+      "pattern": "t.me/xelonmmgt",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "xmbelon",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/xlordelon",
+      "match_type": "exact",
+      "pattern": "t.me/xlordelon",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "xnewselon96",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
+      "url": "t.me/xmr_beast",
+      "match_type": "exact",
+      "pattern": "t.me/xmr_beast",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "xmr_beast1",
+      "added": "2026-10-04"
+    },
+    {
+      "domain": "t.me",
       "url": "t.me/xspaceceoowner",
       "match_type": "exact",
       "pattern": "t.me/xspaceceoowner",
@@ -1137,6 +1776,17 @@
       "added": "2026-10-03"
     },
     {
+      "domain": "t.me",
+      "url": "t.me/ytelonmusk",
+      "match_type": "exact",
+      "pattern": "t.me/ytelonmusk",
+      "truncated": false,
+      "kind": "telegram",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "elonm_lordx",
+      "added": "2026-10-04"
+    },
+    {
       "domain": "twitter.on",
       "url": "twitter.on",
       "match_type": "exact",
@@ -1146,6 +1796,17 @@
       "source": "x-search:Tesla CEO (2026-10-03)",
       "first_seen_handle": "teslaceo6390",
       "added": "2026-10-03"
+    },
+    {
+      "domain": "wa.me",
+      "url": "wa.me/17153198222",
+      "match_type": "exact",
+      "pattern": "wa.me/17153198222",
+      "truncated": false,
+      "kind": "whatsapp",
+      "source": "x-search:know your opinion (2026-10-04)",
+      "first_seen_handle": "_tcn1",
+      "added": "2026-10-04"
     }
   ]
 }

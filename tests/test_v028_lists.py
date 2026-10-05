@@ -36,7 +36,7 @@ class TestShippedV028(unittest.TestCase):
         links = kl.load_links(RULES)["LINKS"]
         self.assertGreaterEqual(len(links), 79)
         self.assertGreaterEqual(sum(e["match_type"] == "exact" for e in links), 38)
-        self.assertEqual(sum(e["match_type"] == "prefix" for e in links), 41)
+        self.assertGreaterEqual(sum(e["match_type"] == "prefix" for e in links), 41)
         self.assertFalse(any(e.get("source") == SOURCE for e in links))
 
     def test_never_list_untouched(self):

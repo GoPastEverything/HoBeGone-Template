@@ -386,8 +386,11 @@ class TestScoutingQueue(Env):
         self.ingest([row("nice2", "NEW_FOLLOW", ts(2))])
         states, new, _ = scout.run_full_audits(self.store, self.cp, [rec(HARMLESS, "nice2")], self.ctx())
         self.assertEqual(states[0]["DECISION"]["ENFORCEMENT"], "KEEP"); self.assertEqual(new, []); self.assertEqual(scout.alerts(self.store), [])
-        # a later like from the now-cached low-risk account only updates history
-        self.assertEqual(self.ingest([row("nice1", "LIKE", ts(3), "https://x.com/me/status/2")])[0]["RESULT"], "HISTORY_UPDATED")
+        # a later like from the now-cached low-risk account only updates history. light_check stamps LAST_LIGHT_RECHECK with
+        # the real clock, so the later like is timed from the real clock too (a fixed 2026-09-27 timestamp went stale once
+        # LIGHT_CHECK_STALE_DAYS = 7 had passed in real time, on 2026-10-04)
+        later = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
+        self.assertEqual(self.ingest([row("nice1", "LIKE", later, "https://x.com/me/status/2")])[0]["RESULT"], "HISTORY_UPDATED")
 
     def test_alert_owner_reactions_record_correctly(self):
         self.ingest([row("scam1", "NEW_FOLLOW", ts(1))] + [row("scam1", "LIKE", ts(1 + i), f"https://x.com/me/status/{i}") for i in range(1, 5)])
